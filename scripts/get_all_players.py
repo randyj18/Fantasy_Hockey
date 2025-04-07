@@ -15,6 +15,27 @@ def get_full_name(player):
 
     return f"{first_name} {last_name}".strip()
 
+def get_position_code(player):
+    """Get proper position code from player object"""
+    # First try to get from the position object
+    if 'position' in player and isinstance(player['position'], dict):
+        if 'abbreviation' in player['position']:
+            return player['position']['abbreviation']
+    
+    # Fall back to positionCode
+    if 'positionCode' in player:
+        # Map positionCode to proper abbreviation
+        position_map = {
+            'L': 'LW',   # Left Wing
+            'R': 'RW',   # Right Wing
+            'C': 'C',    # Center
+            'D': 'D',    # Defense
+            'G': 'G'     # Goalie
+        }
+        return position_map.get(player['positionCode'], player['positionCode'])
+    
+    return 'N/A'  # Default if no position found
+
 def fetch_player_stats(player_id, position_code, retries=3, backoff_factor=0.3):
     stats_url = f"https://api-web.nhle.com/v1/player/{player_id}/landing"
     
@@ -40,7 +61,7 @@ def fetch_player_stats(player_id, position_code, retries=3, backoff_factor=0.3):
             'gamesPlayed': featured_stats.get('gamesPlayed', 0),
         }
         
-        if position_code == 'G':  # Goalie stats
+        if position_code in ['G']:  # Goalie stats
             player_stats.update({
                 'wins': featured_stats.get('wins', 0),
                 'losses': featured_stats.get('losses', 0),
@@ -72,11 +93,13 @@ def fetch_player_stats(player_id, position_code, retries=3, backoff_factor=0.3):
             return {'gamesPlayed': 0, 'goals': 0, 'assists': 0, 'points': 0}
 
 def main():
+    """Generate database of all NHL players"""
+    
     # Define the list of team abbreviations
     team_abbreviations = ['NJD', 'NYI', 'NYR', 'PHI', 'PIT', 'BOS', 'BUF', 'MTL', 'OTT', 'TOR', 
                          'CAR', 'FLA', 'TBL', 'WSH', 'CHI', 'DET', 'NSH', 'STL', 'CGY', 'COL', 
                          'EDM', 'VAN', 'ANA', 'DAL', 'LAK', 'SJS', 'CBJ', 'MIN', 'WPG', 
-                         'VGK', 'SEA', 'UTA']
+                         'VGK', 'SEA', 'UTA']  # Removed 'ARI'
 
     # Base URL for the API
     base_url = "https://api-web.nhle.com/v1/roster/"
@@ -98,20 +121,23 @@ def main():
             for category in ['forwards', 'defensemen', 'goalies']:
                 if category in data:
                     for player in data[category]:
+                        # Get position code with proper mapping
+                        position_code = get_position_code(player)
+                        
                         # Get basic player info
                         player_data = {
                             "id": player['id'],
                             "fullName": get_full_name(player),
                             "firstName": player.get('firstName', {}).get('default', ''),
                             "lastName": player.get('lastName', {}).get('default', ''),
-                            "positionCode": player['positionCode'],
-                            "position": player.get('position', {}).get('abbreviation', ''),
+                            "positionCode": player.get('positionCode', ''),
+                            "position": position_code,
                             "teamAbbreviation": team,
                             "jerseyNumber": player.get('jerseyNumber', '')
                         }
                         
                         # Add player stats (with a small delay to avoid rate limiting)
-                        stats = fetch_player_stats(player['id'], player['positionCode'])
+                        stats = fetch_player_stats(player['id'], position_code)
                         player_data.update(stats)
                         
                         all_players.append(player_data)
