@@ -46,6 +46,22 @@ jobs:
           window.firebaseConfig = firebaseConfig;
           EOL
       
+      - name: Create Gmail Config
+        env:
+          GMAIL_API_KEY: ${{ secrets.GMAIL_API_KEY }}
+          GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+        run: |
+          cat > gmailConfig.js << EOL
+          // Gmail API configuration
+          const gmailConfig = {
+              apiKey: "$GMAIL_API_KEY",
+              clientId: "$GMAIL_CLIENT_ID"
+          };
+
+          // Make config available globally
+          window.gmailConfig = gmailConfig;
+          EOL
+      
       - name: Setup Pages
         uses: actions/configure-pages@v4
       

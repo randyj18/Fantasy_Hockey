@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fantasy Hockey Standings</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Fantasy Hockey League</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,11 +11,9 @@
             margin: 0;
             padding: 0;
             color: #333;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         header {
             background-color: #003366;
@@ -24,461 +21,136 @@
             padding: 1rem;
             text-align: center;
         }
-        h1, h2 {
-            margin-top: 0;
-        }
-        .standings-container {
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
             margin-bottom: 30px;
         }
-        .standings-table {
-            flex: 1;
-            min-width: 300px;
-        }
-        .standings-chart {
-            flex: 2;
-            min-width: 500px;
-            height: 400px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        tbody tr:hover {
-            background-color: #f5f5f5;
-        }
-        .tabs {
+        .cta-buttons {
             display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-bottom: none;
-            margin-right: 5px;
-            border-radius: 5px 5px 0 0;
+        .btn {
+            display: inline-block;
+            background-color: #003366;
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: background-color 0.2s;
         }
-        .tab.active {
+        .btn:hover {
+            background-color: #002244;
+        }
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid #003366;
+            color: #003366;
+        }
+        .btn-outline:hover {
             background-color: #003366;
             color: white;
         }
-        .tab-content {
-            display: none;
+        .features {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            margin-top: 50px;
+            flex-wrap: wrap;
         }
-        .tab-content.active {
-            display: block;
+        .feature {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .player-detail {
-            margin-top: 30px;
+        .feature h3 {
+            color: #003366;
+            margin-top: 0;
         }
-        .last-updated {
-            font-style: italic;
-            text-align: right;
-            margin-top: 20px;
+        footer {
+            background-color: #f0f0f0;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
             color: #666;
         }
-        .live-indicator {
-            background-color: #ff4136;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            margin-left: 10px;
-            animation: pulse 2s infinite;
-            display: none;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        .nav-links {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .nav-links a {
-            margin: 0 10px;
-            color: #003366;
-            text-decoration: none;
-        }
-        .nav-links a:hover {
-            text-decoration: underline;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .features {
+                flex-direction: column;
+            }
+            .feature {
+                margin-bottom: 20px;
+            }
         }
     </style>
+    <!-- Auto-redirect after a short delay -->
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.location.href = 'manage-leagues.html';
+            }, 300); // 300ms delay
+        }
+    </script>
 </head>
 <body>
     <header>
-        <h1>Fantasy Hockey Standings <span id="liveIndicator" class="live-indicator">LIVE</span></h1>
+        <h1>Fantasy Hockey League</h1>
     </header>
     
     <div class="container">
-        <div class="tabs">
-            <div class="tab active" data-tab="standings">Standings</div>
-            <div class="tab" data-tab="players">Player Stats</div>
-            <div class="tab" data-tab="charts">Team Breakdown</div>
-        </div>
-        
-        <div id="standings" class="tab-content active">
-            <div class="standings-container">
-                <div class="standings-table">
-                    <h2>Current Standings</h2>
-                    <table id="standingsTable">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Team</th>
-                                <th>Points</th>
-                            </tr>
-                        </thead>
-                        <tbody id="standingsTableBody">
-                            <!-- Standings data will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="standings-chart">
-                    <canvas id="standingsChart"></canvas>
-                </div>
+        <div class="hero">
+            <h1>Welcome to the Fantasy Hockey League</h1>
+            <p class="subtitle">Create or join a league, draft your dream team, and compete with friends!</p>
+            <div class="cta-buttons">
+                <a href="manage-leagues.html" class="btn">Manage My Leagues</a>
+                <a href="manage-leagues.html?tab=create-league" class="btn btn-outline">Create New League</a>
             </div>
         </div>
         
-        <div id="players" class="tab-content">
-            <h2>Player Statistics</h2>
-            <table id="playerTable">
-                <thead>
-                    <tr>
-                        <th>Player</th>
-                        <th>Team</th>
-                        <th>Total Points</th>
-                        <th>Goals</th>
-                        <th>Assists</th>
-                        <th>Wins</th>
-                        <th>Shutouts</th>
-                    </tr>
-                </thead>
-                <tbody id="playerTableBody">
-                    <!-- Player data will be loaded here -->
-                </tbody>
-            </table>
-        </div>
-        
-        <div id="charts" class="tab-content">
-            <h2>Team Points Breakdown</h2>
-            <canvas id="teamBreakdownChart" height="400"></canvas>
-        </div>
-        
-        <div class="last-updated">
-            Last updated: <span id="lastUpdatedTime">Loading...</span>
-        </div>
-        
-        <div class="nav-links">
-            <a href="create-league.html">Manage Leagues</a> | 
-            <a href="https://github.com/your-username/fantasy-hockey-app" target="_blank">View on GitHub</a>
+        <div class="features">
+            <div class="feature">
+                <h3>Create Your League</h3>
+                <p>Start a league with friends or colleagues. Set up draft dates, invite players, and customize league settings.</p>
+            </div>
+            <div class="feature">
+                <h3>Draft Players</h3>
+                <p>Build your fantasy team by drafting real NHL players. Strategic drafting is the key to success!</p>
+            </div>
+            <div class="feature">
+                <h3>Track Live Scores</h3>
+                <p>Watch your players earn points in real-time during NHL games. Stay updated with current standings.</p>
+            </div>
         </div>
     </div>
     
-    <script>
-        // Global variables
-        let standingsData = {};
-        let isLiveGame = false;
-        let chartObjects = {};
-        
-        // Initialize the application
-        async function init() {
-            // Set up tab navigation
-            setupTabs();
-            
-            // Load the data
-            await loadData();
-            
-            // Check if any games are live
-            checkLiveGames();
-            
-            // Set up refresh timer (every 5 minutes)
-            setInterval(loadData, 300000);
-            
-            // Set up live game checker (every minute)
-            setInterval(checkLiveGames, 60000);
-        }
-        
-        // Set up tab navigation
-        function setupTabs() {
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    // Remove active class from all tabs and contents
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    
-                    // Add active class to clicked tab and corresponding content
-                    tab.classList.add('active');
-                    const tabId = tab.dataset.tab;
-                    document.getElementById(tabId).classList.add('active');
-                    
-                    // Refresh charts if needed
-                    if (tabId === 'charts' && chartObjects.teamBreakdown) {
-                        chartObjects.teamBreakdown.update();
-                    }
-                });
-            });
-        }
-        
-        // Load standings and player data
-        async function loadData() {
-            try {
-                // Get the current date for the filename
-                const now = new Date();
-                const month = now.toLocaleString('en-US', { month: 'short' });
-                const day = now.getDate().toString().padStart(2, '0');
-                const dateStr = month + day;
-                
-                // Load standings data
-                const standingsResponse = await fetch(`data/Standings-${dateStr}.json`);
-                standingsData = await standingsResponse.json();
-                
-                // Update the UI
-                updateStandingsTable();
-                updateStandingsChart();
-                updatePlayerTable();
-                updateTeamBreakdownChart();
-                
-                // Update last updated time
-                document.getElementById('lastUpdatedTime').textContent = now.toLocaleString();
-                
-            } catch (error) {
-                console.error('Error loading data:', error);
-                document.getElementById('lastUpdatedTime').textContent = 'Failed to load data';
-            }
-        }
-        
-        // Check if any games are currently live
-        async function checkLiveGames() {
-            try {
-                // This would be a call to NHL API to check schedule
-                // For demo purposes, we'll just set it to false
-                isLiveGame = false;
-                
-                // Show/hide live indicator
-                const liveIndicator = document.getElementById('liveIndicator');
-                liveIndicator.style.display = isLiveGame ? 'inline-block' : 'none';
-                
-                // If games are live, refresh data more frequently
-                if (isLiveGame) {
-                    loadData();
-                }
-                
-            } catch (error) {
-                console.error('Error checking live games:', error);
-            }
-        }
-        
-        // Update the standings table
-        function updateStandingsTable() {
-            const tableBody = document.getElementById('standingsTableBody');
-            tableBody.innerHTML = '';
-            
-            // Sort teams by total points
-            const sortedTeams = Object.keys(standingsData).sort((a, b) => 
-                standingsData[b]['Total Points'] - standingsData[a]['Total Points']
-            );
-            
-            // Add each team to the table
-            sortedTeams.forEach((team, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${team}</td>
-                    <td>${standingsData[team]['Total Points']}</td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-        
-        // Update the standings chart
-        function updateStandingsChart() {
-            const ctx = document.getElementById('standingsChart').getContext('2d');
-            
-            // Sort teams by total points
-            const sortedTeams = Object.keys(standingsData).sort((a, b) => 
-                standingsData[b]['Total Points'] - standingsData[a]['Total Points']
-            );
-            
-            const data = {
-                labels: sortedTeams,
-                datasets: [{
-                    label: 'Total Points',
-                    data: sortedTeams.map(team => standingsData[team]['Total Points']),
-                    backgroundColor: 'rgba(0, 51, 102, 0.7)',
-                    borderColor: 'rgba(0, 51, 102, 1)',
-                    borderWidth: 1
-                }]
-            };
-            
-            // Destroy existing chart if it exists
-            if (chartObjects.standings) {
-                chartObjects.standings.destroy();
-            }
-            
-            // Create new chart
-            chartObjects.standings = new Chart(ctx, {
-                type: 'horizontalBar',
-                data: data,
-                options: {
-                    indexAxis: 'y',
-                    scales: {
-                        x: {
-                            beginAtZero: true
-                        }
-                    },
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
-            });
-        }
-        
-        // Update the player stats table
-        function updatePlayerTable() {
-            const tableBody = document.getElementById('playerTableBody');
-            tableBody.innerHTML = '';
-            
-            // Collect all players from all teams
-            const allPlayers = [];
-            Object.keys(standingsData).forEach(team => {
-                const players = standingsData[team]['Players'];
-                Object.keys(players).forEach(playerName => {
-                    allPlayers.push({
-                        name: playerName,
-                        team: team,
-                        ...players[playerName]
-                    });
-                });
-            });
-            
-            // Sort players by total points
-            allPlayers.sort((a, b) => b['Total Points'] - a['Total Points']);
-            
-            // Add each player to the table
-            allPlayers.forEach(player => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${player.name}</td>
-                    <td>${player.team}</td>
-                    <td>${player['Total Points']}</td>
-                    <td>${player['Goals'] || 0}</td>
-                    <td>${player['Assists'] || 0}</td>
-                    <td>${player['Wins'] || 0}</td>
-                    <td>${player['Shutouts'] || 0}</td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-        
-        // Update the team breakdown chart
-        function updateTeamBreakdownChart() {
-            const ctx = document.getElementById('teamBreakdownChart').getContext('2d');
-            
-            // Prepare data for stacked bar chart
-            const teams = Object.keys(standingsData).sort((a, b) => 
-                standingsData[b]['Total Points'] - standingsData[a]['Total Points']
-            );
-            
-            // Collect player data for each team
-            const datasets = [];
-            const colors = [
-                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
-                '#9966FF', '#FF9F40', '#C9CBCF', '#7CFC00',
-                '#FF69B4', '#00BFFF', '#FFA500', '#00FF7F'
-            ];
-            
-            teams.forEach(team => {
-                const players = standingsData[team]['Players'];
-                const playerNames = Object.keys(players);
-                
-                // Sort players by points
-                playerNames.sort((a, b) => players[b]['Total Points'] - players[a]['Total Points']);
-                
-                // Take top 5 players
-                const topPlayers = playerNames.slice(0, 5);
-                
-                // Create dataset for each top player
-                topPlayers.forEach((player, i) => {
-                    const playerData = players[player];
-                    const teamIndex = teams.indexOf(team);
-                    
-                    // Create array with zeros except for this player's team
-                    const data = Array(teams.length).fill(0);
-                    data[teamIndex] = playerData['Total Points'];
-                    
-                    datasets.push({
-                        label: `${player} (${team})`,
-                        data: data,
-                        backgroundColor: colors[i % colors.length]
-                    });
-                });
-                
-                // If there are more than 5 players, add an "Others" category
-                if (playerNames.length > 5) {
-                    const otherPlayersTotal = playerNames.slice(5).reduce((sum, player) => 
-                        sum + players[player]['Total Points'], 0);
-                    
-                    if (otherPlayersTotal > 0) {
-                        const data = Array(teams.length).fill(0);
-                        data[teams.indexOf(team)] = otherPlayersTotal;
-                        
-                        datasets.push({
-                            label: `Others (${team})`,
-                            data: data,
-                            backgroundColor: '#808080'
-                        });
-                    }
-                }
-            });
-            
-            // Destroy existing chart if it exists
-            if (chartObjects.teamBreakdown) {
-                chartObjects.teamBreakdown.destroy();
-            }
-            
-            // Create new chart
-            chartObjects.teamBreakdown = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: teams,
-                    datasets: datasets
-                },
-                options: {
-                    scales: {
-                        x: {
-                            stacked: true
-                        },
-                        y: {
-                            stacked: true,
-                            beginAtZero: true
-                        }
-                    },
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
-            });
-        }
-        
-        // Initialize on page load
-        window.addEventListener('DOMContentLoaded', init);
-    </script>
+    <footer>
+        &copy; 2025 Fantasy Hockey League | <a href="https://github.com/your-username/fantasy-hockey-app" target="_blank">GitHub</a>
+    </footer>
 </body>
 </html>

@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fantasy Hockey League Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #333;
+        }
+        h1, h2 {
+            color: #003366;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #003366;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #002244;
+        }
+        .managers-list {
+            margin-top: 15px;
+        }
+        .manager-item {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .remove-btn {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .auth-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        #auth-status {
+            margin: 10px 0;
+            font-style: italic;
+        }
+        .hidden {
+            display: none;
+        }
+        .error {
+            color: #ff0000;
+            margin-top: 5px;
+        }
+        .success {
+            color: #008000;
+            margin-top: 5px;
+        }
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .loading:after {
+            content: ".";
+            animation: dots 1s steps(5, end) infinite;
+        }
+        @keyframes dots {
+            0%, 20% { content: "."; }
+            40% { content: ".."; }
+            60% { content: "..."; }
+            80%, 100% { content: ""; }
+        }
+        .leagues-list {
+            margin-top: 30px;
+        }
+        .league-item {
+            background-color: #f0f0f0;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .league-item:hover {
+            background-color: #e0e0e0;
+        }
+        .league-name {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .league-details {
+            color: #666;
+            margin-top: 5px;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            margin-bottom: 20px;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 10px 16px;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #003366;
+            color: white;
+        }
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-top: none;
+            animation: fadeEffect 1s;
+        }
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+        .league-section {
+            margin-bottom: 30px;
+        }
+        .league-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .status-active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .status-pending {
+            background-color: #FFC107;
+            color: black;
+        }
+        .status-invitation {
+            background-color: #2196F3;
+            color: white;
+        }
+        .league-action {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .league-action button {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+        .share-box {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e9f7fe;
+            border: 1px solid #b3e5fc;
+            border-radius: 4px;
+        }
+        .share-link {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .copy-btn {
+            background-color: #4CAF50;
+            margin-right: 10px;
+        }
+        #password-confirm-group {
+            margin-top: 10px;
+        }
+        .password-toggle {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 5px;
+            font-size: 11px;
+            border-radius: 3px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+        .commissioner-badge {
+            background-color: #FFD700;
+            color: #333;
+        }
+        .join-password-group {
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideInOut 5s ease-in-out forwards;
+        }
+        @keyframes slideInOut {
+            0% { transform: translateX(100%); opacity: 0; }
+            10% { transform: translateX(0); opacity: 1; }
+            90% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(100%); opacity: 0; }
+        }
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            gap: 20px;
+        }
+        .nav-links a {
+            color: #003366;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: 1px solid #003366;
+            transition: all 0.3s;
+        }
+        .nav-links a:hover {
+            background-color: #003366;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fantasy Hockey League Manager</h1>
+    
+    <div class="auth-container">
+        <button id="login-btn">Sign in with Google</button>
+        <button id="logout-btn" class="hidden">Sign Out</button>
+        <div id="auth-status">You are not signed in</div>
+    </div>
+    
+    <div id="content-container" class="hidden">
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'my-leagues')">My Leagues</button>
+            <button class="tablinks" onclick="openTab(event, 'create-league')">Create League</button>
+            <button class="tablinks" onclick="openTab(event, 'join-league')">Join League</button>
+        </div>
+        
+        <div id="my-leagues" class="tabcontent" style="display:block;">
+            <h2>My Leagues</h2>
+            
+            <div class="league-section">
+                <h3>Active Leagues</h3>
+                <div id="active-leagues" class="leagues-list">
+                    <div class="loading">Loading your leagues</div>
+                </div>
+            </div>
+            
+            <div class="league-section">
+                <h3>League Invitations</h3>
+                <div id="league-invitations" class="leagues-list">
+                    <div class="loading">Loading invitations</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="join-league" class="tabcontent">
+            <h2>Join a League</h2>
+            <p>Enter a league code to join:</p>
+            
+            <div class="form-group">
+                <label for="league-code">League Code:</label>
+                <div style="display: flex;">
+                    <input type="text" id="league-code" placeholder="Enter league code">
+                    <button style="width: 100px; margin-left: 10px;" onclick="findLeagueByCode()">Find</button>
+                </div>
+            </div>
+            
+            <div id="league-details" class="hidden">
+                <div class="league-item">
+                    <div class="league-name" id="found-league-name"></div>
+                    <div class="league-details" id="found-league-info"></div>
+                    
+                    <div id="join-password-required" class="join-password-group hidden">
+                        <label for="join-password">League Password:</label>
+                        <div class="password-toggle">
+                            <input type="password" id="join-password" placeholder="Enter league password">
+                            <span class="toggle-password" onclick="togglePasswordVisibility('join-password')">Show</span>
+                        </div>
+                    </div>
+                    
+                    <div class="league-action">
+                        <button id="join-league-btn" onclick="joinFoundLeague()">Join League</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="join-status"></div>
+        </div>
+        
+        <div id="create-league" class="tabcontent">
+            <h2>Create a New League</h2>
+            <form id="create-league-form">
+                <div class="form-group">
+                    <label for="league-name">League Name:</label>
+                    <input type="text" id="league-name" placeholder="Enter league name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="max-teams">Number of Teams:</label>
+                    <select id="max-teams">
+                        <option value="4">4 Teams</option>
+                        <option value="6">6 Teams</option>
+                        <option value="8" selected>8 Teams</option>
+                        <option value="10">10 Teams</option>
+                        <option value="12">12 Teams</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="league-password">League Password:</label>
+                    <div class="password-toggle">
+                        <input type="password" id="league-password" placeholder="Create a password for others to join" required>
+                        <span class="toggle-password" onclick="togglePasswordVisibility('league-password')">Show</span>
+                    </div>
+                    <p class="password-hint">This password will be required for users to join unless they're invited by email.</p>
+                </div>
+                
+                <div id="password-confirm-group" class="form-group">
+                    <label for="confirm-password">Confirm Password:</label>
+                    <div class="password-toggle">
+                        <input type="password" id="confirm-password" placeholder="Confirm the password" required>
+                        <span class="toggle-password" onclick="togglePasswordVisibility('confirm-password')">Show</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">League Description (optional):</label>
+                    <textarea id="description" rows="3" placeholder="Describe your league..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Invite Managers (optional):</label>
+                    <div style="display: flex;">
+                        <input type="email" id="manager-email" placeholder="Enter email address">
+                        <button type="button" style="width: 100px; margin-left: 10px;" onclick="addManager()">Add</button>
+                    </div>
+                    
+                    <div id="managers-list" class="managers-list">
+                        <!-- Manager items will be added here -->
+                    </div>
+                </div>
+                
+                <div id="create-status"></div>
+                
+                <button type="submit">Create League</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="nav-links">
+        <a href="index.html">Standings</a>
+        <a href="https://github.com/your-username/fantasy-hockey-app" target="_blank">GitHub</a>
+    </div>
+    
+    <!-- Before initializing Firebase, add this script tag -->
+    <script src="firebaseConfig.js"></script>
+    
+    <!-- Gmail API Configuration -->
+    <script src="gmailConfig.js"></script>
+
+    <!-- Gmail API Script -->
+    <script async defer src="https://apis.google.com/js/api.js"></script>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, push, onValue, get, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Firebase configuration will be injected by GitHub Actions
+        const firebaseConfig = {
+            apiKey: "PLACEHOLDER",
+            authDomain: "playofffantasyhockey.firebaseapp.com",
+            databaseURL: "https://playofffantasyhockey-default-rtdb.firebaseio.com",
+            projectId: "playofffantasyhockey",
+            storageBucket: "playofffantasyhockey.appspot.com",
+            messagingSenderId: "PLACEHOLDER",
+            appId: "PLACEHOLDER"
+        };
+
+        // Initialize Firebase with config
+        const app = initializeApp(window.firebaseConfig || {
+            apiKey: "PLACEHOLDER",
+            authDomain: "playofffantasyhockey.firebaseapp.com",
+            databaseURL: "https://playofffantasyhockey-default-rtdb.firebaseio.com",
+            projectId: "playofffantasyhockey",
+            storageBucket: "playofffantasyhockey.appspot.com",
+            messagingSenderId: "PLACEHOLDER",
+            appId: "PLACEHOLDER"
+        });
+        const auth = getAuth();
+        const provider = new GoogleAuthProvider();
+        const database = getDatabase();
+        let currentUser = null;
+        let invitedManagers = [];
+        let foundLeague = null;
+        
+        // Check for URL parameters (for direct join links)
+        const urlParams = new URLSearchParams(window.location.search);
+        let actionFromUrl = null;
+        let leagueIdFromUrl = null;
+        let leagueCodeFromUrl = null;
+        
+        if (urlParams.has('action') && urlParams.has('league')) {
+            actionFromUrl = urlParams.get('action');
+            leagueIdFromUrl = urlParams.get('league');
+            if (urlParams.has('code')) {
+                leagueCodeFromUrl = urlParams.get('code');
+            }
+        }
+        
+        // Auth state observer
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                currentUser = user;
+                document.getElementById('login-btn').classList.add('hidden');
+                document.getElementById('logout-btn').classList.remove('hidden');
+                document.getElementById('auth-status').textContent = `Signed in as ${user.displayName}`;
+                document.getElementById('content-container').classList.remove('hidden');
+                
+                // Initialize Gmail API if needed
+                initGmailAPI();
+                
+                // Load user's leagues
+                loadUserLeagues();
+                
+                // Check for direct actions from URL
+                handleUrlActions();
+            } else {
+                // User is signed out
+                currentUser = null;
+                document.getElementById('login-btn').classList.remove('hidden');
+                document.getElementById('logout-btn').classList.add('hidden');
+                document.getElementById('auth-status').textContent = 'You are not signed in';
+                document.getElementById('content-container').classList.add('hidden');
+            }
+        });
+        
+        // Sign in with Google
+        document.getElementById('login-btn').addEventListener('click', () => {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    // User signed in
+                    console.log("User signed in:", result.user);
+                }).catch((error) => {
+                    // Handle errors
+                    console.error("Auth error:", error);
+                    document.getElementById('auth-status').textContent = `Error: ${error.message}`;
+                });
+        });
+        
+        // Sign out
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                console.log("User signed out");
+            }).catch((error) => {
+                console.error("Sign out error:", error);
+            });
+        });
+        
+        // Handle actions from URL params
+        function handleUrlActions() {
+            if (!actionFromUrl || !leagueIdFromUrl || !currentUser) return;
+            
+            if (actionFromUrl === 'join') {
+                // If we have a direct join link with league ID and code
+                findLeagueById(leagueIdFromUrl).then(league => {
+                    if (league) {
+                        foundLeague = {
+                            id: leagueIdFromUrl,
+                            ...league
+                        };
+                        
+                        // If user is already in this league, just go to tab
+                        if (league.teams && league.teams[currentUser.uid]) {
+                            showNotification("You're already a member of this league");
+                            openTab(null, 'my-leagues');
+                            return;
+                        }
+                        
+                        // Switch to join tab and show league details
+                        openTab(null, 'join-league');
+                        
+                        const leagueNameEl = document.getElementById('found-league-name');
+                        const leagueInfoEl = document.getElementById('found-league-info');
+                        const leagueDetailsEl = document.getElementById('league-details');
+                        const passwordGroupEl = document.getElementById('join-password-required');
+                        
+                        leagueNameEl.textContent = league.name;
+                        leagueInfoEl.textContent = `Teams: ${Object.keys(league.teams || {}).length}/${league.maxTeams}`;
+                        leagueDetailsEl.classList.remove('hidden');
+                        
+                        // Check if user is invited (doesn't need password)
+                        const isInvited = (league.invitedManagers || []).some(m => 
+                            m.email === currentUser.email
+                        );
+                        
+                        // If we have a code from URL and it matches, or user is invited, no password needed
+                        if ((leagueCodeFromUrl && leagueCodeFromUrl === league.code) || isInvited) {
+                            passwordGroupEl.classList.add('hidden');
+                        } else {
+                            passwordGroupEl.classList.remove('hidden');
+                        }
+                    } else {
+                        showNotification("League not found");
+                    }
+                }).catch(error => {
+                    console.error("Error finding league:", error);
+                    showNotification("Error finding league");
+                });
+            }
+            
+            // Clear URL params after handling
+            window.history.replaceState({}, document.title, window.location.pathname);
+            actionFromUrl = null;
+            leagueIdFromUrl = null;
+            leagueCodeFromUrl = null;
+        }
+        
+        // Create league form submission
+        document.getElementById('create-league-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showNotification("You must be signed in to create a league");
+                return;
+            }
+            
+            const leagueName = document.getElementById('league-name').value.trim();
+            const maxTeams = parseInt(document.getElementById('max-teams').value);
+            const description = document.getElementById('description').value.trim();
+            const password = document.getElementById('league-password').value.trim();
+            const confirmPassword = document.getElementById('confirm-password').value.trim();
+            
+            if (!leagueName) {
+                document.getElementById('create-status').innerHTML = '<div class="error">Please enter a league name</div>';
+                return;
+            }
+            
+            if (!password) {
+                document.getElementById('create-status').innerHTML = '<div class="error">Please enter a league password</div>';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                document.getElementById('create-status').innerHTML = '<div class="error">Passwords do not match</div>';
+                return;
+            }
+            
+            // Generate a unique code for the league
+            const leagueCode = generateLeagueCode();
+            
+            // Create the league object
+            const leagueData = {
+                name: leagueName,
+                code: leagueCode,
+                password: password, // Store the password for joining
+                description: description,
+                maxTeams: maxTeams,
+                createdBy: {
+                    uid: currentUser.uid,
+                    name: currentUser.displayName,
+                    email: currentUser.email
+                },
+                createdAt: new Date().toISOString(),
+                teams: {
+                    [currentUser.uid]: {
+                        name: currentUser.displayName,
+                        uid: currentUser.uid,
+                        email: currentUser.email,
+                        isCommissioner: true,
+                        joinedAt: new Date().toISOString()
+                    }
+                },
+                invitedManagers: invitedManagers,
+                settings: {
+                    status: 'active', // active, completed, etc.
+                    draftStatus: 'pending' // pending, scheduled, completed
+                },
+                chat: {
+                    system: {
+                        type: 'system',
+                        text: `League "${leagueName}" created by ${currentUser.displayName}`,
+                        timestamp: new Date().toISOString()
+                    }
+                }
+            };
+            
+            // Save to Firebase
+            const leaguesRef = ref(database, 'leagues');
+            const newLeagueRef = push(leaguesRef);
+            
+            set(newLeagueRef, leagueData)
+                .then(() => {
+                    // Link league to user
+                    const userLeaguesRef = ref(database, `users/${currentUser.uid}/leagues/${newLeagueRef.key}`);
+                    return set(userLeaguesRef, {
+                        leagueId: newLeagueRef.key,
+                        name: leagueName,
+                        code: leagueCode,
+                        role: 'commissioner',
+                        joinedAt: new Date().toISOString()
+                    });
+                })
+                .then(() => {
+                    // Show success message with sharing options
+                    const joinLink = `${window.location.origin}/manage-leagues.html?action=join&league=${newLeagueRef.key}&code=${leagueCode}`;
+                    
+                    document.getElementById('create-status').innerHTML = `
+                        <div class="success">
+                            League created successfully!
+                        </div>
+                        <div class="share-box">
+                            <p><strong>Share with others:</strong></p>
+                            <p>League Code: <strong>${leagueCode}</strong></p>
+                            <input type="text" class="share-link" value="${joinLink}" readonly>
+                            <div>
+                                <button type="button" class="copy-btn" onclick="copyToClipboard('${joinLink}')">Copy Link</button>
+                                <a href="draftcentre.html?league=${newLeagueRef.key}" class="back-to-standings">Go to Draftcentre</a>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('create-league-form').reset();
+                    invitedManagers = [];
+                    document.getElementById('managers-list').innerHTML = '';
+                    
+                    // Send email invitations
+                    if (invitedManagers.length > 0) {
+                        sendEmailInvitations(newLeagueRef.key, leagueName, leagueCode, invitedManagers);
+                    }
+                    
+                    // Refresh user leagues
+                    loadUserLeagues();
+                })
+                .catch((error) => {
+                    console.error("Error creating league:", error);
+                    document.getElementById('create-status').innerHTML = `<div class="error">Error creating league: ${error.message}</div>`;
+                });
+        });
+        
+        // Find league by code
+        window.findLeagueByCode = function() {
+            if (!currentUser) {
+                showNotification("You must be signed in to join a league");
+                return;
+            }
+            
+            const leagueCode = document.getElementById('league-code').value.trim();
+            
+            if (!leagueCode) {
+                showNotification("Please enter a league code");
+                return;
+            }
+            
+            // Find league with this code
+            const leaguesRef = ref(database, 'leagues');
+            
+            get(leaguesRef).then((snapshot) => {
+                if (!snapshot.exists()) {
+                    throw new Error("No leagues found");
+                }
+                
+                const leagues = snapshot.val();
+                let foundLeagueId = null;
+                
+                // Find the league with matching code
+                Object.keys(leagues).forEach(leagueId => {
+                    if (leagues[leagueId].code === leagueCode) {
+                        foundLeagueId = leagueId;
+                        foundLeague = {
+                            id: leagueId,
+                            ...leagues[leagueId]
+                        };
+                    }
+                });
+                
+                if (!foundLeagueId) {
+                    throw new Error("League not found with this code");
+                }
+                
+                // Check if user is already in this league
+                if (foundLeague.teams && foundLeague.teams[currentUser.uid]) {
+                    showNotification("You're already a member of this league");
+                    window.location.href = `draftcentre.html?league=${foundLeagueId}`;
+                    return;
+                }
+                
+                // Check if team limit is reached
+                const currentTeamCount = Object.keys(foundLeague.teams || {}).length;
+                if (currentTeamCount >= foundLeague.maxTeams) {
+                    throw new Error("This league is full");
+                }
+                
+                // Display the league details for confirmation
+                const leagueDetailsEl = document.getElementById('league-details');
+                const leagueNameEl = document.getElementById('found-league-name');
+                const leagueInfoEl = document.getElementById('found-league-info');
+                const passwordGroupEl = document.getElementById('join-password-required');
+                
+                leagueNameEl.textContent = foundLeague.name;
+                leagueInfoEl.innerHTML = `
+                    Teams: ${currentTeamCount}/${foundLeague.maxTeams}
+                    ${foundLeague.description ? `<br>${foundLeague.description}` : ''}
+                `;
+                
+                // Check if user is invited (doesn't need password)
+                const isInvited = (foundLeague.invitedManagers || []).some(m => 
+                    m.email === currentUser.email
+                );
+                
+                if (isInvited) {
+                    passwordGroupEl.classList.add('hidden');
+                } else {
+                    passwordGroupEl.classList.remove('hidden');
+                }
+                
+                leagueDetailsEl.classList.remove('hidden');
+                
+            }).catch(error => {
+                console.error("Error finding league:", error);
+                document.getElementById('join-status').innerHTML = `<div class="error">${error.message}</div>`;
+            });
+        };
+        
+        // Join the found league
+        window.joinFoundLeague = function() {
+            if (!foundLeague) {
+                showNotification("No league selected");
+                return;
+            }
+            
+            // Check if password is required
+            const isInvited = (foundLeague.invitedManagers || []).some(m => 
+                m.email === currentUser.email
+            );
+            
+            const passwordEl = document.getElementById('join-password');
+            const enteredPassword = passwordEl.value.trim();
+            
+            // Verify password if needed
+            if (!isInvited && foundLeague.password && enteredPassword !== foundLeague.password) {
+                document.getElementById('join-status').innerHTML = `<div class="error">Incorrect password</div>`;
+                return;
+            }
+            
+            // Add user to league teams
+            const teamRef = ref(database, `leagues/${foundLeague.id}/teams/${currentUser.uid}`);
+            set(teamRef, {
+                name: currentUser.displayName,
+                uid: currentUser.uid,
+                email: currentUser.email,
+                isCommissioner: false,
+                joinedAt: new Date().toISOString()
+            }).then(() => {
+            // Add league to user's leagues
+            const userLeagueRef = ref(database, `users/${currentUser.uid}/leagues/${foundLeague.id}`);
+                return set(userLeagueRef, {
+                    leagueId: foundLeague.id,
+                    name: foundLeague.name,
+                    code: foundLeague.code,
+                    role: 'manager',
+                    joinedAt: new Date().toISOString()
+                });
+            }).then(() => {
+                // Remove from invited managers if they were invited
+                if (isInvited) {
+                    removeInvitation(foundLeague.id, currentUser.email);
+                }
+                
+                // Add system message to chat
+                addChatMessage(foundLeague.id, {
+                    type: 'system',
+                    text: `${currentUser.displayName} joined the league`,
+                    timestamp: new Date().toISOString()
+                });
+                
+                showNotification("You've joined the league successfully!");
+                window.location.href = `draftcentre.html?league=${foundLeague.id}`;
+            }).catch(error => {
+                console.error("Error joining league:", error);
+                document.getElementById('join-status').innerHTML = `<div class="error">${error.message}</div>`;
+            });
+        };
+        
+        // Accept invitation
+        window.acceptInvitation = function(leagueId) {
+            // Find the league
+            findLeagueById(leagueId).then(league => {
+                if (!league) {
+                    throw new Error("League not found");
+                }
+                
+                // Check if already a member
+                if (league.teams && league.teams[currentUser.uid]) {
+                    throw new Error("Already a member of this league");
+                }
+                
+                // Check if invited
+                const isInvited = (league.invitedManagers || []).some(m => 
+                    m.email === currentUser.email
+                );
+                
+                if (!isInvited) {
+                    throw new Error("Not invited to this league");
+                }
+                
+                // Add user to league teams
+                const teamRef = ref(database, `leagues/${leagueId}/teams/${currentUser.uid}`);
+                return set(teamRef, {
+                    name: currentUser.displayName,
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    isCommissioner: false,
+                    joinedAt: new Date().toISOString()
+                }).then(() => {
+                    // Add league to user's leagues
+                    const userLeagueRef = ref(database, `users/${currentUser.uid}/leagues/${leagueId}`);
+                    return set(userLeagueRef, {
+                        leagueId: leagueId,
+                        name: league.name,
+                        code: league.code,
+                        role: 'manager',
+                        joinedAt: new Date().toISOString()
+                    });
+                }).then(() => {
+                    // Remove from invited managers
+                    removeInvitation(leagueId, currentUser.email);
+                    
+                    // Add system message to chat
+                    addChatMessage(leagueId, {
+                        type: 'system',
+                        text: `${currentUser.displayName} joined the league`,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    showNotification("You've joined the league successfully!");
+                    loadUserLeagues();
+                });
+            }).catch(error => {
+                console.error("Error accepting invitation:", error);
+                showNotification(`Error: ${error.message}`);
+            });
+        };
+        
+        // Decline invitation
+        window.declineInvitation = function(leagueId) {
+            // Remove from invited managers
+            removeInvitation(leagueId, currentUser.email).then(() => {
+                showNotification("Invitation declined");
+                loadUserLeagues();
+            }).catch(error => {
+                console.error("Error declining invitation:", error);
+                showNotification(`Error: ${error.message}`);
+            });
+        };
+        
+        // Load user's leagues
+        function loadUserLeagues() {
+            if (!currentUser) return;
+            
+            const activeLeaguesEl = document.getElementById('active-leagues');
+            const invitationsEl = document.getElementById('league-invitations');
+            
+            activeLeaguesEl.innerHTML = '<div class="loading">Loading your leagues</div>';
+            invitationsEl.innerHTML = '<div class="loading">Loading invitations</div>';
+            
+            // First check user's leagues
+            const userLeaguesRef = ref(database, `users/${currentUser.uid}/leagues`);
+            
+            get(userLeaguesRef).then((snapshot) => {
+                const userLeagues = snapshot.exists() ? snapshot.val() : {};
+                
+                // Then check all leagues to find those with pending invitations
+                const allLeaguesRef = ref(database, 'leagues');
+                return get(allLeaguesRef).then((leaguesSnapshot) => {
+                    const allLeagues = leaguesSnapshot.exists() ? leaguesSnapshot.val() : {};
+                    return { userLeagues, allLeagues };
+                });
+            }).then(({ userLeagues, allLeagues }) => {
+                let activeLeagues = [];
+                let invitedLeagues = [];
+                
+                // Add user's active leagues
+                Object.keys(userLeagues || {}).forEach(leagueId => {
+                    if (allLeagues[leagueId]) {
+                        activeLeagues.push({
+                            id: leagueId,
+                            ...allLeagues[leagueId],
+                            userRole: userLeagues[leagueId].role,
+                            status: 'active'
+                        });
+                    }
+                });
+                
+                // Add leagues with pending invitations
+                Object.keys(allLeagues || {}).forEach(leagueId => {
+                    const league = allLeagues[leagueId];
+                    
+                    // Skip if user is already in this league
+                    if (userLeagues && userLeagues[leagueId]) {
+                        return;
+                    }
+                    
+                    const invitedEmails = (league.invitedManagers || []).map(m => m.email);
+                    
+                    if (invitedEmails.includes(currentUser.email)) {
+                        invitedLeagues.push({
+                            id: leagueId,
+                            ...league,
+                            status: 'invited'
+                        });
+                    }
+                });
+                
+                // Render the leagues
+                renderActiveLeagues(activeLeagues);
+                renderLeagueInvitations(invitedLeagues);
+            }).catch(error => {
+                console.error("Error loading leagues:", error);
+                activeLeaguesEl.innerHTML = `<div class="error">Error loading leagues: ${error.message}</div>`;
+                invitationsEl.innerHTML = '';
+            });
+        }
+        
+        // Render active leagues
+        function renderActiveLeagues(leagues) {
+            const leaguesContainer = document.getElementById('active-leagues');
+            
+            if (leagues.length === 0) {
+                leaguesContainer.innerHTML = '<p>You haven\'t joined any leagues yet. Create a new league or join an existing one.</p>';
+                return;
+            }
+            
+            leaguesContainer.innerHTML = '';
+            leagues.forEach(league => {
+                const leagueItem = document.createElement('div');
+                leagueItem.className = 'league-item';
+                
+                // Determine draft status
+                let draftStatus = 'Waiting for draft';
+                let draftStatusClass = 'status-pending';
+                
+                if (league.draftStatus && league.draftStatus.active) {
+                    draftStatus = 'Draft in progress';
+                    draftStatusClass = 'status-active';
+                } else if (league.settings && league.settings.draftStatus === 'completed') {
+                    draftStatus = 'Draft completed';
+                    draftStatusClass = 'status-active';
+                }
+                
+                // Check if user is commissioner
+                const isCommissioner = league.teams && 
+                                      league.teams[currentUser.uid] && 
+                                      league.teams[currentUser.uid].isCommissioner;
+                
+                const commissionerBadge = isCommissioner ? 
+                    '<span class="badge commissioner-badge">Commissioner</span>' : '';
+                
+                leagueItem.innerHTML = `
+                    <div class="league-name">
+                        ${league.name}
+                        ${commissionerBadge}
+                        <span class="league-status ${draftStatusClass}">${draftStatus}</span>
+                    </div>
+                    <div class="league-details">
+                        Teams: ${Object.keys(league.teams || {}).length}/${league.maxTeams}
+                        ${league.description ? `<br>${league.description}` : ''}
+                    </div>
+                    <div class="league-action">
+                        <a href="draftcentre.html?league=${league.id}" class="back-to-standings">Go to Draftcentre</a>
+                        <a href="league.html?id=${league.id}" class="back-to-standings">View League</a>
+                        ${isCommissioner ? `<button onclick="manageLeague('${league.id}')">Manage</button>` : ''}
+                    </div>
+                `;
+                
+                leaguesContainer.appendChild(leagueItem);
+            });
+        }
+        
+        // Render league invitations
+        function renderLeagueInvitations(leagues) {
+            const leaguesContainer = document.getElementById('league-invitations');
+            
+            if (leagues.length === 0) {
+                leaguesContainer.innerHTML = '<p>No pending invitations.</p>';
+                return;
+            }
+            
+            leaguesContainer.innerHTML = '';
+            leagues.forEach(league => {
+                const leagueItem = document.createElement('div');
+                leagueItem.className = 'league-item';
+                
+                leagueItem.innerHTML = `
+                    <div class="league-name">
+                        ${league.name}
+                        <span class="league-status status-invitation">Invitation</span>
+                    </div>
+                    <div class="league-details">
+                        Teams: ${Object.keys(league.teams || {}).length}/${league.maxTeams}
+                        <br>From: ${league.createdBy ? league.createdBy.name : 'Unknown'}
+                        ${league.description ? `<br>${league.description}` : ''}
+                    </div>
+                    <div class="league-action">
+                        <button onclick="acceptInvitation('${league.id}')">Accept</button>
+                        <button onclick="declineInvitation('${league.id}')" class="remove-btn">Decline</button>
+                    </div>
+                `;
+                
+                leaguesContainer.appendChild(leagueItem);
+            });
+        }
+        
+        // Add chat message
+        function addChatMessage(leagueId, message) {
+            const chatRef = ref(database, `leagues/${leagueId}/chat`);
+            const newMessageRef = push(chatRef);
+            return set(newMessageRef, message);
+        }
+        
+        // Remove invitation
+        function removeInvitation(leagueId, email) {
+            return findLeagueById(leagueId).then(league => {
+                if (!league || !league.invitedManagers) {
+                    return;
+                }
+                
+                // Find and remove the invitation
+                const updatedInvites = league.invitedManagers.filter(m => 
+                    m.email !== email
+                );
+                
+                // Update the league
+                const invitesRef = ref(database, `leagues/${leagueId}/invitedManagers`);
+                return set(invitesRef, updatedInvites);
+            });
+        }
+        
+        // Find league by ID
+        function findLeagueById(leagueId) {
+            const leagueRef = ref(database, `leagues/${leagueId}`);
+            return get(leagueRef).then(snapshot => {
+                if (snapshot.exists()) {
+                    return snapshot.val();
+                }
+                return null;
+            });
+        }
+        
+        // Initialize Gmail API
+        function initGmailAPI() {
+            if (window.gapi && window.gapi.client) {
+                // API already initialized
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = 'https://apis.google.com/js/api.js';
+            script.onload = () => {
+                gapi.load('client:auth2', () => {
+                    gapi.client.init({
+                        clientId: window.gmailConfig?.clientId || 'PLACEHOLDER',
+                        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest'],
+                        scope: 'https://www.googleapis.com/auth/gmail.send'
+                    }).then(() => {
+                        console.log('Gmail API initialized');
+                    }).catch(error => {
+                        console.error('Error initializing Gmail API', error);
+                    });
+                });
+            };
+            document.body.appendChild(script);
+        }
+        
+        // Send email invitations to invited managers
+        function sendEmailInvitations(leagueId, leagueName, leagueCode, invitedManagers) {
+            if (!window.gapi || !window.gapi.client) {
+                console.error("Gmail API not initialized");
+                return;
+            }
+            
+            // Check if user is authenticated for Gmail API
+            const auth2Instance = gapi.auth2.getAuthInstance();
+            if (!auth2Instance || !auth2Instance.isSignedIn.get()) {
+                // Will need to authenticate specifically for Gmail
+                auth2Instance.signIn().then(() => {
+                    // Retry after authentication
+                    sendEmailInvitations(leagueId, leagueName, leagueCode, invitedManagers);
+                }).catch(error => {
+                    console.error("Error authenticating for Gmail API:", error);
+                    showNotification("Failed to authenticate for sending invitations");
+                });
+                return;
+            }
+            
+            const joinLink = `${window.location.origin}/manage-leagues.html?action=join&league=${leagueId}&code=${leagueCode}`;
+            
+            // Send an email to each invited manager
+            invitedManagers.forEach(manager => {
+                const email = manager.email;
+                
+                // Create the email content
+                const emailContent = `
+                    <html>
+                        <body>
+                            <h2>You've been invited to join a Fantasy Hockey League!</h2>
+                            <p>You've been invited by ${currentUser.displayName} to join the league "${leagueName}".</p>
+                            <p>To join this league, simply click the link below:</p>
+                            <p><a href="${joinLink}">Join "${leagueName}" League</a></p>
+                            <p>Or you can join manually with this code: <strong>${leagueCode}</strong></p>
+                            <p>Good luck!</p>
+                        </body>
+                    </html>
+                `;
+                
+                // Use Gmail API to send the email
+                sendEmail(email, `Fantasy Hockey League Invitation: ${leagueName}`, emailContent);
+            });
+        }
+        
+        // Send an email using the Gmail API
+        function sendEmail(to, subject, bodyHtml) {
+            if (!window.gapi || !window.gapi.auth2 || !gapi.auth2.getAuthInstance() || !gapi.auth2.getAuthInstance().isSignedIn.get()) {
+                console.error("Gmail API not ready or user not authenticated");
+                return;
+            }
+            
+            // Create the email content in base64url encoded format
+            const email = [
+                'Content-Type: text/html; charset="UTF-8"',
+                'MIME-Version: 1.0',
+                `To: ${to}`,
+                `Subject: ${subject}`,
+                '',
+                bodyHtml
+            ].join('\r\n');
+            
+            const encodedEmail = btoa(unescape(encodeURIComponent(email)))
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/, '');
+            
+            // Send the email
+            gapi.client.gmail.users.messages.send({
+                'userId': 'me',
+                'resource': {
+                    'raw': encodedEmail
+                }
+            }).then(response => {
+                console.log('Email sent:', response);
+                showNotification(`Invitation sent to ${to}`);
+            }).catch(error => {
+                console.error('Error sending email:', error);
+                showNotification(`Failed to send invitation to ${to}`);
+            });
+        }
+        
+        // Copy to clipboard
+        window.copyToClipboard = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification("Link copied to clipboard!");
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+        };
+        
+        // Toggle password visibility
+        window.togglePasswordVisibility = function(inputId) {
+            const input = document.getElementById(inputId);
+            const toggleBtn = input.nextElementSibling;
+            
+            if (input.type === "password") {
+                input.type = "text";
+                toggleBtn.textContent = "Hide";
+            } else {
+                input.type = "password";
+                toggleBtn.textContent = "Show";
+            }
+        };
+        
+        // Manage league functionality
+        window.manageLeague = function(leagueId) {
+            // Redirect to a league management page
+            window.location.href = `manage-league-details.html?id=${leagueId}`;
+        };
+
+        // Add manager to invite list
+        window.addManager = function() {
+            const managerEmail = document.getElementById('manager-email').value.trim();
+            
+            if (!managerEmail || !validateEmail(managerEmail)) {
+                showNotification("Please enter a valid email address");
+                return;
+            }
+            
+            if (invitedManagers.some(m => m.email === managerEmail)) {
+                showNotification("This email has already been added");
+                return;
+            }
+            
+            invitedManagers.push({
+                email: managerEmail,
+                invitedAt: new Date().toISOString()
+            });
+            
+            renderManagersList();
+            document.getElementById('manager-email').value = '';
+        };
+        
+        // Remove manager from invite list
+        window.removeManager = function(index) {
+            invitedManagers.splice(index, 1);
+            renderManagersList();
+        };
+        
+        // Render managers list
+        function renderManagersList() {
+            const managersListEl = document.getElementById('managers-list');
+            managersListEl.innerHTML = '';
+            
+            invitedManagers.forEach((manager, index) => {
+                const managerItem = document.createElement('div');
+                managerItem.className = 'manager-item';
+                managerItem.innerHTML = `
+                    <div>${manager.email}</div>
+                    <button type="button" class="remove-btn" onclick="removeManager(${index})">Remove</button>
+                `;
+                managersListEl.appendChild(managerItem);
+            });
+        }
+        
+        // Generate a random league code
+        function generateLeagueCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Removed similar looking characters
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+        
+        // Validate email format
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove after animation completes
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+        
+        // Tab navigation
+        window.openTab = function(evt, tabName) {
+            var i, tabcontent, tablinks;
+            
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            
+            document.getElementById(tabName).style.display = "block";
+            
+            // If evt is null, this was programmatically called
+            if (evt) {
+                evt.currentTarget.className += " active";
+            } else {
+                // Find the tab button for this tab and make it active
+                for (i = 0; i < tablinks.length; i++) {
+                    if (tablinks[i].getAttribute('onclick').includes(tabName)) {
+                        tablinks[i].className += " active";
+                        break;
+                    }
+                }
+            }
+        };
+
+        // Make functions available in window context for HTML onclick handlers
+        window.findLeagueByCode = findLeagueByCode;
+        window.joinFoundLeague = joinFoundLeague;
+        window.acceptInvitation = acceptInvitation;
+        window.declineInvitation = declineInvitation;
+        window.copyToClipboard = copyToClipboard;
+        window.togglePasswordVisibility = togglePasswordVisibility;
+        window.manageLeague = manageLeague;
+        window.addManager = addManager;
+        window.removeManager = removeManager;
+        window.openTab = openTab;
+    </script>
+</body>
+</html>

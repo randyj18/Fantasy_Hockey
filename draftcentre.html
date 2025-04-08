@@ -350,6 +350,59 @@
             margin-bottom: 15px;
             border-radius: 4px;
         }
+        
+        .join-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .join-popup {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .join-password-group {
+            margin: 20px 0;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .join-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .join-actions button {
+            padding: 10px 20px;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -622,7 +675,7 @@
             }).catch((error) => {
                 console.error("Sign out error:", error);
             });
-        });
+        });       
         
         // Store user profile in database
         function storeUserProfile(user) {
@@ -686,9 +739,8 @@
                     
                     // Check if user is a member of this league
                     if (!leagueData.teams || !leagueData.teams[currentUser.uid]) {
-                        showNotification("You don't have access to this league");
-                        // Forward to league selection
-                        loadUserLeagues();
+                        // Show join form instead
+                        handleNoAccessToLeague(leagueData);
                         return;
                     }
                     
@@ -1222,131 +1274,7 @@
                     sendChatMessage();
                 }
             });
+            
+            // Add join/leave listeners
+            addJoinLeaveListeners();
         }
-        
-        // Send chat message
-        function sendChatMessage() {
-            const message = chatInput.value.trim();
-            if (!message) return;
-            
-            addChatMessage({
-                type: 'user',
-                uid: currentUser.uid,
-                name: currentUser.displayName,
-                photoURL: currentUser.photoURL,
-                text: message,
-                timestamp: new Date().toISOString()
-            });
-            
-            chatInput.value = '';
-        }
-        
-        // Add chat message to database
-        function addChatMessage(message) {
-            const chatRef = ref(database, `leagues/${leagueId}/chat`);
-            const newMessageRef = push(chatRef);
-            set(newMessageRef, message);
-        }
-        
-        // Update chat messages display
-        function updateChatMessages(messages) {
-            // Get the scroll position before updating
-            const isScrolledToBottom = chatMessages.scrollHeight - chatMessages.clientHeight <= chatMessages.scrollTop + 10;
-            
-            // Clear existing messages
-            // chatMessages.innerHTML = '';
-            
-            // Get the last message key that's already displayed
-            const existingMessages = chatMessages.querySelectorAll('[data-message-key]');
-            const lastDisplayedKey = existingMessages.length > 0 
-                ? existingMessages[existingMessages.length - 1].dataset.messageKey
-                : null;
-            
-            // Find index of last displayed message
-            const messageKeys = Object.keys(messages);
-            const lastKeyIndex = lastDisplayedKey ? messageKeys.indexOf(lastDisplayedKey) : -1;
-            
-            // Only append new messages
-            const newMessageKeys = messageKeys.slice(lastKeyIndex + 1);
-            
-            // Sort messages by timestamp
-            newMessageKeys.sort((a, b) => {
-                const timestampA = messages[a].timestamp || '0';
-                const timestampB = messages[b].timestamp || '0';
-                return timestampA.localeCompare(timestampB);
-            });
-            
-            // Append new messages
-            newMessageKeys.forEach(key => {
-                const message = messages[key];
-                const messageEl = document.createElement('div');
-                messageEl.dataset.messageKey = key;
-                
-                if (message.type === 'system') {
-                    messageEl.className = 'chat-system';
-                    messageEl.textContent = message.text;
-                } else {
-                    messageEl.className = 'chat-message';
-                    
-                    const timestamp = new Date(message.timestamp);
-                    const timeStr = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    
-                    messageEl.innerHTML = `
-                        <div class="chat-user">
-                            ${message.name} <span class="chat-time">${timeStr}</span>
-                        </div>
-                        <div class="chat-text">${message.text}</div>
-                    `;
-                }
-                
-                chatMessages.appendChild(messageEl);
-            });
-            
-            // Scroll to bottom if already at bottom
-            if (isScrolledToBottom) {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-        }
-        
-        // Show notification
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            // Remove after animation completes
-            setTimeout(() => {
-                notification.remove();
-            }, 5000);
-        }
-        
-        // Clean up Firebase listeners
-        function cleanupListeners() {
-            // Clean up player listeners
-            Object.values(playerListeners).forEach(unsubscribe => {
-                if (typeof unsubscribe === 'function') {
-                    unsubscribe();
-                }
-            });
-            
-            // Clean up chat listeners
-            Object.values(chatListeners).forEach(unsubscribe => {
-                if (typeof unsubscribe === 'function') {
-                    unsubscribe();
-                }
-            });
-            
-            // Reset listeners objects
-            playerListeners = {};
-            chatListeners = {};
-        }
-        
-        // Initialize chat when DOM is loaded
-        document.addEventListener('DOMContentLoaded', setupChat);
-        
-        // Clean up listeners when page unloads
-        window.addEventListener('beforeunload', cleanupListeners);
-    </script>
-</body>
-</html>
