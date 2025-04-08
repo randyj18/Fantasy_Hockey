@@ -173,6 +173,7 @@
 </head>
 <body>
     <h1>Fantasy Hockey Draftcentre</h1>
+    <p style="margin-top: -10px; color: #666;">Stats shown are from the 2023-2024 regular season</p>
     
     <div class="options-container">
         <div class="view-toggle">
@@ -265,7 +266,6 @@
                     <th data-sort="Position">Position</th>
                     <th data-sort="NHL Team">NHL Team</th>
                     <th data-sort="Team">Fantasy Team</th>
-                    <th data-sort="Points Before Acquiring">Points Before Acquiring</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -560,9 +560,7 @@
                 "Position": position,
                 "NHL Team": nhlTeam,
                 "Team": selectedTeam,
-                "Points Before Acquiring": position === 'G' 
-                    ? ((playerData.wins || 0) + (playerData.shutouts || 0))
-                    : ((playerData.goals || 0) + (playerData.assists || 0)),
+                "Points Before Acquiring": 0, // Initial draft - all players start with 0 points
                 "Points for Gordie Howe Hattricks": 0,
                 "Points for Conn Smythe": 0
             };
@@ -614,7 +612,6 @@
                     <td>${player.Position}</td>
                     <td>${player["NHL Team"]}</td>
                     <td>${player.Team}</td>
-                    <td>${player["Points Before Acquiring"]}</td>
                     <td>
                         <button onclick="removeDraftedPlayer(${originalIndex})" ${!canRemove ? 'disabled' : ''}>
                             Remove
