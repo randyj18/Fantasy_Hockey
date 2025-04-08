@@ -235,6 +235,9 @@
         </div>
     </div>
     
+    // Before initializing Firebase, add this script tag
+    <script src="firebaseConfig.js"></script>
+
     <!-- Firebase SDK -->
     <script type="module">
         // Import the functions you need from the SDKs
@@ -254,7 +257,15 @@
         };
 
         // Initialize Firebase with config
-        const app = initializeApp(firebaseConfig);
+        const app = initializeApp(window.firebaseConfig || {
+            apiKey: "PLACEHOLDER",
+            authDomain: "playofffantasyhockey.firebaseapp.com",
+            databaseURL: "https://playofffantasyhockey-default-rtdb.firebaseio.com",
+            projectId: "playofffantasyhockey",
+            storageBucket: "playofffantasyhockey.appspot.com",
+            messagingSenderId: "PLACEHOLDER",
+            appId: "PLACEHOLDER"
+        });
         const auth = getAuth();
         const provider = new GoogleAuthProvider();
         const database = getDatabase();
