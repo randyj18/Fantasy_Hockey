@@ -98,8 +98,8 @@
         <div class="position-filter">
             <button class="position-btn active" data-position="all">All</button>
             <button class="position-btn" data-position="C">Center</button>
-            <button class="position-btn" data-position="L">Left Wing</button>
-            <button class="position-btn" data-position="R">Right Wing</button>
+            <button class="position-btn" data-position="LW">Left Wing</button>
+            <button class="position-btn" data-position="RW">Right Wing</button>
             <button class="position-btn" data-position="D">Defense</button>
             <button class="position-btn" data-position="G">Goalie</button>
         </div>
@@ -217,17 +217,17 @@
             
             let filteredPlayers = [...allPlayers];
             
-            // Apply position filter
-            if (currentPositionFilter !== 'all') {
-                filteredPlayers = filteredPlayers.filter(player => 
-                    player.position === currentPositionFilter);
-            }
-            
-            // Apply search filter
-            if (searchTerm) {
-                filteredPlayers = filteredPlayers.filter(player => 
-                    player.fullName.toLowerCase().includes(searchTerm));
-            }
+        // Apply position filter
+        if (currentPositionFilter !== 'all') {
+            filteredPlayers = filteredPlayers.filter(player => 
+                player.position === currentPositionFilter);
+        }
+        
+        // Apply search filter
+        if (searchTerm) {
+            filteredPlayers = filteredPlayers.filter(player => 
+                player.fullName.toLowerCase().includes(searchTerm));
+        }
             
             // Sort players
             if (sortByStats) {
