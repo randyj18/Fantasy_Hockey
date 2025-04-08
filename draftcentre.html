@@ -494,19 +494,26 @@
         </div>
     </div>
     
-    <!-- Load Firebase config (not tracked in Git) -->
-    <script src="firebaseConfig.js"></script>
-
     <!-- Firebase SDK -->
     <script type="module">
         // Import the functions you need from the SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, set, get, push, onValue, update, off } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        
-        // Initialize Firebase with explicit config
-        console.log("Firebase config available:", window.firebaseConfig); 
-        const app = initializeApp(window.firebaseConfig || firebaseConfig);
+        import { getDatabase, ref, set, push, onValue, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Firebase configuration will be injected by GitHub Actions
+        const firebaseConfig = {
+            apiKey: "PLACEHOLDER",
+            authDomain: "playofffantasyhockey.firebaseapp.com",
+            databaseURL: "https://playofffantasyhockey-default-rtdb.firebaseio.com",
+            projectId: "playofffantasyhockey",
+            storageBucket: "playofffantasyhockey.appspot.com",
+            messagingSenderId: "PLACEHOLDER",
+            appId: "PLACEHOLDER"
+        };
+
+        // Initialize Firebase with config
+        const app = initializeApp(firebaseConfig);
         const auth = getAuth();
         const provider = new GoogleAuthProvider();
         const database = getDatabase();
