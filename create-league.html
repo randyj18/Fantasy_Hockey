@@ -245,7 +245,9 @@
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, set, push, onValue, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         
-        const app = initializeApp(window.firebaseConfig);
+        // Initialize Firebase with explicit config
+        console.log("Firebase config available:", window.firebaseConfig); 
+        const app = initializeApp(window.firebaseConfig || firebaseConfig);
         const auth = getAuth();
         const provider = new GoogleAuthProvider();
         const database = getDatabase();
