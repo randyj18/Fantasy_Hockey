@@ -420,7 +420,7 @@
                     <span id="league-team-count"></span>
                 </div>
             </div>
-            <a href="create-league.html" class="back-to-standings">Manage Leagues</a>
+            <a href="manage-leagues.html" class="back-to-standings">Manage Leagues</a>
         </div>
         
         <div id="league-select-container">
@@ -428,7 +428,7 @@
             <p>Please select a league or create a new one:</p>
             <div id="league-list" class="loader"></div>
             <div class="action-buttons">
-                <a href="create-league.html" class="back-to-standings">Create New League</a>
+                <a href="manage-leagues.html" class="back-to-standings">Create New League</a>
             </div>
         </div>
         
@@ -554,7 +554,7 @@
         // Import the functions you need from the SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, set, push, onValue, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // Firebase configuration will be injected by GitHub Actions
         const firebaseConfig = {
@@ -632,6 +632,9 @@
                 authStatus.textContent = `Signed in as ${user.displayName}`;
                 contentContainer.classList.remove('hidden');
                 
+                // Store user data for persistence
+                setupAuthPersistence();
+                
                 // Store user in database
                 storeUserProfile(user);
                 
@@ -642,6 +645,33 @@
                     loadUserLeagues();
                 }
             } else {
+                // Try to use stored user if available
+                const storedUser = localStorage.getItem('fantasy_hockey_user');
+                if (storedUser) {
+                    try {
+                        currentUser = JSON.parse(storedUser);
+                        console.log("Using stored user credentials");
+                        
+                        // Use stored credentials
+                        loginBtn.classList.add('hidden');
+                        logoutBtn.classList.remove('hidden');
+                        authStatus.textContent = `Signed in as ${currentUser.displayName}`;
+                        contentContainer.classList.remove('hidden');
+                        
+                        // Load data based on context
+                        if (leagueId) {
+                            loadLeague(leagueId);
+                        } else {
+                            loadUserLeagues();
+                        }
+                        
+                        return;
+                    } catch (e) {
+                        console.error("Error parsing stored user:", e);
+                        localStorage.removeItem('fantasy_hockey_user');
+                    }
+                }
+                
                 // User is signed out
                 currentUser = null;
                 loginBtn.classList.remove('hidden');
@@ -719,7 +749,7 @@
                 } else {
                     leagueListEl.innerHTML = `
                         <p>You haven't joined any leagues yet.</p>
-                        <a href="create-league.html" class="back-to-standings">Create a League</a>
+                        <a href="manage-leagues.html" class="back-to-standings">Create a League</a>
                     `;
                 }
             }).catch((error) => {
@@ -1278,3 +1308,370 @@
             // Add join/leave listeners
             addJoinLeaveListeners();
         }
+
+        // Add this persistence helper
+        function setupAuthPersistence() {
+            // Store minimal user data in localStorage as backup
+            if (currentUser) {
+                localStorage.setItem('fantasy_hockey_user', JSON.stringify({
+                    uid: currentUser.uid,
+                    displayName: currentUser.displayName,
+                    email: currentUser.email,
+                    photoURL: currentUser.photoURL
+                }));
+            }
+        }
+
+        // Send chat message
+        function sendChatMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            addChatMessage({
+                type: 'user',
+                uid: currentUser.uid,
+                name: currentUser.displayName,
+                photoURL: currentUser.photoURL,
+                text: message,
+                timestamp: new Date().toISOString()
+            });
+            
+            chatInput.value = '';
+        }
+
+        // Add chat message
+        function addChatMessage(message) {
+            if (!leagueId) return;
+            
+            const chatRef = ref(database, `leagues/${leagueId}/chat`);
+            const newMessageRef = push(chatRef);
+            set(newMessageRef, message).catch(error => {
+                console.error("Error adding chat message:", error);
+            });
+        }
+
+        // Update chat messages display
+        function updateChatMessages(messages) {
+            // Get the scroll position before updating
+            const isScrolledToBottom = chatMessages.scrollHeight - chatMessages.clientHeight <= chatMessages.scrollTop + 10;
+            
+            // Get the last message key that's already displayed
+            const existingMessages = chatMessages.querySelectorAll('[data-message-key]');
+            const lastDisplayedKey = existingMessages.length > 0 
+                ? existingMessages[existingMessages.length - 1].dataset.messageKey
+                : null;
+            
+            // Find index of last displayed message
+            const messageKeys = Object.keys(messages);
+            const lastKeyIndex = lastDisplayedKey ? messageKeys.indexOf(lastDisplayedKey) : -1;
+            
+            // Only append new messages
+            const newMessageKeys = messageKeys.slice(lastKeyIndex + 1);
+            
+            // Sort messages by timestamp
+            newMessageKeys.sort((a, b) => {
+                const timestampA = messages[a].timestamp || '0';
+                const timestampB = messages[b].timestamp || '0';
+                return timestampA.localeCompare(timestampB);
+            });
+            
+            // Append new messages
+            newMessageKeys.forEach(key => {
+                const message = messages[key];
+                const messageEl = document.createElement('div');
+                messageEl.dataset.messageKey = key;
+                
+                if (message.type === 'system') {
+                    messageEl.className = 'chat-system';
+                    messageEl.textContent = message.text;
+                } else {
+                    messageEl.className = 'chat-message';
+                    
+                    const timestamp = new Date(message.timestamp);
+                    const timeStr = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    messageEl.innerHTML = `
+                        <div class="chat-user">
+                            ${message.name} <span class="chat-time">${timeStr}</span>
+                        </div>
+                        <div class="chat-text">${message.text}</div>
+                    `;
+                }
+                
+                chatMessages.appendChild(messageEl);
+            });
+            
+            // Scroll to bottom if already at bottom
+            if (isScrolledToBottom) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // Add join/leave notifications
+        function addJoinLeaveListeners() {
+            if (!leagueId) return;
+            
+            const teamsRef = ref(database, `leagues/${leagueId}/teams`);
+            onValue(teamsRef, (snapshot) => {
+                if (!snapshot.exists()) return;
+                
+                const teams = snapshot.val();
+                
+                // Compare with previous teams state
+                const newMembers = {};
+                const leftMembers = {...currentTeams};
+                
+                // Find new members
+                Object.keys(teams).forEach(uid => {
+                    if (!currentTeams[uid]) {
+                        newMembers[uid] = teams[uid];
+                    }
+                    
+                    // Remove from left members if still present
+                    delete leftMembers[uid];
+                });
+                
+                // Update currentTeams for next comparison
+                currentTeams = teams;
+                
+                // Add chat notifications for new members (except first load)
+                if (Object.keys(newMembers).length > 0 && Object.keys(leftMembers).length === 0) {
+                    Object.values(newMembers).forEach(member => {
+                        const systemMessage = {
+                            type: 'system',
+                            text: `${member.name} joined the league`,
+                            timestamp: new Date().toISOString()
+                        };
+                        
+                        // Only add if not the current user joining
+                        if (member.uid !== currentUser.uid) {
+                            addChatMessage(systemMessage);
+                        }
+                    });
+                }
+                
+                // Add chat notifications for members who left
+                if (Object.keys(leftMembers).length > 0) {
+                    Object.values(leftMembers).forEach(member => {
+                        const systemMessage = {
+                            type: 'system',
+                            text: `${member.name} left the league`,
+                            timestamp: new Date().toISOString()
+                        };
+                        
+                        addChatMessage(systemMessage);
+                    });
+                }
+            });
+        }
+
+        // Handle if user doesn't have access but tries to join
+        function handleNoAccessToLeague(leagueData) {
+            // Show join form overlay
+            const joinOverlay = document.createElement('div');
+            joinOverlay.className = 'join-overlay';
+            joinOverlay.innerHTML = `
+                <div class="join-popup">
+                    <h2>Join "${leagueData.name}" League</h2>
+                    <p>You're not a member of this league yet.</p>
+                    
+                    <div id="join-password-required" class="join-password-group">
+                        <label for="join-password">League Password:</label>
+                        <div class="password-toggle">
+                            <input type="password" id="join-password" placeholder="Enter league password">
+                            <span class="toggle-password" onclick="togglePasswordVisibility('join-password')">Show</span>
+                        </div>
+                    </div>
+                    
+                    <div class="join-actions">
+                        <button id="join-league-btn" onclick="joinLeagueWithPassword()">Join League</button>
+                        <button onclick="closeJoinOverlay()">Cancel</button>
+                    </div>
+                    <div id="join-error" class="error"></div>
+                </div>
+            `;
+            document.body.appendChild(joinOverlay);
+            
+            // Check if user is invited
+            const isInvited = (leagueData.invitedManagers || []).some(m => 
+                m.email === currentUser.email
+            );
+            
+            if (isInvited) {
+                // No password needed if invited
+                document.getElementById('join-password-required').style.display = 'none';
+            }
+        }
+
+        // Toggle password visibility
+        window.togglePasswordVisibility = function(inputId) {
+            const input = document.getElementById(inputId);
+            const toggleBtn = input.nextElementSibling;
+            
+            if (input.type === "password") {
+                input.type = "text";
+                toggleBtn.textContent = "Hide";
+            } else {
+                input.type = "password";
+                toggleBtn.textContent = "Show";
+            }
+        };
+
+        // Close join overlay
+        window.closeJoinOverlay = function() {
+            const overlay = document.querySelector('.join-overlay');
+            if (overlay) {
+                overlay.remove();
+            }
+            window.location.href = 'manage-leagues.html';
+        };
+
+        // Join league with password
+        window.joinLeagueWithPassword = function() {
+            if (!leagueData) {
+                showError("League data not found");
+                return;
+            }
+            
+            // Check if user is invited (doesn't need password)
+            const isInvited = (leagueData.invitedManagers || []).some(m => 
+                m.email === currentUser.email
+            );
+            
+            let passwordValid = isInvited;
+            
+            if (!isInvited) {
+                // Verify password
+                const passwordEl = document.getElementById('join-password');
+                const enteredPassword = passwordEl.value.trim();
+                
+                if (!enteredPassword) {
+                    showError("Please enter the league password");
+                    return;
+                }
+                
+                if (enteredPassword !== leagueData.password) {
+                    showError("Incorrect password");
+                    return;
+                }
+                
+                passwordValid = true;
+            }
+            
+            if (passwordValid) {
+                // Check if team limit is reached
+                const currentTeamCount = Object.keys(leagueData.teams || {}).length;
+                if (currentTeamCount >= leagueData.maxTeams) {
+                    showError("This league is full");
+                    return;
+                }
+                
+                // Add user to league teams
+                const teamRef = ref(database, `leagues/${leagueId}/teams/${currentUser.uid}`);
+                set(teamRef, {
+                    name: currentUser.displayName,
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    isCommissioner: false,
+                    joinedAt: new Date().toISOString()
+                }).then(() => {
+                    // Add league to user's leagues
+                    const userLeagueRef = ref(database, `users/${currentUser.uid}/leagues/${leagueId}`);
+                    return set(userLeagueRef, {
+                        leagueId: leagueId,
+                        name: leagueData.name,
+                        code: leagueData.code,
+                        role: 'manager',
+                        joinedAt: new Date().toISOString()
+                    });
+                }).then(() => {
+                    // Remove from invited managers if they were invited
+                    if (isInvited) {
+                        removeInvitation(leagueId, currentUser.email);
+                    }
+                    
+                    // Add system message to chat
+                    addChatMessage({
+                        type: 'system',
+                        text: `${currentUser.displayName} joined the league`,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    showNotification("You've joined the league successfully!");
+                    // Reload the page to refresh data
+                    window.location.reload();
+                }).catch(error => {
+                    console.error("Error joining league:", error);
+                    showError(`Error: ${error.message}`);
+                });
+            }
+        };
+
+        // Show error in join form
+        function showError(message) {
+            const errorEl = document.getElementById('join-error');
+            if (errorEl) {
+                errorEl.textContent = message;
+            }
+        }
+
+        // Remove invitation
+        function removeInvitation(leagueId, email) {
+            if (!leagueData || !leagueData.invitedManagers) {
+                return Promise.resolve();
+            }
+            
+            // Find and remove the invitation
+            const updatedInvites = leagueData.invitedManagers.filter(m => 
+                m.email !== email
+            );
+            
+            // Update the league
+            const invitesRef = ref(database, `leagues/${leagueId}/invitedManagers`);
+            return set(invitesRef, updatedInvites);
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove after animation completes
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Clean up Firebase listeners
+        function cleanupListeners() {
+            // Clean up player listeners
+            Object.values(playerListeners).forEach(unsubscribe => {
+                if (typeof unsubscribe === 'function') {
+                    unsubscribe();
+                }
+            });
+            
+            // Clean up chat listeners
+            Object.values(chatListeners).forEach(unsubscribe => {
+                if (typeof unsubscribe === 'function') {
+                    unsubscribe();
+                }
+            });
+            
+            // Reset listeners objects
+            playerListeners = {};
+            chatListeners = {};
+        }
+
+        // Initialize chat
+        document.addEventListener('DOMContentLoaded', () => {
+            // Make sure setupChat is called when the document is ready
+            if (chatContainer) {
+                setupChat();
+            }
+        });
+    </script>
+</body>
+</html>
