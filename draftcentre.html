@@ -169,236 +169,666 @@
             background-color: #003366;
             color: white;
         }
+        .instructions {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #003366;
+        }
+        .instructions summary {
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .instructions ol {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        .auth-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #auth-status {
+            margin: 10px 0;
+            font-style: italic;
+        }
+        .hidden {
+            display: none;
+        }
+        .league-info {
+            background-color: #f0f0f0;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .league-name {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .league-details {
+            color: #666;
+        }
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .team-member {
+            display: inline-block;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+        .commissioner-badge {
+            background-color: #ffd700;
+            color: #333;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+        .chat-container {
+            position: fixed;
+            bottom: 0;
+            right: 20px;
+            width: 300px;
+            height: 400px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px 5px 0 0;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            background-color: #003366;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #eee;
+        }
+        .chat-input input {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .chat-message {
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+        .chat-user {
+            font-weight: bold;
+            color: #003366;
+        }
+        .chat-time {
+            font-size: 0.8em;
+            color: #999;
+            margin-left: 5px;
+        }
+        .chat-text {
+            background-color: white;
+            padding: 8px;
+            border-radius: 5px;
+            display: inline-block;
+            max-width: 80%;
+            word-wrap: break-word;
+            margin-top: 3px;
+        }
+        .chat-system {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin: 10px 0;
+        }
+        .minimized {
+            height: auto;
+        }
+        .minimized .chat-messages,
+        .minimized .chat-input {
+            display: none;
+        }
+        .loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+        .loader:after {
+            content: " ";
+            display: block;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 6px solid #003366;
+            border-color: #003366 transparent #003366 transparent;
+            animation: loader 1.2s linear infinite;
+        }
+        @keyframes loader {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #003366;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 2000;
+            animation: fadeInOut 5s forwards;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .current-drafter {
+            background-color: #e6f7ff;
+            border-left: 4px solid #1890ff;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
-    <h1>Fantasy Hockey Draftcentre</h1>
-    <p style="margin-top: -10px; color: #666;">Stats shown are from the 2023-2024 regular season</p>
-    
-    <div class="instructions">
-        <details>
-            <summary><strong>How to use the Draftcentre</strong> (click to expand)</summary>
-            <ol>
-                <li><strong>Select your team</strong> from the "View Mode" dropdown</li>
-                <li><strong>Browse available players</strong> by position using the filter buttons</li>
-                <li><strong>Search</strong> for specific players using the search box</li>
-                <li><strong>Sort</strong> any column by clicking the column header</li>
-                <li><strong>Draft a player</strong> when it's your turn by clicking the "Draft" button</li>
-                <li><strong>View your team</strong> in the "Drafted Players" section below</li>
-            </ol>
-            <p><em>Note: In team view mode, you can only draft for your own team. The commissioner can draft for any team.</em></p>
-        </details>
+    <div class="auth-container">
+        <button id="login-btn">Sign in with Google</button>
+        <button id="logout-btn" class="hidden">Sign Out</button>
+        <div id="auth-status">You are not signed in</div>
     </div>
     
-    <div class="options-container">
-        <div class="view-toggle">
-            <label for="viewMode">View Mode:</label>
-            <select id="viewMode" onchange="changeViewMode()">
-                <option value="commissioner">Commissioner View</option>
-                <option value="Team 1">Team 1</option>
-                <option value="Team 2">Team 2</option>
-                <option value="Team 3">Team 3</option>
-                <option value="Team 4">Team 4</option>
-                <option value="Team 5">Team 5</option>
-                <option value="Team 6">Team 6</option>
-                <option value="Team 7">Team 7</option>
-                <option value="Team 8">Team 8</option>
-            </select>
+    <div id="content-container" class="hidden">
+        <div id="league-info" class="league-info hidden">
+            <div>
+                <div class="league-name" id="league-name"></div>
+                <div class="league-details">
+                    <span id="league-team-count"></span>
+                </div>
+            </div>
+            <a href="create-league.html" class="back-to-standings">Manage Leagues</a>
+        </div>
+        
+        <div id="league-select-container">
+            <h2>Select a League</h2>
+            <p>Please select a league or create a new one:</p>
+            <div id="league-list" class="loader"></div>
+            <div class="action-buttons">
+                <a href="create-league.html" class="back-to-standings">Create New League</a>
+            </div>
+        </div>
+        
+        <div id="draft-container" class="hidden">
+            <h1>Fantasy Hockey Draftcentre</h1>
+            <p style="margin-top: -10px; color: #666;">Stats shown are from the 2023-2024 regular season</p>
             
-            <div class="filter-options">
-                <label>
-                    <input type="checkbox" id="showDrafted" onchange="filterPlayers()">
-                    Show Drafted Players
-                </label>
+            <div class="instructions">
+                <details>
+                    <summary><strong>How to use the Draftcentre</strong> (click to expand)</summary>
+                    <ol>
+                        <li><strong>Browse available players</strong> by position using the filter buttons</li>
+                        <li><strong>Search</strong> for specific players using the search box</li>
+                        <li><strong>Sort</strong> any column by clicking the column header</li>
+                        <li><strong>Draft a player</strong> when it's your turn by clicking the "Draft" button</li>
+                        <li><strong>View your team</strong> in the "Drafted Players" section below</li>
+                    </ol>
+                    <p><em>Note: You can only draft when it's your turn. The commissioner can manage the draft order and settings.</em></p>
+                </details>
+            </div>
+            
+            <div id="current-drafter" class="current-drafter hidden">
+                <p><strong>Current drafter:</strong> <span id="current-drafter-name">Waiting to start draft...</span></p>
+            </div>
+            
+            <div class="options-container">
+                <div class="view-toggle">
+                    <div class="filter-options">
+                        <label>
+                            <input type="checkbox" id="showDrafted" onchange="filterPlayers()">
+                            Show Drafted Players
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search by player name..." oninput="filterPlayers()">
+                <div class="position-filter">
+                    <button class="position-btn active" data-position="all">All</button>
+                    <button class="position-btn" data-position="C">Center</button>
+                    <button class="position-btn" data-position="LW">Left Wing</button>
+                    <button class="position-btn" data-position="RW">Right Wing</button>
+                    <button class="position-btn" data-position="D">Defense</button>
+                    <button class="position-btn" data-position="G">Goalie</button>
+                </div>
+            </div>
+            
+            <div class="player-table-container">
+                <table id="playerTable">
+                    <thead>
+                        <tr>
+                            <th data-sort="fullName">Name</th>
+                            <th data-sort="position">Position</th>
+                            <th data-sort="teamAbbreviation">Team</th>
+                            <th data-sort="gamesPlayed">GP</th>
+                            <th data-sort="goals" class="skater-stat">G</th>
+                            <th data-sort="assists" class="skater-stat">A</th>
+                            <th data-sort="points" class="skater-stat">PTS</th>
+                            <th data-sort="wins" class="goalie-stat">W</th>
+                            <th data-sort="shutouts" class="goalie-stat">SO</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="playerTableBody">
+                        <!-- Player data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="drafted-players">
+                <h2>Drafted Players</h2>
+                
+                <div class="drafted-team-filter">
+                    <label for="draftedTeamFilter">Show Team: </label>
+                    <select id="draftedTeamFilter" onchange="filterDraftedPlayers()">
+                        <option value="all">All Teams</option>
+                        <!-- Team options will be dynamically added -->
+                    </select>
+                </div>
+                
+                <table id="draftedTable">
+                    <thead>
+                        <tr>
+                            <th data-sort="Player">Name</th>
+                            <th data-sort="Position">Position</th>
+                            <th data-sort="NHL Team">NHL Team</th>
+                            <th data-sort="Team">Fantasy Team</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="draftedTableBody">
+                        <!-- Drafted players will be shown here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="action-buttons">
+                <button id="start-draft-btn" class="hidden">Start Draft</button>
+                <a href="index.html" class="back-to-standings">Back to Standings</a>
             </div>
         </div>
     </div>
     
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Search by player name..." oninput="filterPlayers()">
-        <div class="position-filter">
-            <button class="position-btn active" data-position="all">All</button>
-            <button class="position-btn" data-position="C">Center</button>
-            <button class="position-btn" data-position="LW">Left Wing</button>
-            <button class="position-btn" data-position="RW">Right Wing</button>
-            <button class="position-btn" data-position="D">Defense</button>
-            <button class="position-btn" data-position="G">Goalie</button>
+    <div id="chat-container" class="chat-container hidden">
+        <div class="chat-header" id="chat-header">
+            <span>Draft Chat</span>
+            <span id="chat-toggle">-</span>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <!-- Chat messages will appear here -->
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chat-input" placeholder="Type a message...">
+            <button id="chat-send">Send</button>
         </div>
     </div>
     
-    <div class="player-table-container">
-        <table id="playerTable">
-            <thead>
-                <tr>
-                    <th data-sort="fullName">Name</th>
-                    <th data-sort="position">Position</th>
-                    <th data-sort="teamAbbreviation">Team</th>
-                    <th data-sort="gamesPlayed">GP</th>
-                    <th data-sort="goals" class="skater-stat">G</th>
-                    <th data-sort="assists" class="skater-stat">A</th>
-                    <th data-sort="points" class="skater-stat">PTS</th>
-                    <th data-sort="wins" class="goalie-stat">W</th>
-                    <th data-sort="shutouts" class="goalie-stat">SO</th>
-                    <th>Select Team</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="playerTableBody">
-                <!-- Player data will be loaded here -->
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="drafted-players">
-        <h2>Drafted Players</h2>
+    <!-- Load Firebase config (not tracked in Git) -->
+    <script src="firebaseConfig.js"></script>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, get, push, onValue, update, off } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         
-        <div class="drafted-team-filter">
-            <label for="draftedTeamFilter">Show Team: </label>
-            <select id="draftedTeamFilter" onchange="filterDraftedPlayers()">
-                <option value="all">All Teams</option>
-                <option value="Team 1">Team 1</option>
-                <option value="Team 2">Team 2</option>
-                <option value="Team 3">Team 3</option>
-                <option value="Team 4">Team 4</option>
-                <option value="Team 5">Team 5</option>
-                <option value="Team 6">Team 6</option>
-                <option value="Team 7">Team 7</option>
-                <option value="Team 8">Team 8</option>
-            </select>
-        </div>
+        // Initialize Firebase using the config from firebaseConfig.js
+        const app = initializeApp(window.firebaseConfig);
+        const auth = getAuth();
+        const provider = new GoogleAuthProvider();
+        const database = getDatabase();
         
-        <table id="draftedTable">
-            <thead>
-                <tr>
-                    <th data-sort="Player">Name</th>
-                    <th data-sort="Position">Position</th>
-                    <th data-sort="NHL Team">NHL Team</th>
-                    <th data-sort="Team">Fantasy Team</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="draftedTableBody">
-                <!-- Drafted players will be shown here -->
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="action-buttons">
-        <button id="downloadBtn">Download Player List</button>
-        <button id="saveBtn">Save to GitHub</button>
-        <a href="index.html" class="back-to-standings">Back to Standings</a>
-    </div>
-    
-    <script>
-        // Define team options for the fantasy league
-        const fantasyTeams = [
-            "Team 1", "Team 2", "Team 3", "Team 4", 
-            "Team 5", "Team 6", "Team 7", "Team 8"
-        ];
-        
-        // Store all players and drafted players
+        // Global variables
+        let currentUser = null;
         let allPlayers = [];
         let draftedPlayers = [];
+        let leagueData = null;
+        let leagueId = null;
         let currentPositionFilter = 'all';
-        let currentViewMode = 'commissioner';
         let currentSortColumn = null;
         let currentSortDirection = 'asc';
+        let currentTeams = {};
+        let isCommissioner = false;
+        let chatListeners = {};
+        let playerListeners = {};
         
-        // Initialize the application
-        async function init() {
-            try {
-                // Load player database
-                const playersResponse = await fetch('data/nhl_players.json');
-                allPlayers = await playersResponse.json();
+        // DOM Elements
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const authStatus = document.getElementById('auth-status');
+        const contentContainer = document.getElementById('content-container');
+        const leagueSelectContainer = document.getElementById('league-select-container');
+        const draftContainer = document.getElementById('draft-container');
+        const leagueInfoContainer = document.getElementById('league-info');
+        const leagueNameEl = document.getElementById('league-name');
+        const leagueTeamCountEl = document.getElementById('league-team-count');
+        const draftedTeamFilter = document.getElementById('draftedTeamFilter');
+        const startDraftBtn = document.getElementById('start-draft-btn');
+        const currentDrafterContainer = document.getElementById('current-drafter');
+        const currentDrafterName = document.getElementById('current-drafter-name');
+        const chatContainer = document.getElementById('chat-container');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const chatSend = document.getElementById('chat-send');
+        const chatHeader = document.getElementById('chat-header');
+        const chatToggle = document.getElementById('chat-toggle');
+        
+        // Check for league ID in URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('league')) {
+            leagueId = urlParams.get('league');
+        }
+        
+        // Auth state observer
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                currentUser = user;
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                authStatus.textContent = `Signed in as ${user.displayName}`;
+                contentContainer.classList.remove('hidden');
                 
-                // Try to load existing drafted players
-                try {
-                    const draftedResponse = await fetch('data/playerlist.json');
-                    draftedPlayers = await draftedResponse.json();
-                } catch (err) {
-                    console.log('No existing player list found, starting fresh');
-                    draftedPlayers = [];
+                // Store user in database
+                storeUserProfile(user);
+                
+                // Load data based on context
+                if (leagueId) {
+                    loadLeague(leagueId);
+                } else {
+                    loadUserLeagues();
                 }
+            } else {
+                // User is signed out
+                currentUser = null;
+                loginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                authStatus.textContent = 'You are not signed in';
+                contentContainer.classList.add('hidden');
+                chatContainer.classList.add('hidden');
                 
-                // Initial display
-                filterPlayers();
-                filterDraftedPlayers();
-                
-                // Set up position filter buttons
-                document.querySelectorAll('.position-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        document.querySelectorAll('.position-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        currentPositionFilter = btn.dataset.position;
-                        filterPlayers();
-                    });
-                });
-                
-                // Set up sortable columns
-                document.querySelectorAll('th[data-sort]').forEach(header => {
-                    header.addEventListener('click', () => {
-                        const column = header.dataset.sort;
-                        sortTable(column, header.closest('table').id);
-                    });
-                });
-                
-                // Set up action buttons
-                document.getElementById('downloadBtn').addEventListener('click', downloadPlayerList);
-                document.getElementById('saveBtn').addEventListener('click', saveToGitHub);
-                
-            } catch (error) {
-                console.error('Error initializing application:', error);
-                alert('Failed to load player data. Please try again later.');
+                // Clean up listeners
+                cleanupListeners();
             }
+        });
+        
+        // Sign in with Google
+        loginBtn.addEventListener('click', () => {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    // User signed in
+                    console.log("User signed in:", result.user);
+                }).catch((error) => {
+                    // Handle errors
+                    console.error("Auth error:", error);
+                    authStatus.textContent = `Error: ${error.message}`;
+                });
+        });
+        
+        // Sign out
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                console.log("User signed out");
+            }).catch((error) => {
+                console.error("Sign out error:", error);
+            });
+        });
+        
+        // Store user profile in database
+        function storeUserProfile(user) {
+            const userRef = ref(database, `users/${user.uid}/profile`);
+            set(userRef, {
+                uid: user.uid,
+                displayName: user.displayName,
+                email: user.email,
+                photoURL: user.photoURL,
+                lastLogin: new Date().toISOString()
+            });
         }
         
-        // Change view mode (commissioner or team-specific)
-        function changeViewMode() {
-            currentViewMode = document.getElementById('viewMode').value;
-            filterPlayers();
+        // Load user's leagues
+        function loadUserLeagues() {
+            if (!currentUser) return;
             
-            // Update the drafted players filter to match the selected team
-            if (currentViewMode !== 'commissioner') {
-                document.getElementById('draftedTeamFilter').value = currentViewMode;
-                filterDraftedPlayers();
-            }
+            const leagueListEl = document.getElementById('league-list');
+            leagueListEl.innerHTML = '<div class="loader"></div>';
+            leagueSelectContainer.classList.remove('hidden');
+            draftContainer.classList.add('hidden');
+            
+            const userLeaguesRef = ref(database, `users/${currentUser.uid}/leagues`);
+            get(userLeaguesRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const leagues = snapshot.val();
+                    leagueListEl.innerHTML = '';
+                    
+                    Object.keys(leagues).forEach(key => {
+                        const league = leagues[key];
+                        const leagueItem = document.createElement('div');
+                        leagueItem.className = 'league-item';
+                        leagueItem.innerHTML = `
+                            <div class="league-name">${league.name}</div>
+                            <div class="league-details">Role: ${league.role}</div>
+                            <a href="draftcentre.html?league=${league.leagueId}" 
+                               class="back-to-standings">Open Draft</a>
+                        `;
+                        leagueListEl.appendChild(leagueItem);
+                    });
+                } else {
+                    leagueListEl.innerHTML = `
+                        <p>You haven't joined any leagues yet.</p>
+                        <a href="create-league.html" class="back-to-standings">Create a League</a>
+                    `;
+                }
+            }).catch((error) => {
+                console.error("Error loading leagues:", error);
+                leagueListEl.innerHTML = `<p>Error loading leagues: ${error.message}</p>`;
+            });
         }
         
-        // Sort a table by a specific column
-        function sortTable(column, tableId) {
-            const table = document.getElementById(tableId);
-            const headers = table.querySelectorAll('th');
+        // Load league data
+        function loadLeague(leagueId) {
+            if (!currentUser) return;
             
-            // Remove existing sort indicators
-            headers.forEach(h => {
-                h.classList.remove('sorted-asc', 'sorted-desc');
+            const leagueRef = ref(database, `leagues/${leagueId}`);
+            get(leagueRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    leagueData = snapshot.val();
+                    
+                    // Check if user is a member of this league
+                    if (!leagueData.teams || !leagueData.teams[currentUser.uid]) {
+                        showNotification("You don't have access to this league");
+                        // Forward to league selection
+                        loadUserLeagues();
+                        return;
+                    }
+                    
+                    // Check if user is commissioner
+                    isCommissioner = leagueData.teams[currentUser.uid].isCommissioner || false;
+                    
+                    // Show draft interface
+                    showDraftInterface();
+                    
+                    // Setup real-time listeners
+                    setupLeagueListeners();
+                    
+                    // Load player data
+                    loadPlayerData();
+                } else {
+                    showNotification("League not found");
+                    loadUserLeagues();
+                }
+            }).catch((error) => {
+                console.error("Error loading league:", error);
+                showNotification(`Error: ${error.message}`);
+                loadUserLeagues();
+            });
+        }
+        
+        // Show draft interface
+        function showDraftInterface() {
+            leagueSelectContainer.classList.add('hidden');
+            draftContainer.classList.remove('hidden');
+            leagueInfoContainer.classList.remove('hidden');
+            chatContainer.classList.remove('hidden');
+            
+            // Update league info
+            leagueNameEl.textContent = leagueData.name;
+            const teamCount = Object.keys(leagueData.teams || {}).length;
+            leagueTeamCountEl.textContent = `${teamCount} teams`;
+            
+            // Populate team filter
+            populateTeamFilter();
+            
+            // Show draft controls for commissioner
+            if (isCommissioner) {
+                startDraftBtn.classList.remove('hidden');
+            }
+            
+            // Listen for draft start events
+            const draftStatusRef = ref(database, `leagues/${leagueId}/draftStatus`);
+            onValue(draftStatusRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const draftStatus = snapshot.val();
+                    if (draftStatus.active) {
+                        startDraftBtn.classList.add('hidden');
+                        currentDrafterContainer.classList.remove('hidden');
+                        
+                        // Update current drafter display
+                        const currentDrafterUid = draftStatus.currentDrafter;
+                        if (currentDrafterUid && leagueData.teams[currentDrafterUid]) {
+                            currentDrafterName.textContent = leagueData.teams[currentDrafterUid].name;
+                            
+                            // Highlight if it's current user's turn
+                            if (currentDrafterUid === currentUser.uid) {
+                                currentDrafterContainer.style.backgroundColor = '#e6ffed';
+                                currentDrafterContainer.style.borderLeftColor = '#52c41a';
+                                currentDrafterName.textContent += ' (Your Turn!)';
+                                showNotification("It's your turn to draft!");
+                            } else {
+                                currentDrafterContainer.style.backgroundColor = '#e6f7ff';
+                                currentDrafterContainer.style.borderLeftColor = '#1890ff';
+                            }
+                        } else {
+                            currentDrafterName.textContent = 'Waiting...';
+                        }
+                    } else {
+                        if (isCommissioner) {
+                            startDraftBtn.classList.remove('hidden');
+                        }
+                        currentDrafterContainer.classList.add('hidden');
+                    }
+                }
             });
             
-            // Set the new sort column and direction
-            if (column === currentSortColumn) {
-                currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
-            } else {
-                currentSortColumn = column;
-                currentSortDirection = 'asc';
-            }
-            
-            // Add sort indicator to the column header
-            const currentHeader = Array.from(headers).find(h => h.dataset.sort === column);
-            if (currentHeader) {
-                currentHeader.classList.add(
-                    currentSortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc'
-                );
-            }
-            
-            // Refresh the table with the new sort
-            if (tableId === 'playerTable') {
-                filterPlayers();
-            } else if (tableId === 'draftedTable') {
-                filterDraftedPlayers();
-            }
+            // Setup start draft button
+            startDraftBtn.addEventListener('click', startDraft);
         }
         
-        // Filter and display players based on search, position, and draft status
+        // Setup league listeners
+        function setupLeagueListeners() {
+            // Listen for drafted players changes
+            const draftedPlayersRef = ref(database, `leagues/${leagueId}/draftedPlayers`);
+            playerListeners.draftedPlayers = onValue(draftedPlayersRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    draftedPlayers = Object.values(snapshot.val());
+                } else {
+                    draftedPlayers = [];
+                }
+                filterDraftedPlayers();
+                filterPlayers();
+            });
+            
+            // Listen for league teams changes
+            const teamsRef = ref(database, `leagues/${leagueId}/teams`);
+            playerListeners.teams = onValue(teamsRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    currentTeams = snapshot.val();
+                    populateTeamFilter();
+                }
+            });
+            
+            // Listen for chat messages
+            const chatRef = ref(database, `leagues/${leagueId}/chat`);
+            chatListeners.chat = onValue(chatRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const messages = snapshot.val();
+                    updateChatMessages(messages);
+                }
+            });
+        }
+        
+        // Populate team filter dropdown
+        function populateTeamFilter() {
+            draftedTeamFilter.innerHTML = '<option value="all">All Teams</option>';
+            
+            // Add team options
+            if (currentTeams) {
+                Object.keys(currentTeams).forEach(uid => {
+                    const team = currentTeams[uid];
+                    const option = document.createElement('option');
+                    option.value = team.name;
+                    option.textContent = team.name;
+                    draftedTeamFilter.appendChild(option);
+                    
+                    // Select current user's team by default
+                    if (uid === currentUser.uid) {
+                        draftedTeamFilter.value = team.name;
+                    }
+                });
+            }
+            
+            // Refresh the drafted players display
+            filterDraftedPlayers();
+        }
+        
+        // Load player data
+        function loadPlayerData() {
+            // Fetch NHL players
+            fetch('data/nhl_players.json')
+                .then(response => response.json())
+                .then(data => {
+                    allPlayers = data;
+                    filterPlayers();
+                })
+                .catch(error => {
+                    console.error('Error loading player data:', error);
+                    showNotification('Error loading NHL player data');
+                });
+        }
+        
+        // Filter and display players
         function filterPlayers() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const showDrafted = document.getElementById('showDrafted').checked;
@@ -419,9 +849,9 @@
             
             // Filter out drafted players unless showing drafted is enabled
             if (!showDrafted) {
-                const draftedIds = draftedPlayers.map(dp => dp['Player ID'].toString());
+                const draftedIds = draftedPlayers.map(dp => dp.playerId?.toString());
                 filteredPlayers = filteredPlayers.filter(player => 
-                    !draftedIds.includes(player.id.toString()));
+                    !draftedIds.includes(player.id?.toString()));
             }
             
             // Apply custom sorting if a column is selected
@@ -458,11 +888,14 @@
             const tableBody = document.getElementById('playerTableBody');
             tableBody.innerHTML = '';
             
-            const draftedIds = draftedPlayers.map(dp => dp['Player ID'].toString());
+            const draftedIds = draftedPlayers.map(dp => dp.playerId?.toString());
+            
+            // Get current drafter for determining if draft button should be enabled
+            const canDraft = isCurrentUserTurn();
             
             displayPlayers.forEach(player => {
                 const row = document.createElement('tr');
-                const isDrafted = draftedIds.includes(player.id.toString());
+                const isDrafted = draftedIds.includes(player.id?.toString());
                 
                 if (isDrafted && !showDrafted) return; // Skip if drafted and not showing drafted
                 if (isDrafted) row.classList.add('drafted');
@@ -479,18 +912,8 @@
                     <td class="goalie-stat">${player.position === 'G' ? (player.wins || 0) : '-'}</td>
                     <td class="goalie-stat">${player.position === 'G' ? (player.shutouts || 0) : '-'}</td>
                     <td>
-                        <select class="team-select" ${isDrafted ? 'disabled' : ''}>
-                            <option value="">Select Team</option>
-                            ${fantasyTeams.map(team => {
-                                const selected = currentViewMode !== 'commissioner' && currentViewMode === team ? 'selected' : '';
-                                return `<option value="${team}" ${selected}>${team}</option>`;
-                            }).join('')}
-                        </select>
-                    </td>
-                    <td>
-                        <button onclick="draftPlayer(this)" data-id="${player.id}" data-name="${player.fullName}" 
-                            data-position="${player.position}" data-team="${player.teamAbbreviation}"
-                            ${isDrafted ? 'disabled' : ''}>
+                        <button onclick="draftPlayer('${player.id}', '${player.fullName}', '${player.position}', '${player.teamAbbreviation}')" 
+                            ${isDrafted || !canDraft ? 'disabled' : ''}>
                             Draft
                         </button>
                     </td>
@@ -503,81 +926,106 @@
                     row.querySelectorAll('.goalie-stat').forEach(cell => cell.style.display = 'table-cell');
                 }
                 
-                // Check if player is already drafted
-                if (isDrafted) {
-                    const draftedPlayer = draftedPlayers.find(dp => dp['Player ID'].toString() === player.id.toString());
-                    row.querySelector('.team-select').value = draftedPlayer?.Team || '';
-                }
-                
-                // In team view, only enable drafting for that team
-                if (currentViewMode !== 'commissioner') {
-                    row.querySelector('.team-select').value = currentViewMode;
-                    row.querySelector('.team-select').disabled = true;
-                }
-                
                 tableBody.appendChild(row);
             });
         }
         
-        // Draft a player to a team
-        function draftPlayer(button) {
-            const row = button.closest('tr');
-            const teamSelect = row.querySelector('.team-select');
-            const selectedTeam = teamSelect.value;
+        // Check if it's the current user's turn to draft
+        function isCurrentUserTurn() {
+            if (!leagueData || !leagueData.draftStatus || !leagueData.draftStatus.active) {
+                return false;
+            }
             
-            if (!selectedTeam) {
-                alert('Please select a team for this player');
+            return leagueData.draftStatus.currentDrafter === currentUser.uid;
+        }
+        
+        // Draft a player
+        window.draftPlayer = function(playerId, playerName, position, nhlTeam) {
+            if (!isCurrentUserTurn() && !isCommissioner) {
+                showNotification("It's not your turn to draft");
                 return;
             }
             
-            // Get player data
-            const playerId = button.dataset.id;
-            const playerName = button.dataset.name;
-            const position = button.dataset.position;
-            const nhlTeam = button.dataset.team;
-            
-            // Check if current view mode allows this draft
-            if (currentViewMode !== 'commissioner' && currentViewMode !== selectedTeam) {
-                alert(`You can only draft for ${currentViewMode} in the current view mode.`);
-                return;
+            // Get current team 
+            let teamName = '';
+            if (currentTeams && currentTeams[currentUser.uid]) {
+                teamName = currentTeams[currentUser.uid].name;
             }
-            
-            // Find the player in the allPlayers array to get stats
-            const playerData = allPlayers.find(p => p.id.toString() === playerId);
             
             // Create player object for the draft list
             const draftedPlayer = {
-                "Player": playerName,
-                "Player ID": playerId,
-                "Position": position,
+                playerId: playerId,
+                Player: playerName,
+                Position: position,
                 "NHL Team": nhlTeam,
-                "Team": selectedTeam,
-                "Points Before Acquiring": 0, // Initial draft - all players start with 0 points
-                "Points for Gordie Howe Hattricks": 0,
-                "Points for Conn Smythe": 0
+                Team: teamName,
+                draftedBy: currentUser.uid,
+                draftedByName: currentUser.displayName,
+                draftedAt: new Date().toISOString(),
+                "Points Before Acquiring": 0 // Initial draft - all players start with 0 points
             };
             
-            // Add to drafted players list
-            draftedPlayers.push(draftedPlayer);
+            // Save to Firebase
+            const draftedPlayersRef = ref(database, `leagues/${leagueId}/draftedPlayers`);
+            const newPlayerRef = push(draftedPlayersRef);
             
-            // Update the UI
-            filterDraftedPlayers();
-            filterPlayers(); // Refresh the available players list
-        }
+            set(newPlayerRef, draftedPlayer).then(() => {
+                // Add system message to chat
+                addChatMessage({
+                    type: 'system',
+                    text: `${currentUser.displayName} drafted ${playerName} (${position}, ${nhlTeam})`
+                });
+                
+                // Move to next drafter if automatic progression is enabled
+                if (leagueData.draftStatus && leagueData.draftStatus.automatic) {
+                    moveToNextDrafter();
+                }
+            }).catch((error) => {
+                console.error("Error drafting player:", error);
+                showNotification(`Error: ${error.message}`);
+            });
+        };
         
         // Remove a player from the drafted list
-        function removeDraftedPlayer(index) {
-            // Check if current view mode allows this removal
-            const playerTeam = draftedPlayers[index].Team;
-            if (currentViewMode !== 'commissioner' && currentViewMode !== playerTeam) {
-                alert(`You can only remove players from ${currentViewMode} in the current view mode.`);
+        window.removeDraftedPlayer = function(playerId) {
+            // Only commissioner can remove players
+            if (!isCommissioner) {
+                showNotification("Only the commissioner can remove drafted players");
                 return;
             }
             
-            draftedPlayers.splice(index, 1);
-            filterDraftedPlayers();
-            filterPlayers(); // Refresh the available players list
-        }
+            // Find the player key
+            const draftedPlayersRef = ref(database, `leagues/${leagueId}/draftedPlayers`);
+            get(draftedPlayersRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const players = snapshot.val();
+                    let playerKey = null;
+                    
+                    // Find the key for the player with this ID
+                    Object.keys(players).forEach(key => {
+                        if (players[key].playerId === playerId) {
+                            playerKey = key;
+                        }
+                    });
+                    
+                    if (playerKey) {
+                        // Remove the player
+                        const playerRef = ref(database, `leagues/${leagueId}/draftedPlayers/${playerKey}`);
+                        set(playerRef, null).then(() => {
+                            showNotification("Player removed");
+                        }).catch(error => {
+                            console.error("Error removing player:", error);
+                            showNotification(`Error: ${error.message}`);
+                        });
+                    } else {
+                        showNotification("Player not found");
+                    }
+                }
+            }).catch(error => {
+                console.error("Error accessing drafted players:", error);
+                showNotification(`Error: ${error.message}`);
+            });
+        };
         
         // Filter the drafted players list
         function filterDraftedPlayers() {
@@ -592,12 +1040,11 @@
             }
             
             // Display filtered players
-            filteredDrafted.forEach((player, index) => {
-                const originalIndex = draftedPlayers.indexOf(player);
+            filteredDrafted.forEach((player) => {
                 const row = document.createElement('tr');
                 
-                // Disable remove button if not in commissioner mode and not for current team
-                const canRemove = currentViewMode === 'commissioner' || currentViewMode === player.Team;
+                // Disable remove button if not commissioner
+                const canRemove = isCommissioner;
                 
                 row.innerHTML = `
                     <td>${player.Player}</td>
@@ -605,7 +1052,7 @@
                     <td>${player["NHL Team"]}</td>
                     <td>${player.Team}</td>
                     <td>
-                        <button onclick="removeDraftedPlayer(${originalIndex})" ${!canRemove ? 'disabled' : ''}>
+                        <button onclick="removeDraftedPlayer('${player.playerId}')" ${!canRemove ? 'disabled' : ''}>
                             Remove
                         </button>
                     </td>
@@ -614,27 +1061,274 @@
             });
         }
         
-        // Download the player list as JSON
-        function downloadPlayerList() {
-            const dataStr = JSON.stringify(draftedPlayers, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        // Start the draft
+        function startDraft() {
+            if (!isCommissioner) {
+                showNotification("Only the commissioner can start the draft");
+                return;
+            }
             
-            const exportFileDefaultName = 'playerlist.json';
+            // Get all team members
+            const teamMembers = Object.keys(currentTeams);
             
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
+            if (teamMembers.length < 2) {
+                showNotification("Need at least 2 teams to start a draft");
+                return;
+            }
+            
+            // Randomize draft order if not already set
+            let draftOrder = teamMembers;
+            
+            // Create draft status object
+            const draftStatus = {
+                active: true,
+                startedAt: new Date().toISOString(),
+                startedBy: currentUser.uid,
+                draftOrder: draftOrder,
+                currentDrafter: draftOrder[0],
+                automatic: true, // Auto-advance to next drafter
+                round: 1
+            };
+            
+            // Save to Firebase
+            const draftStatusRef = ref(database, `leagues/${leagueId}/draftStatus`);
+            set(draftStatusRef, draftStatus).then(() => {
+                // Add system message to chat
+                addChatMessage({
+                    type: 'system',
+                    text: `Draft started by ${currentUser.displayName}`
+                });
+                
+                showNotification("Draft started!");
+            }).catch((error) => {
+                console.error("Error starting draft:", error);
+                showNotification(`Error: ${error.message}`);
+            });
         }
         
-        // Save player list to GitHub (placeholder - actual implementation would require GitHub API)
-        function saveToGitHub() {
-            alert('This would save the player list to GitHub.\n\nIn a real implementation, this would use the GitHub API to commit changes.\n\nFor now, please use the Download button and manually upload the file to your repository.');
-            downloadPlayerList();
+        // Move to next drafter
+        function moveToNextDrafter() {
+            if (!leagueData || !leagueData.draftStatus) return;
+            
+            const draftStatus = leagueData.draftStatus;
+            const draftOrder = draftStatus.draftOrder;
+            const currentIndex = draftOrder.indexOf(draftStatus.currentDrafter);
+            
+            // Calculate next drafter
+            let nextIndex = currentIndex + 1;
+            let nextRound = draftStatus.round;
+            
+            // If we reached the end of the order
+            if (nextIndex >= draftOrder.length) {
+                nextIndex = 0;
+                nextRound++;
+            }
+            
+            const nextDrafter = draftOrder[nextIndex];
+            
+            // Update draft status
+            const draftStatusRef = ref(database, `leagues/${leagueId}/draftStatus`);
+            update(draftStatusRef, {
+                currentDrafter: nextDrafter,
+                round: nextRound
+            }).then(() => {
+                // Add system message to chat about whose turn it is
+                if (currentTeams[nextDrafter]) {
+                    addChatMessage({
+                        type: 'system',
+                        text: `It's now ${currentTeams[nextDrafter].name}'s turn to draft`
+                    });
+                }
+            }).catch((error) => {
+                console.error("Error updating draft status:", error);
+            });
         }
         
-        // Initialize on page load
-        window.addEventListener('DOMContentLoaded', init);
+        // Set up position filter buttons
+        document.querySelectorAll('.position-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.position-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentPositionFilter = btn.dataset.position;
+                filterPlayers();
+            });
+        });
+        
+        // Set up sortable columns
+        document.querySelectorAll('th[data-sort]').forEach(header => {
+            header.addEventListener('click', () => {
+                const column = header.dataset.sort;
+                
+                // Get all headers in the same table
+                const headers = header.closest('table').querySelectorAll('th[data-sort]');
+                
+                // Remove existing sort indicators
+                headers.forEach(h => {
+                    h.classList.remove('sorted-asc', 'sorted-desc');
+                });
+                
+                // Set the new sort column and direction
+                if (column === currentSortColumn) {
+                    currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSortColumn = column;
+                    currentSortDirection = 'asc';
+                }
+                
+                // Add sort indicator to the column header
+                header.classList.add(
+                    currentSortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc'
+                );
+                
+                // Refresh the displayed data
+                if (header.closest('table').id === 'playerTable') {
+                    filterPlayers();
+                } else if (header.closest('table').id === 'draftedTable') {
+                    filterDraftedPlayers();
+                }
+            });
+        });
+        
+        // Chat functionality
+        function setupChat() {
+            // Toggle chat visibility
+            chatHeader.addEventListener('click', () => {
+                chatContainer.classList.toggle('minimized');
+                chatToggle.textContent = chatContainer.classList.contains('minimized') ? '+' : '-';
+            });
+            
+            // Send message
+            chatSend.addEventListener('click', sendChatMessage);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendChatMessage();
+                }
+            });
+        }
+        
+        // Send chat message
+        function sendChatMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            addChatMessage({
+                type: 'user',
+                uid: currentUser.uid,
+                name: currentUser.displayName,
+                photoURL: currentUser.photoURL,
+                text: message,
+                timestamp: new Date().toISOString()
+            });
+            
+            chatInput.value = '';
+        }
+        
+        // Add chat message to database
+        function addChatMessage(message) {
+            const chatRef = ref(database, `leagues/${leagueId}/chat`);
+            const newMessageRef = push(chatRef);
+            set(newMessageRef, message);
+        }
+        
+        // Update chat messages display
+        function updateChatMessages(messages) {
+            // Get the scroll position before updating
+            const isScrolledToBottom = chatMessages.scrollHeight - chatMessages.clientHeight <= chatMessages.scrollTop + 10;
+            
+            // Clear existing messages
+            // chatMessages.innerHTML = '';
+            
+            // Get the last message key that's already displayed
+            const existingMessages = chatMessages.querySelectorAll('[data-message-key]');
+            const lastDisplayedKey = existingMessages.length > 0 
+                ? existingMessages[existingMessages.length - 1].dataset.messageKey
+                : null;
+            
+            // Find index of last displayed message
+            const messageKeys = Object.keys(messages);
+            const lastKeyIndex = lastDisplayedKey ? messageKeys.indexOf(lastDisplayedKey) : -1;
+            
+            // Only append new messages
+            const newMessageKeys = messageKeys.slice(lastKeyIndex + 1);
+            
+            // Sort messages by timestamp
+            newMessageKeys.sort((a, b) => {
+                const timestampA = messages[a].timestamp || '0';
+                const timestampB = messages[b].timestamp || '0';
+                return timestampA.localeCompare(timestampB);
+            });
+            
+            // Append new messages
+            newMessageKeys.forEach(key => {
+                const message = messages[key];
+                const messageEl = document.createElement('div');
+                messageEl.dataset.messageKey = key;
+                
+                if (message.type === 'system') {
+                    messageEl.className = 'chat-system';
+                    messageEl.textContent = message.text;
+                } else {
+                    messageEl.className = 'chat-message';
+                    
+                    const timestamp = new Date(message.timestamp);
+                    const timeStr = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    messageEl.innerHTML = `
+                        <div class="chat-user">
+                            ${message.name} <span class="chat-time">${timeStr}</span>
+                        </div>
+                        <div class="chat-text">${message.text}</div>
+                    `;
+                }
+                
+                chatMessages.appendChild(messageEl);
+            });
+            
+            // Scroll to bottom if already at bottom
+            if (isScrolledToBottom) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove after animation completes
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+        
+        // Clean up Firebase listeners
+        function cleanupListeners() {
+            // Clean up player listeners
+            Object.values(playerListeners).forEach(unsubscribe => {
+                if (typeof unsubscribe === 'function') {
+                    unsubscribe();
+                }
+            });
+            
+            // Clean up chat listeners
+            Object.values(chatListeners).forEach(unsubscribe => {
+                if (typeof unsubscribe === 'function') {
+                    unsubscribe();
+                }
+            });
+            
+            // Reset listeners objects
+            playerListeners = {};
+            chatListeners = {};
+        }
+        
+        // Initialize chat when DOM is loaded
+        document.addEventListener('DOMContentLoaded', setupChat);
+        
+        // Clean up listeners when page unloads
+        window.addEventListener('beforeunload', cleanupListeners);
     </script>
 </body>
 </html>
