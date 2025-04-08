@@ -4,10 +4,10 @@ const firebaseConfig = {
     authDomain: "playofffantasyhockey.firebaseapp.com",
     databaseURL: "https://playofffantasyhockey-default-rtdb.firebaseio.com",
     projectId: "playofffantasyhockey",
-    storageBucket: "playofffantasyhockey.firebasestorage.app",
+    storageBucket: "playofffantasyhockey.appspot.com",
     messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
     appId: "YOUR_APP_ID"
-  };
-  
-  // Make config available globally
-  window.firebaseConfig = firebaseConfig;
+};
+
+// Make config available globally
+window.firebaseConfig = firebaseConfig;
