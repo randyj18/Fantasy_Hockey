@@ -175,6 +175,21 @@
     <h1>Fantasy Hockey Draftcentre</h1>
     <p style="margin-top: -10px; color: #666;">Stats shown are from the 2023-2024 regular season</p>
     
+    <div class="instructions">
+        <details>
+            <summary><strong>How to use the Draftcentre</strong> (click to expand)</summary>
+            <ol>
+                <li><strong>Select your team</strong> from the "View Mode" dropdown</li>
+                <li><strong>Browse available players</strong> by position using the filter buttons</li>
+                <li><strong>Search</strong> for specific players using the search box</li>
+                <li><strong>Sort</strong> any column by clicking the column header</li>
+                <li><strong>Draft a player</strong> when it's your turn by clicking the "Draft" button</li>
+                <li><strong>View your team</strong> in the "Drafted Players" section below</li>
+            </ol>
+            <p><em>Note: In team view mode, you can only draft for your own team. The commissioner can draft for any team.</em></p>
+        </details>
+    </div>
+    
     <div class="options-container">
         <div class="view-toggle">
             <label for="viewMode">View Mode:</label>
@@ -196,13 +211,6 @@
                     Show Drafted Players
                 </label>
             </div>
-        </div>
-        
-        <div class="sort-option">
-            <label>
-                <input type="checkbox" id="sortByStats" onchange="filterPlayers()">
-                Sort by Points/Wins
-            </label>
         </div>
     </div>
     
@@ -393,7 +401,6 @@
         // Filter and display players based on search, position, and draft status
         function filterPlayers() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const sortByStats = document.getElementById('sortByStats').checked;
             const showDrafted = document.getElementById('showDrafted').checked;
             
             let filteredPlayers = [...allPlayers];
@@ -438,23 +445,8 @@
                         : bValue - aValue;
                 });
             }
-            // Default sorting (if no column is selected)
-            else if (sortByStats) {
-                filteredPlayers.sort((a, b) => {
-                    // For skaters, sort by points
-                    if (a.position !== 'G' && b.position !== 'G') {
-                        return (b.points || 0) - (a.points || 0);
-                    }
-                    // For goalies, sort by wins
-                    else if (a.position === 'G' && b.position === 'G') {
-                        return (b.wins || 0) - (a.wins || 0);
-                    }
-                    // Mixed positions - skaters first
-                    else {
-                        return a.position === 'G' ? 1 : -1;
-                    }
-                });
-            } else {
+            // Default sorting - alphabetical by name
+            else {
                 // Sort alphabetically
                 filteredPlayers.sort((a, b) => a.fullName.localeCompare(b.fullName));
             }
