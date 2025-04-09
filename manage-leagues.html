@@ -423,6 +423,9 @@
     <!-- Gmail API Script -->
     <script async defer src="https://apis.google.com/js/api.js"></script>
 
+    <!-- Google Identity Services Script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
     <!-- Firebase SDK -->
     <script type="module">
         // Import the functions you need from the SDKs
@@ -1114,27 +1117,17 @@
         
         // Initialize Gmail API
         function initGmailAPI() {
-            if (window.gapi && window.gapi.client) {
-                // API already initialized
-                return;
-            }
-            
-            const script = document.createElement('script');
-            script.src = 'https://apis.google.com/js/api.js';
-            script.onload = () => {
-                gapi.load('client:auth2', () => {
-                    gapi.client.init({
-                        clientId: window.gmailConfig?.clientId || 'PLACEHOLDER',
-                        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest'],
-                        scope: 'https://www.googleapis.com/auth/gmail.send'
-                    }).then(() => {
-                        console.log('Gmail API initialized');
-                    }).catch(error => {
-                        console.error('Error initializing Gmail API', error);
-                    });
+            // Load the API client library
+            gapi.load('client', () => {
+                gapi.client.init({
+                    apiKey: window.gmailConfig?.apiKey || 'PLACEHOLDER',
+                    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest']
+                }).then(() => {
+                    console.log('Gmail API initialized');
+                }).catch(error => {
+                    console.error('Error initializing Gmail API', error);
                 });
-            };
-            document.body.appendChild(script);
+            });
         }
         
         // Send email invitations to invited managers
@@ -1185,39 +1178,59 @@
         
         // Send an email using the Gmail API
         function sendEmail(to, subject, bodyHtml) {
-            if (!window.gapi || !window.gapi.auth2 || !gapi.auth2.getAuthInstance() || !gapi.auth2.getAuthInstance().isSignedIn.get()) {
-                console.error("Gmail API not ready or user not authenticated");
+            // Check if Google Identity Services is initialized
+            if (!google || !google.accounts || !google.accounts.oauth2) {
+                console.error("Google Identity Services not initialized");
                 return;
             }
             
-            // Create the email content in base64url encoded format
-            const email = [
-                'Content-Type: text/html; charset="UTF-8"',
-                'MIME-Version: 1.0',
-                `To: ${to}`,
-                `Subject: ${subject}`,
-                '',
-                bodyHtml
-            ].join('\r\n');
-            
-            const encodedEmail = btoa(unescape(encodeURIComponent(email)))
-                .replace(/\+/g, '-')
-                .replace(/\//g, '_')
-                .replace(/=+$/, '');
-            
-            // Send the email
-            gapi.client.gmail.users.messages.send({
-                'userId': 'me',
-                'resource': {
-                    'raw': encodedEmail
+            // Create token client for OAuth
+            const tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: window.gmailConfig?.clientId || 'PLACEHOLDER',
+                scope: 'https://www.googleapis.com/auth/gmail.send',
+                callback: (tokenResponse) => {
+                    if (tokenResponse.error) {
+                        console.error('Error getting token:', tokenResponse);
+                        showNotification(`Authentication failed: ${tokenResponse.error}`);
+                        return;
+                    }
+                    
+                    // Set access token for the client
+                    gapi.client.setToken(tokenResponse);
+                    
+                    // Create the email content in base64url encoded format
+                    const email = [
+                        'Content-Type: text/html; charset="UTF-8"',
+                        'MIME-Version: 1.0',
+                        `To: ${to}`,
+                        `Subject: ${subject}`,
+                        '',
+                        bodyHtml
+                    ].join('\r\n');
+                    
+                    const encodedEmail = btoa(unescape(encodeURIComponent(email)))
+                        .replace(/\+/g, '-')
+                        .replace(/\//g, '_')
+                        .replace(/=+$/, '');
+                    
+                    // Send the email
+                    gapi.client.gmail.users.messages.send({
+                        'userId': 'me',
+                        'resource': {
+                            'raw': encodedEmail
+                        }
+                    }).then(response => {
+                        console.log('Email sent:', response);
+                        showNotification(`Invitation sent to ${to}`);
+                    }).catch(error => {
+                        console.error('Error sending email:', error);
+                        showNotification(`Failed to send invitation to ${to}`);
+                    });
                 }
-            }).then(response => {
-                console.log('Email sent:', response);
-                showNotification(`Invitation sent to ${to}`);
-            }).catch(error => {
-                console.error('Error sending email:', error);
-                showNotification(`Failed to send invitation to ${to}`);
             });
+            
+            // Request an access token
+            tokenClient.requestAccessToken();
         }
         
         // Copy to clipboard
