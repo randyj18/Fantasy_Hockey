@@ -803,14 +803,26 @@
                 return;
             }
             
-            // Add user to league teams
+            // Make sure we're writing to the correct path in the database
+            // It should be: leagues/[leagueId]/teams/[userId]
             const teamRef = ref(database, `leagues/${foundLeague.id}/teams/${currentUser.uid}`);
+            
             set(teamRef, {
                 name: currentUser.displayName,
                 uid: currentUser.uid,
                 email: currentUser.email,
                 isCommissioner: false,
                 joinedAt: new Date().toISOString()
+            }).then(() => {
+                // Add league to user's leagues
+                const userLeagueRef = ref(database, `users/${currentUser.uid}/leagues/${foundLeague.id}`);
+                return set(userLeagueRef, {
+                    leagueId: foundLeague.id,
+                    name: foundLeague.name,
+                    code: foundLeague.code,
+                    role: 'manager',
+                    joinedAt: new Date().toISOString()
+                });
             }).then(() => {
             // Add league to user's leagues
             const userLeagueRef = ref(database, `users/${currentUser.uid}/leagues/${foundLeague.id}`);
@@ -864,8 +876,9 @@
                     throw new Error("Not invited to this league");
                 }
                 
-                // Add user to league teams
+                // Make sure we're writing to the correct path
                 const teamRef = ref(database, `leagues/${leagueId}/teams/${currentUser.uid}`);
+                
                 return set(teamRef, {
                     name: currentUser.displayName,
                     uid: currentUser.uid,
@@ -1073,6 +1086,7 @@
         
         // Add chat message
         function addChatMessage(leagueId, message) {
+    // Make sure we're using the correct path for chat messages
             const chatRef = ref(database, `leagues/${leagueId}/chat`);
             const newMessageRef = push(chatRef);
             return set(newMessageRef, message);
