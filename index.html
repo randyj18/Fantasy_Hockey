@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fantasy Hockey League</title>
+    <title>Fantasy Hockey League Hub</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,143 +14,301 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            background-color: #f4f7f6; /* Light background */
         }
         header {
-            background-color: #003366;
+            background-color: #003366; /* Dark blue */
             color: white;
-            padding: 1rem;
+            padding: 1rem 0;
             text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+         header h1 {
+            margin: 0;
+            font-size: 2rem;
+         }
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            max-width: 1100px; /* Slightly wider */
+            margin: 20px auto; /* Add margin top/bottom */
             padding: 20px;
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            align-items: center; /* Center content */
+        }
+        .auth-container {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        #auth-status {
+            margin-top: 10px;
+            font-style: italic;
+            color: #555;
         }
         .hero {
             text-align: center;
             margin-bottom: 40px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px; /* Limit hero width */
         }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+        .hero h2 { /* Changed from h1 to h2 for semantics */
+            font-size: 2.2rem; /* Adjusted size */
+            color: #003366;
+            margin-bottom: 15px;
         }
         .subtitle {
-            font-size: 1.2rem;
+            font-size: 1.1rem; /* Adjusted size */
             color: #666;
             margin-bottom: 30px;
         }
         .cta-buttons {
             display: flex;
-            gap: 20px;
+            gap: 15px; /* Adjusted gap */
             justify-content: center;
             flex-wrap: wrap;
         }
-        .btn {
+        .btn, button { /* Style buttons consistently */
             display: inline-block;
-            background-color: #003366;
+            background-color: #005ea5; /* Slightly lighter blue */
             color: white;
             text-decoration: none;
-            padding: 12px 24px;
-            border-radius: 4px;
+            padding: 10px 20px; /* Adjusted padding */
+            border-radius: 5px;
             font-size: 16px;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            border: none; /* Remove default border for buttons */
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
-        .btn:hover {
-            background-color: #002244;
+        .btn:hover, button:hover {
+            background-color: #003366; /* Darker blue on hover */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
         .btn-outline {
             background-color: transparent;
-            border: 2px solid #003366;
-            color: #003366;
+            border: 2px solid #005ea5;
+            color: #005ea5;
         }
         .btn-outline:hover {
-            background-color: #003366;
+            background-color: #005ea5;
             color: white;
         }
+        button.hidden, .btn.hidden { /* Class to hide elements */
+             display: none;
+         }
         .features {
-            display: flex;
-            justify-content: space-between;
+            display: grid; /* Use grid for better alignment */
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
             gap: 30px;
             margin-top: 50px;
-            flex-wrap: wrap;
+            width: 100%;
         }
         .feature {
-            flex: 1;
-            min-width: 250px;
             text-align: center;
-            padding: 20px;
+            padding: 25px; /* Increased padding */
             border-radius: 8px;
-            background-color: #f9f9f9;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #fff; /* White background for features */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
         }
         .feature h3 {
             color: #003366;
             margin-top: 0;
+            margin-bottom: 10px; /* Space below heading */
         }
         footer {
-            background-color: #f0f0f0;
-            padding: 10px;
+            background-color: #e9ecef; /* Lighter footer */
+            padding: 15px; /* Increased padding */
             text-align: center;
             font-size: 14px;
             color: #666;
+            margin-top: 30px; /* Space above footer */
+            border-top: 1px solid #dee2e6;
         }
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .features {
-                flex-direction: column;
-            }
-            .feature {
-                margin-bottom: 20px;
-            }
-        }
+         footer a {
+             color: #005ea5;
+             text-decoration: none;
+         }
+         footer a:hover {
+             text-decoration: underline;
+         }
     </style>
-    <!-- Auto-redirect after a short delay -->
-    <script>
-        window.onload = function() {
-            setTimeout(function() {
-                window.location.href = 'manage-leagues.html';
-            }, 300); // 300ms delay
-        }
-    </script>
+    <!-- REMOVED the auto-redirect script -->
 </head>
 <body>
     <header>
-        <h1>Fantasy Hockey League</h1>
+        <h1>Fantasy Hockey League Hub</h1>
     </header>
-    
+
     <div class="container">
-        <div class="hero">
-            <h1>Welcome to the Fantasy Hockey League</h1>
-            <p class="subtitle">Create or join a league, draft your dream team, and compete with friends!</p>
-            <div class="cta-buttons">
-                <a href="manage-leagues.html" class="btn">Manage My Leagues</a>
-                <a href="manage-leagues.html?tab=create-league" class="btn btn-outline">Create New League</a>
+        <!-- Authentication Section -->
+        <div class="auth-container">
+            <button id="login-btn" class="btn">Sign in with Google</button>
+            <button id="logout-btn" class="btn btn-outline hidden">Sign Out</button>
+            <div id="auth-status">Please sign in to manage your leagues.</div>
+        </div>
+
+        <!-- Hero Section - Content changes based on login -->
+        <div class="hero" id="main-content">
+            <div id="logged-out-content">
+                <h2>Welcome to the Ultimate Fantasy Hockey Experience</h2>
+                <p class="subtitle">Create or join leagues, draft your dream team, track live scores, and compete with friends!</p>
+                <div class="cta-buttons">
+                    <!-- Login button is the primary CTA when logged out -->
+                    <button class="btn" onclick="document.getElementById('login-btn').click();">Get Started (Sign In)</button>
+                </div>
+            </div>
+            <div id="logged-in-content" class="hidden">
+                <h2>Welcome back, <span id="user-name"></span>!</h2>
+                <p class="subtitle">Ready to manage your leagues or check the latest standings?</p>
+                <div class="cta-buttons">
+                    <a href="manage-leagues.html" class="btn">Manage My Leagues</a>
+                    <a href="manage-leagues.html?tab=create" class="btn btn-outline">Create New League</a>
+                     <!-- Link to draftcentre could be added if a default league is known -->
+                    <!-- <a href="draftcentre.html" class="btn">Go to Draft</a> -->
+                </div>
             </div>
         </div>
-        
+
+        <!-- Features Section -->
         <div class="features">
             <div class="feature">
-                <h3>Create Your League</h3>
-                <p>Start a league with friends or colleagues. Set up draft dates, invite players, and customize league settings.</p>
+                <h3><i class="fas fa-plus-circle"></i> Create Your League</h3> <!-- Example using FontAwesome icons if added -->
+                <p>Start a league with friends. Customize settings, invite managers, and set your draft time.</p>
             </div>
             <div class="feature">
-                <h3>Draft Players</h3>
-                <p>Build your fantasy team by drafting real NHL players. Strategic drafting is the key to success!</p>
+                <h3><i class="fas fa-drafting-compass"></i> Live Draft Centre</h3>
+                <p>Experience an interactive draft with real-time updates, player stats, and team tracking.</p>
             </div>
             <div class="feature">
-                <h3>Track Live Scores</h3>
-                <p>Watch your players earn points in real-time during NHL games. Stay updated with current standings.</p>
+                <h3><i class="fas fa-clipboard-list"></i> Track Standings</h3>
+                <p>Follow your team's performance throughout the season with updated scores and standings.</p>
             </div>
         </div>
     </div>
-    
+
     <footer>
-        &copy; 2025 Fantasy Hockey League | <a href="https://github.com/your-username/fantasy-hockey-app" target="_blank">GitHub</a>
+        &copy; 2024 Fantasy Hockey Hub | Built with Firebase
+        <!-- Optional: Link to GitHub Repo -->
+        <!-- | <a href="https://github.com/your-username/fantasy-hockey-app" target="_blank" rel="noopener noreferrer">GitHub</a> -->
     </footer>
+
+    <!-- Firebase Configuration -->
+    <script src="firebaseConfig.js"></script>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import necessary Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        // import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"; // Only needed if storing profile or listing leagues here
+
+        // Initialize Firebase
+        const app = initializeApp(window.firebaseConfig || {
+            apiKey: "PLACEHOLDER", // Fallback if config injection fails
+            authDomain: "playofffantasyhockey.firebaseapp.com",
+            databaseURL: "https://playofffantasyhockey-default-rtdb.firebaseio.com",
+            projectId: "playofffantasyhockey",
+            storageBucket: "playofffantasyhockey.appspot.com",
+            messagingSenderId: "PLACEHOLDER",
+            appId: "PLACEHOLDER"
+         });
+        const auth = getAuth();
+        // const database = getDatabase(); // Uncomment if needed
+        const provider = new GoogleAuthProvider();
+
+        // Set session persistence
+         setPersistence(auth, browserSessionPersistence)
+             .catch((error) => {
+                 console.error("Error setting auth persistence:", error);
+             });
+
+        // DOM Elements
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const authStatus = document.getElementById('auth-status');
+        const loggedOutContent = document.getElementById('logged-out-content');
+        const loggedInContent = document.getElementById('logged-in-content');
+        const userNameSpan = document.getElementById('user-name');
+
+        // Auth State Observer
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                console.log("User signed in:", user.displayName);
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                authStatus.textContent = `Signed in as ${user.displayName}`;
+
+                loggedOutContent.classList.add('hidden');
+                loggedInContent.classList.remove('hidden');
+                userNameSpan.textContent = user.displayName;
+
+                // Optional: Store/update user profile in database
+                // storeUserProfile(user);
+
+            } else {
+                // User is signed out
+                console.log("User signed out");
+                loginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                authStatus.textContent = 'Please sign in to manage your leagues.';
+
+                loggedOutContent.classList.remove('hidden');
+                loggedInContent.classList.add('hidden');
+                userNameSpan.textContent = ''; // Clear name
+            }
+        });
+
+        // Sign in
+        loginBtn.addEventListener('click', () => {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    // onAuthStateChanged will handle UI updates
+                    console.log("Sign in successful for:", result.user.displayName);
+                }).catch((error) => {
+                    console.error("Authentication error:", error);
+                    authStatus.textContent = `Error: ${error.message}`;
+                });
+        });
+
+        // Sign out
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                // onAuthStateChanged will handle UI updates
+                console.log("Sign out successful");
+            }).catch((error) => {
+                console.error("Sign out error:", error);
+            });
+        });
+
+        /* Optional: Function to store user profile (Uncomment database import/init if using)
+        function storeUserProfile(user) {
+            const userRef = ref(database, `users/${user.uid}/profile`);
+            set(userRef, {
+                uid: user.uid,
+                displayName: user.displayName,
+                email: user.email,
+                photoURL: user.photoURL,
+                lastLogin: new Date().toISOString()
+            }).catch(error => console.error("Error storing user profile:", error));
+        }
+        */
+
+    </script>
+    <!-- Optional: Add FontAwesome for icons -->
+    <!-- <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script> -->
 </body>
 </html>
