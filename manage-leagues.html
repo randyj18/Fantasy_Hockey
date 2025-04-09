@@ -1132,22 +1132,10 @@
         
         // Send email invitations to invited managers
         function sendEmailInvitations(leagueId, leagueName, leagueCode, invitedManagers) {
-            if (!window.gapi || !window.gapi.client) {
-                console.error("Gmail API not initialized");
-                return;
-            }
+            console.log("Sending email invitations to:", invitedManagers);
             
-            // Check if user is authenticated for Gmail API
-            const auth2Instance = gapi.auth2.getAuthInstance();
-            if (!auth2Instance || !auth2Instance.isSignedIn.get()) {
-                // Will need to authenticate specifically for Gmail
-                auth2Instance.signIn().then(() => {
-                    // Retry after authentication
-                    sendEmailInvitations(leagueId, leagueName, leagueCode, invitedManagers);
-                }).catch(error => {
-                    console.error("Error authenticating for Gmail API:", error);
-                    showNotification("Failed to authenticate for sending invitations");
-                });
+            if (invitedManagers.length === 0) {
+                console.log("No managers to invite");
                 return;
             }
             
@@ -1175,26 +1163,32 @@
                 sendEmail(email, `Fantasy Hockey League Invitation: ${leagueName}`, emailContent);
             });
         }
-        
-        // Send an email using the Gmail API
+
+        // Send an email using the Gmail API with Google Identity Services
         function sendEmail(to, subject, bodyHtml) {
+            console.log("Starting email send process to:", to);
+            
             // Check if Google Identity Services is initialized
             if (!google || !google.accounts || !google.accounts.oauth2) {
                 console.error("Google Identity Services not initialized");
                 return;
             }
             
+            console.log("Creating token client...");
             // Create token client for OAuth
             const tokenClient = google.accounts.oauth2.initTokenClient({
                 client_id: window.gmailConfig?.clientId || 'PLACEHOLDER',
                 scope: 'https://www.googleapis.com/auth/gmail.send',
                 callback: (tokenResponse) => {
+                    console.log("Token response received:", tokenResponse);
+                    
                     if (tokenResponse.error) {
                         console.error('Error getting token:', tokenResponse);
                         showNotification(`Authentication failed: ${tokenResponse.error}`);
                         return;
                     }
                     
+                    console.log("Setting access token...");
                     // Set access token for the client
                     gapi.client.setToken(tokenResponse);
                     
@@ -1213,6 +1207,7 @@
                         .replace(/\//g, '_')
                         .replace(/=+$/, '');
                     
+                    console.log("Sending email request...");
                     // Send the email
                     gapi.client.gmail.users.messages.send({
                         'userId': 'me',
@@ -1220,7 +1215,7 @@
                             'raw': encodedEmail
                         }
                     }).then(response => {
-                        console.log('Email sent:', response);
+                        console.log('Email sent successfully:', response);
                         showNotification(`Invitation sent to ${to}`);
                     }).catch(error => {
                         console.error('Error sending email:', error);
@@ -1229,6 +1224,7 @@
                 }
             });
             
+            console.log("Requesting access token...");
             // Request an access token
             tokenClient.requestAccessToken();
         }
