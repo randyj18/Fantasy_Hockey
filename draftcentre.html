@@ -1358,27 +1358,13 @@
         }
 
         // Add chat message
-        function addChatMessage(messageOrLeagueId, messageParam) {
-            // Handle both function signature styles for compatibility
-            let targetLeagueId = leagueId;
-            let message;
+        function addChatMessage(message) {
+            if (!leagueId) return;
             
-            if (messageParam) {
-                // Called with leagueId, message format (from manage-leagues.html)
-                targetLeagueId = messageOrLeagueId;
-                message = messageParam;
-            } else {
-                // Called with just message format (from this file)
-                message = messageOrLeagueId;
-            }
-            
-            if (!targetLeagueId) return Promise.reject(new Error("No league ID available"));
-            
-            const chatRef = ref(database, `leagues/${targetLeagueId}/chat`);
+            const chatRef = ref(database, `leagues/${leagueId}/chat`);
             const newMessageRef = push(chatRef);
-            return set(newMessageRef, message).catch(error => {
+            set(newMessageRef, message).catch(error => {
                 console.error("Error adding chat message:", error);
-                throw error;
             });
         }
 
