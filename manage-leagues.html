@@ -821,38 +821,22 @@
                 isCommissioner: false,
                 joinedAt: new Date().toISOString()
             }).then(() => {
-                // Add league to user's leagues
-                const userLeagueRef = ref(database, `users/${currentUser.uid}/leagues/${foundLeague.id}`);
-                return set(userLeagueRef, {
-                    leagueId: foundLeague.id,
-                    name: foundLeague.name,
-                    code: foundLeague.code,
-                    role: 'manager',
-                    joinedAt: new Date().toISOString()
-                });
-            }).then(() => {
-            // Add league to user's leagues
-            const userLeagueRef = ref(database, `users/${currentUser.uid}/leagues/${foundLeague.id}`);
-                return set(userLeagueRef, {
-                    leagueId: foundLeague.id,
-                    name: foundLeague.name,
-                    code: foundLeague.code,
-                    role: 'manager',
-                    joinedAt: new Date().toISOString()
-                });
-            }).then(() => {
                 // Remove from invited managers if they were invited
+                let cleanupPromise = Promise.resolve(); // Start with a resolved promise
                 if (isInvited) {
-                    removeInvitation(foundLeague.id, currentUser.email);
+                    cleanupPromise = removeInvitation(foundLeague.id, currentUser.email);
                 }
                 
-                // Add system message to chat
-                addChatMessage(foundLeague.id, {
-                    type: 'system',
-                    text: `${currentUser.displayName} joined the league`,
-                    timestamp: new Date().toISOString()
+                // Chain the chat message after the potential invitation removal
+                return cleanupPromise.then(() => {
+                    return addChatMessage(foundLeague.id, {
+                        type: 'system',
+                        text: `${currentUser.displayName} joined the league`,
+                        timestamp: new Date().toISOString()
+                    });
                 });
-                
+            }).then(() => {
+                // All database operations successful, now show notification and redirect
                 showNotification("You've joined the league successfully!");
                 window.location.href = `draftcentre.html?league=${foundLeague.id}`;
             }).catch(error => {
