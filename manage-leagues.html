@@ -679,14 +679,15 @@
                         </div>
                     `;
                     
-                    document.getElementById('create-league-form').reset();
-                    invitedManagers = [];
-                    document.getElementById('managers-list').innerHTML = '';
-                    
-                    // Send email invitations
+                    // Send email invitations before resetting the invitedManagers array
                     if (invitedManagers.length > 0) {
                         sendEmailInvitations(newLeagueRef.key, leagueName, leagueCode, invitedManagers);
                     }
+                    
+                    // Now reset the form and invitedManagers list
+                    document.getElementById('create-league-form').reset();
+                    invitedManagers = [];
+                    document.getElementById('managers-list').innerHTML = '';
                     
                     // Refresh user leagues
                     loadUserLeagues();
