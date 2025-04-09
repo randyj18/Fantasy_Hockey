@@ -662,7 +662,7 @@
                 })
                 .then(() => {
                     // Show success message with sharing options
-                    const joinLink = `${window.location.origin}/manage-leagues.html?action=join&league=${newLeagueRef.key}&code=${leagueCode}`;
+                    const joinLink = `${window.location.origin}/Fantasy_Hockey/manage-leagues.html?action=join&league=${newLeagueRef.key}&code=${leagueCode}`;
                     
                     document.getElementById('create-status').innerHTML = `
                         <div class="success">
@@ -1141,7 +1141,7 @@
                 return;
             }
             
-            const joinLink = `${window.location.origin}/manage-leagues.html?action=join&league=${leagueId}&code=${leagueCode}`;
+            const joinLink = `${window.location.origin}/Fantasy_Hockey/manage-leagues.html?action=join&league=${leagueId}&code=${leagueCode}`;
             
             // Send an email to each invited manager
             invitedManagers.forEach(manager => {
