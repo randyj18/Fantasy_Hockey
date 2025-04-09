@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmail API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        #log {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gmail API Test</h1>
+    
+    <div>
+        <label for="recipient">Send to:</label>
+        <input type="email" id="recipient" placeholder="recipient@example.com">
+    </div>
+    
+    <button id="authorize-button">1. Authorize</button>
+    <button id="send-button" disabled>2. Send Test Email</button>
+    
+    <div id="status" class="status"></div>
+    
+    <div id="log"></div>
+    
+    <!-- Gmail API Configuration -->
+    <script src="gmailConfig.js"></script>
+    
+    <!-- Gmail API Script -->
+    <script async defer src="https://apis.google.com/js/api.js"></script>
+    
+    <!-- Google Identity Services Script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+    <script>
+        // Log function to display messages in the log area
+        function log(message, isError = false) {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.style.color = isError ? 'red' : 'black';
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        // Show status message
+        function showStatus(message, isError = false) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = isError ? 'status error' : 'status success';
+        }
+        
+        // Initialize Gmail API
+        function initGmailAPI() {
+            log("Loading Gmail API client...");
+            gapi.load('client', () => {
+                log("Client loaded, initializing...");
+                
+                gapi.client.init({
+                    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest']
+                }).then(() => {
+                    log("Gmail API client initialized successfully");
+                    document.getElementById('authorize-button').disabled = false;
+                }).catch(error => {
+                    log("Error initializing Gmail API client: " + error.message, true);
+                    showStatus("Error initializing Gmail API: " + error.message, true);
+                });
+            });
+        }
+        
+        // Authorize with Google
+        function authorize() {
+            log("Starting authorization...");
+            
+            if (!window.google || !google.accounts || !google.accounts.oauth2) {
+                log("Google Identity Services not initialized", true);
+                showStatus("Google Identity Services not initialized", true);
+                return;
+            }
+            
+            const tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: window.gmailConfig?.clientId || 'YOUR_CLIENT_ID',
+                scope: 'https://www.googleapis.com/auth/gmail.send',
+                callback: (tokenResponse) => {
+                    if (tokenResponse.error) {
+                        log("Authorization error: " + tokenResponse.error, true);
+                        showStatus("Authorization failed: " + tokenResponse.error, true);
+                        return;
+                    }
+                    
+                    log("Authorization successful! Token received.");
+                    showStatus("Authorization successful! You can now send a test email.");
+                    
+                    // Store the token
+                    gapi.client.setToken(tokenResponse);
+                    
+                    // Enable the send button
+                    document.getElementById('send-button').disabled = false;
+                }
+            });
+            
+            // Request an access token
+            tokenClient.requestAccessToken();
+        }
+        
+        // Send a test email
+        function sendTestEmail() {
+            const recipient = document.getElementById('recipient').value.trim();
+            
+            if (!recipient) {
+                showStatus("Please enter a recipient email address", true);
+                return;
+            }
+            
+            log("Preparing to send email to: " + recipient);
+            
+            // Create the email content
+            const subject = "Gmail API Test";
+            const bodyHtml = `
+                <html>
+                    <body>
+                        <h2>Hello from Gmail API Test!</h2>
+                        <p>This is a test email sent using the Gmail API.</p>
+                        <p>If you're seeing this, the API is working correctly!</p>
+                        <p>Time: ${new Date().toLocaleString()}</p>
+                    </body>
+                </html>
+            `;
+            
+            // Encode the email as required by Gmail API
+            const email = [
+                'Content-Type: text/html; charset="UTF-8"',
+                'MIME-Version: 1.0',
+                `To: ${recipient}`,
+                `Subject: ${subject}`,
+                '',
+                bodyHtml
+            ].join('\r\n');
+            
+            const encodedEmail = btoa(unescape(encodeURIComponent(email)))
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/, '');
+            
+            log("Sending email request...");
+            
+            // Send the email
+            gapi.client.gmail.users.messages.send({
+                'userId': 'me',
+                'resource': {
+                    'raw': encodedEmail
+                }
+            }).then(response => {
+                log("Email sent successfully! Response: " + JSON.stringify(response.result));
+                showStatus("Email sent successfully!");
+            }).catch(error => {
+                log("Error sending email: " + error.message, true);
+                showStatus("Error sending email: " + error.message, true);
+            });
+        }
+        
+        // Set up event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize the Gmail API
+            initGmailAPI();
+            
+            // Set up button handlers
+            document.getElementById('authorize-button').addEventListener('click', authorize);
+            document.getElementById('send-button').addEventListener('click', sendTestEmail);
+            
+            log("Gmail API Test page loaded");
+        });
+    </script>
+</body>
+</html>
