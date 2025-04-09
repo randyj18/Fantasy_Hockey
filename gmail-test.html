@@ -58,7 +58,7 @@
         <input type="email" id="recipient" placeholder="recipient@example.com">
     </div>
     
-    <button id="authorize-button">1. Authorize</button>
+    <button id="authorize-button" disabled>1. Authorize</button>
     <button id="send-button" disabled>2. Send Test Email</button>
     
     <div id="status" class="status"></div>
@@ -67,12 +67,6 @@
     
     <!-- Gmail API Configuration -->
     <script src="gmailConfig.js"></script>
-    
-    <!-- Gmail API Script -->
-    <script async defer src="https://apis.google.com/js/api.js"></script>
-    
-    <!-- Google Identity Services Script -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     
     <script>
         // Log function to display messages in the log area
@@ -202,17 +196,15 @@
             });
         }
         
-        // Set up event listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize the Gmail API
-            initGmailAPI();
-            
-            // Set up button handlers
-            document.getElementById('authorize-button').addEventListener('click', authorize);
-            document.getElementById('send-button').addEventListener('click', sendTestEmail);
-            
-            log("Gmail API Test page loaded");
-        });
+        // Set up event listeners for buttons
+        document.getElementById('authorize-button').addEventListener('click', authorize);
+        document.getElementById('send-button').addEventListener('click', sendTestEmail);
+        
+        log("Gmail API Test page loaded");
     </script>
+    
+    <!-- These scripts need to be at the end of the body to ensure the page loads first -->
+    <script src="https://apis.google.com/js/api.js" onload="initGmailAPI()"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </body>
 </html>
