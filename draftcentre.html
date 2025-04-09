@@ -1457,7 +1457,7 @@
                     Object.values(newMembers).forEach(member => {
                         const systemMessage = {
                             type: 'system',
-                            text: `${member.name} joined the league`,
+                            text: `${member.name} joined the draft`,
                             timestamp: new Date().toISOString()
                         };
                         
@@ -1611,7 +1611,7 @@
                     // Add system message to chat
                     addChatMessage({
                         type: 'system',
-                        text: `${currentUser.displayName} joined the league`,
+                        text: `${currentUser.displayName} joined the draft`,
                         timestamp: new Date().toISOString()
                     });
                     
