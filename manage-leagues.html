@@ -341,7 +341,7 @@
                     </div>
                     
                     <div class="league-action">
-                        <button id="join-league-btn" onclick="joinFoundLeague()">Join League</button>
+                        <button id="join-league-btn" onclick="joinFoundLeague(this)">Join League</button>
                     </div>
                 </div>
             </div>
@@ -543,6 +543,7 @@
                         const leagueInfoEl = document.getElementById('found-league-info');
                         const leagueDetailsEl = document.getElementById('league-details');
                         const passwordGroupEl = document.getElementById('join-password-required');
+                        const joinButton = document.getElementById('join-league-btn');
                         
                         leagueNameEl.textContent = league.name;
                         leagueInfoEl.textContent = `Teams: ${Object.keys(league.teams || {}).length}/${league.maxTeams}`;
@@ -559,6 +560,14 @@
                         } else {
                             passwordGroupEl.classList.remove('hidden');
                         }
+                        
+                        // Store data directly on the button
+                        joinButton.dataset.leagueId = league.id;
+                        joinButton.dataset.leagueName = league.name;
+                        joinButton.dataset.leagueCode = league.code;
+                        joinButton.dataset.passwordRequired = !isInvited;
+                        joinButton.dataset.passwordValue = league.password;
+                        joinButton.dataset.isInvited = isInvited;
                     } else {
                         showNotification("League not found");
                     }
@@ -763,6 +772,7 @@
                 const leagueNameEl = document.getElementById('found-league-name');
                 const leagueInfoEl = document.getElementById('found-league-info');
                 const passwordGroupEl = document.getElementById('join-password-required');
+                const joinButton = document.getElementById('join-league-btn');
                 
                 leagueNameEl.textContent = foundLeague.name;
                 leagueInfoEl.innerHTML = `
@@ -783,6 +793,13 @@
                 
                 leagueDetailsEl.classList.remove('hidden');
                 
+                // Store data directly on the button
+                joinButton.dataset.leagueId = foundLeagueId;
+                joinButton.dataset.leagueName = foundLeague.name;
+                joinButton.dataset.leagueCode = foundLeague.code;
+                joinButton.dataset.passwordRequired = !isInvited;
+                joinButton.dataset.passwordValue = foundLeague.password;
+                joinButton.dataset.isInvited = isInvited;
             }).catch(error => {
                 console.error("Error finding league:", error);
                 document.getElementById('join-status').innerHTML = `<div class="error">${error.message}</div>`;
@@ -790,35 +807,32 @@
         };
         
         // Join the found league
-        window.joinFoundLeague = function() {
-            if (!foundLeague || !foundLeague.id) {
-                showNotification("No league selected or league ID is missing");
+        window.joinFoundLeague = function(buttonElement) {
+            // Retrieve data from the button's dataset
+            const leagueToJoinId = buttonElement.dataset.leagueId;
+            const leagueNameToJoin = buttonElement.dataset.leagueName;
+            const leagueCodeToJoin = buttonElement.dataset.leagueCode;
+            const passwordRequired = buttonElement.dataset.passwordRequired === 'true';
+            const leaguePassword = buttonElement.dataset.passwordValue;
+            const isInvited = buttonElement.dataset.isInvited === 'true';
+
+            if (!leagueToJoinId) {
+                showNotification("League ID not found on button");
                 return;
             }
-
-            // Capture leagueId locally to avoid issues with global state
-            const leagueToJoinId = foundLeague.id;
-            const leagueNameToJoin = foundLeague.name;
-            const leagueCodeToJoin = foundLeague.code;
-            const leaguePassword = foundLeague.password;
-            const leagueInvitedManagers = foundLeague.invitedManagers || [];
-
+            
             // Check if password is required
-            const isInvited = leagueInvitedManagers.some(m => 
-                m.email === currentUser.email
-            );
-            
-            const passwordEl = document.getElementById('join-password');
-            const enteredPassword = passwordEl.value.trim();
-            
-            // Verify password if needed
-            if (!isInvited && leaguePassword && enteredPassword !== leaguePassword) {
-                document.getElementById('join-status').innerHTML = `<div class="error">Incorrect password</div>`;
-                return;
+            if (passwordRequired && !isInvited && leaguePassword) {
+                const passwordEl = document.getElementById('join-password');
+                const enteredPassword = passwordEl.value.trim();
+                
+                if (enteredPassword !== leaguePassword) {
+                    document.getElementById('join-status').innerHTML = `<div class="error">Incorrect password</div>`;
+                    return;
+                }
             }
             
             // Make sure we're writing to the correct path in the database
-            // It should be: leagues/[leagueId]/teams/[userId]
             const teamRef = ref(database, `leagues/${leagueToJoinId}/teams/${currentUser.uid}`);
             
             set(teamRef, {
@@ -839,7 +853,7 @@
                 });
             }).then(() => {
                 // Remove from invited managers if they were invited
-                let cleanupPromise = Promise.resolve(); // Start with a resolved promise
+                let cleanupPromise = Promise.resolve();
                 if (isInvited) {
                     cleanupPromise = removeInvitation(leagueToJoinId, currentUser.email);
                 }
