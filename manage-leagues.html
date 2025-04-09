@@ -417,15 +417,6 @@
     <!-- Before initializing Firebase, add this script tag -->
     <script src="firebaseConfig.js"></script>
     
-    <!-- Gmail API Configuration -->
-    <script src="gmailConfig.js"></script>
-
-    <!-- Gmail API Script -->
-    <script async defer src="https://apis.google.com/js/api.js"></script>
-
-    <!-- Google Identity Services Script -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
     <!-- Firebase SDK -->
     <script type="module">
         // Import the functions you need from the SDKs
@@ -1117,13 +1108,23 @@
         
         // Initialize Gmail API
         function initGmailAPI() {
+            console.log("Initializing Gmail API...");
+            
+            // Check if the gapi library exists
+            if (!window.gapi) {
+                console.error("Google API client not loaded");
+                return;
+            }
+            
             // Load the API client library
             gapi.load('client', () => {
+                console.log("GAPI client loaded, initializing...");
+                
                 gapi.client.init({
                     apiKey: window.gmailConfig?.apiKey || 'PLACEHOLDER',
                     discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest']
                 }).then(() => {
-                    console.log('Gmail API initialized');
+                    console.log('Gmail API initialized successfully');
                 }).catch(error => {
                     console.error('Error initializing Gmail API', error);
                 });
@@ -1134,12 +1135,12 @@
         function sendEmailInvitations(leagueId, leagueName, leagueCode, invitedManagers) {
             console.log("Sending email invitations to:", invitedManagers);
             
-            if (invitedManagers.length === 0) {
+            if (!invitedManagers || invitedManagers.length === 0) {
                 console.log("No managers to invite");
                 return;
             }
             
-            const joinLink = `${window.location.origin}/Fantasy_Hockey/manage-leagues.html?action=join&league=${leagueId}&code=${leagueCode}`;
+            const joinLink = `${window.location.origin}/manage-leagues.html?action=join&league=${leagueId}&code=${leagueCode}`;
             
             // Send an email to each invited manager
             invitedManagers.forEach(manager => {
@@ -1159,7 +1160,7 @@
                     </html>
                 `;
                 
-                // Use Gmail API to send the email
+                // Use improved function to send email
                 sendEmail(email, `Fantasy Hockey League Invitation: ${leagueName}`, emailContent);
             });
         }
@@ -1168,30 +1169,73 @@
         function sendEmail(to, subject, bodyHtml) {
             console.log("Starting email send process to:", to);
             
-            // Check if Google Identity Services is initialized
-            if (!google || !google.accounts || !google.accounts.oauth2) {
-                console.error("Google Identity Services not initialized");
+            // Show a notification to the user
+            showNotification("Preparing to send invitation to " + to);
+            
+            // Check if the necessary libraries are loaded
+            if (!window.gapi) {
+                console.error("Google API client not loaded");
+                showNotification("Error: Google API client not loaded");
                 return;
             }
             
-            console.log("Creating token client...");
-            // Create token client for OAuth
-            const tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: window.gmailConfig?.clientId || 'PLACEHOLDER',
-                scope: 'https://www.googleapis.com/auth/gmail.send',
-                callback: (tokenResponse) => {
-                    console.log("Token response received:", tokenResponse);
-                    
-                    if (tokenResponse.error) {
-                        console.error('Error getting token:', tokenResponse);
-                        showNotification(`Authentication failed: ${tokenResponse.error}`);
-                        return;
+            if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
+                console.error("Google Identity Services not initialized");
+                showNotification("Error: Google Identity Services not initialized");
+                return;
+            }
+            
+            // Check if Gmail API is initialized
+            if (!gapi.client.gmail) {
+                console.log("Gmail API not initialized, initializing now...");
+                
+                gapi.client.init({
+                    apiKey: window.gmailConfig?.apiKey || 'PLACEHOLDER',
+                    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest']
+                }).then(() => {
+                    console.log("Gmail API initialized, continuing with authentication");
+                    proceedWithAuthentication();
+                }).catch(error => {
+                    console.error("Error initializing Gmail API:", error);
+                    showNotification("Error initializing Gmail API: " + error.message);
+                });
+            } else {
+                proceedWithAuthentication();
+            }
+            
+            function proceedWithAuthentication() {
+                console.log("Creating token client...");
+                
+                // Create token client for OAuth with explicit error handling
+                const tokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: window.gmailConfig?.clientId || 'PLACEHOLDER',
+                    scope: 'https://www.googleapis.com/auth/gmail.send',
+                    callback: (tokenResponse) => {
+                        if (tokenResponse.error) {
+                            console.error('Error getting token:', tokenResponse);
+                            showNotification(`Authentication failed: ${tokenResponse.error}`);
+                            return;
+                        }
+                        
+                        console.log("Token received successfully");
+                        
+                        // Set access token for the client
+                        gapi.client.setToken(tokenResponse);
+                        
+                        // Now send the actual email
+                        sendEmailWithToken();
                     }
-                    
-                    console.log("Setting access token...");
-                    // Set access token for the client
-                    gapi.client.setToken(tokenResponse);
-                    
+                });
+                
+                // Request an access token
+                console.log("Requesting access token...");
+                tokenClient.requestAccessToken();
+            }
+            
+            function sendEmailWithToken() {
+                console.log("Preparing email content...");
+                
+                try {
                     // Create the email content in base64url encoded format
                     const email = [
                         'Content-Type: text/html; charset="UTF-8"',
@@ -1208,6 +1252,8 @@
                         .replace(/=+$/, '');
                     
                     console.log("Sending email request...");
+                    showNotification("Sending invitation...");
+                    
                     // Send the email
                     gapi.client.gmail.users.messages.send({
                         'userId': 'me',
@@ -1219,14 +1265,13 @@
                         showNotification(`Invitation sent to ${to}`);
                     }).catch(error => {
                         console.error('Error sending email:', error);
-                        showNotification(`Failed to send invitation to ${to}`);
+                        showNotification(`Failed to send invitation to ${to}: ${error.message}`);
                     });
+                } catch (error) {
+                    console.error("Error encoding email:", error);
+                    showNotification("Error preparing email: " + error.message);
                 }
-            });
-            
-            console.log("Requesting access token...");
-            // Request an access token
-            tokenClient.requestAccessToken();
+            }
         }
         
         // Copy to clipboard
@@ -1374,5 +1419,9 @@
         window.removeManager = removeManager;
         window.openTab = openTab;
     </script>
+
+    <script src="gmailConfig.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </body>
 </html>
