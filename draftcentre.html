@@ -796,7 +796,7 @@
                 if (leagueId) {
                     loadLeague(leagueId);
                     // Issue 1: Set the link for the Back to League button
-                    backToLeagueLink.href = `league.html?league=${leagueId}`;
+                    backToLeagueLink.href = `league.html?id=${leagueId}`;
                     backToLeagueLink.classList.remove('hidden');
                 } else {
                     loadUserLeagues();
@@ -1465,25 +1465,26 @@
                 const shutouts = player.shutouts ?? '-';
 
                 row.innerHTML = `
-        <td>${fullName}</td>
-        <td>${position}</td>
-        <td>${team}</td>
-        <td>${games}</td>
-        <td class="skater-stat">${position !== 'G' ? goals : '-'}</td>
-        <td class="skater-stat">${position !== 'G' ? assists : '-'}</td>
-        <td class="skater-stat">${position !== 'G' ? points : '-'}</td>
-        <td class="goalie-stat">${position === 'G' ? wins : '-'}</td>
-        <td class="goalie-stat">${position === 'G' ? shutouts : '-'}</td>
-        <td>
-            <button class="draft-button" data-player-id="${playerIdStr}"
-                    data-player-name="${fullName.replace(/"/g, '&quot;')}" <!-- Escape quotes for attribute -->
-                    data-player-pos="${position}"
-                    data-player-team="${team}"
-                    ${draftButtonEnabled ? '' : 'disabled'}>
-                ${isDrafted ? 'Drafted' : 'Draft'}
-            </button>
-        </td>
-    `;
+                    <td>${fullName}</td>
+                    <td>${position}</td>
+                    <td>${team}</td>
+                    <td>${games || '-'}</td>
+                    <td class="skater-stat">${position !== 'G' ? (goals || '-') : '-'}</td>
+                    <td class="skater-stat">${position !== 'G' ? (assists || '-') : '-'}</td>
+                    <td class="skater-stat">${position !== 'G' ? (points || '-') : '-'}</td>
+                    <td class="goalie-stat">${position === 'G' ? (wins || '-') : '-'}</td>
+                    <td class="goalie-stat">${position === 'G' ? (shutouts || '-') : '-'}</td>
+                    <td>
+                        <button class="draft-button" data-player-id="${playerIdStr}"
+                                data-player-name="${fullName.replace(/"/g, '&quot;')}" <!-- Escape quotes for attribute -->
+                                data-player-pos="${position}"
+                                data-player-team="${team}"
+                                ${draftButtonEnabled ? '' : 'disabled'}>
+                            ${isDrafted ? 'Drafted' : 'Draft'}
+                        </button>
+                    </td>
+                `;
+
 
                 // Hide stats columns based on position (CSS could also handle this)
                 const skaterStats = row.querySelectorAll('.skater-stat');
@@ -1767,17 +1768,23 @@
                     const playerKey = player.firebaseKey || ''; // Ensure key exists
 
                     row.innerHTML = `
-                <td>${playerName}</td>
-                <td>${position}</td>
-                <td>${nhlTeam}</td>
-                <td>${fantasyTeam}</td>
-                <td>
-                    <button onclick="removeDraftedPlayer('${playerKey}')" ${!canRemove || !playerKey ? 'disabled' : ''}
-                            title="${canRemove ? 'Remove this player from the draft' : 'Only commissioner can remove'}">
-                        Remove
-                    </button>
-                </td>
-            `;
+                    <td>${player.fullName}</td>
+                    <td>${player.position}</td>
+                    <td>${player.teamAbbreviation}</td>
+                    <td>${player.gamesPlayed || '-'}</td>
+                    <td class="skater-stat">${player.position !== 'G' ? (player.goals || '-') : '-'}</td>
+                    <td class="skater-stat">${player.position !== 'G' ? (player.assists || '-') : '-'}</td>
+                    <td class="skater-stat">${player.position !== 'G' ? (player.points || '-') : '-'}</td>
+                    <td class="goalie-stat">${player.position === 'G' ? (player.wins || '-') : '-'}</td>
+                    <td class="goalie-stat">${player.position === 'G' ? (player.shutouts || '-') : '-'}</td>
+                    <td>
+                        <button onclick="draftPlayer('${player.id}', '${player.fullName}', '${player.position}', '${player.teamAbbreviation}')"
+                            ${isDrafted || !canDraft ? 'disabled' : ''}>
+                            Draft
+                        </button>
+                    </td>
+                `;
+
                     fragment.appendChild(row);
                 });
             }
