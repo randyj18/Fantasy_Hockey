@@ -1564,8 +1564,8 @@ row.innerHTML = `
             } else {
                 // Determine the key of the last drafted player (highest pick number, or last in timestamp-sorted array)
                 // The global `draftedPlayers` is already sorted by pickNumber (via timestamp).
-                 const lastDraftedPlayer = draftedPlayers.length > 0 ? draftedPlayers[draftedPlayers.length - 1] : null;
-                 const lastDraftedPlayerKey = lastDraftedPlayer?.firebaseKey;
+                const lastDraftedPlayer = draftedPlayers.length > 0 ? draftedPlayers[draftedPlayers.length - 1] : null;
+                const lastDraftedPlayerKey = lastDraftedPlayer?.firebaseKey;
 
                 filtered.forEach((player) => { // 'filtered' here depends on the team dropdown selection
                     const row = document.createElement('tr');
@@ -1575,9 +1575,6 @@ row.innerHTML = `
                     // Button is shown only if commissioner AND this player is the overall last pick
                     const canUndo = isCommissioner && isOverallLastPick;
 
-                    // Sanitize name for the function call
-                    const safePlayerName = (player.Player || 'N/A').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-
                     row.innerHTML = `
                         <td style="width: 5%; text-align: center;">${player.draftNumber || '-'}</td>
                         <td>${player.Player || 'N/A'}</td>
@@ -1585,15 +1582,49 @@ row.innerHTML = `
                         <td class="hide-mobile">${player["NHL Team"] || 'N/A'}</td>
                         <td>${player.Team || 'N/A'}</td>
                         <td>
-                             ${canUndo ? `<button class="undo-button btn danger" onclick="undoLastDraftPick('${player.firebaseKey}', '${safePlayerName}', ${player.pickNumber || 0}, '${player.teamUid || ''}', '${player.Team || ''}')">Undo Pick</button>` : ''}
+                            ${canUndo ? `<button class="undo-button btn danger" data-key="${player.firebaseKey}">Undo Pick</button>` : ''}
                         </td>
                     `;
                     fragment.appendChild(row);
                 });
             }
             draftedTableBody.appendChild(fragment);
+            
+            // Add event listeners to undo buttons AFTER they're in the DOM
+            draftedTableBody.querySelectorAll('.undo-button').forEach(button => {
+                button.removeEventListener('click', handleUndoClick); // Remove any existing handlers
+                button.addEventListener('click', handleUndoClick);
+            });
         }
-
+        
+        function handleUndoClick(event) {
+            const button = event.target;
+            const key = button.dataset.key;
+            const row = button.closest('tr');
+            if (!key || !row) return;
+            
+            // Get data from the row cells to use in the undo function
+            const pickNumber = parseInt(row.cells[0].textContent) || 0;
+            const playerName = row.cells[1].textContent;
+            
+            // Find the full player data from our global array
+            const playerData = draftedPlayers.find(p => p.firebaseKey === key);
+            if (!playerData) {
+                console.error("Could not find player data for key:", key);
+                showNotification("Error: Could not find player data");
+                return;
+            }
+            
+            // Call the undo function with the complete data
+            undoLastDraftPick(
+                key, 
+                playerName, 
+                pickNumber, 
+                playerData.round || 1, 
+                playerData.teamUid, 
+                playerData.Team
+            );
+        }
 
         // --- Draft Control (Start, Advance) ---
         function startDraft() {
@@ -1968,6 +1999,7 @@ row.innerHTML = `
         window.draftPlayer = draftPlayer;
         window.filterPlayers = filterPlayers;
         window.filterDraftedPlayers = filterDraftedPlayers;
+        window.handleUndoClick = handleUndoClick;
 
         // Undo the last draft pick (Commissioner only)
         function undoLastDraftPick(firebaseKey, playerNameForMessage, pickNumberToUndo, roundToRestore, teamUidToRestore, teamNameToRestore) {
@@ -1975,12 +2007,17 @@ row.innerHTML = `
                 showNotification("Only the commissioner can undo draft picks.");
                 return;
             }
-            if (!firebaseKey || pickNumberToUndo <= 0 || roundToRestore <= 0 || !teamUidToRestore) {
-                console.error("Cannot undo pick: Missing required data.", { firebaseKey, pickNumberToUndo, roundToRestore, teamUidToRestore });
+            
+            if (!firebaseKey) {
+                console.error("Cannot undo pick: Missing Firebase key");
                 showNotification("Error: Cannot undo pick due to missing data.");
                 return;
             }
-
+            
+            // Convert parameters to ensure correct types
+            pickNumberToUndo = parseInt(pickNumberToUndo) || 0;
+            roundToRestore = parseInt(roundToRestore) || 1;
+            
             // Verify it's actually the last pick that was made overall
             const actualLastPickNumber = draftedPlayers.length; // Since pick numbers start at 1
             if (pickNumberToUndo !== actualLastPickNumber) {
@@ -1991,6 +2028,7 @@ row.innerHTML = `
 
             const name = playerNameForMessage || 'last player';
             const teamName = teamNameToRestore || 'the previous team';
+            
             if (!confirm(`Are you sure you want to UNDO the last pick (#${pickNumberToUndo} - ${name} by ${teamName})? This will revert the draft to Pick #${pickNumberToUndo} (Round ${roundToRestore}, ${teamName}'s turn).`)) {
                 return;
             }
@@ -2020,6 +2058,7 @@ row.innerHTML = `
                 showNotification(`Error undoing pick: ${error.message}`, 7000);
             });
         }
+
 
     </script>
 </body>
