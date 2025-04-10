@@ -1235,31 +1235,42 @@ console.log(`${leaverName} detected leaving.`);
 
 // --- UI Updates ---
 function populateTeamFilter() {
-const currentFilterValue = draftedTeamFilter.value;
-draftedTeamFilter.innerHTML = '<option value="all">All Teams</option>';
+    const currentFilterValue = draftedTeamFilter.value; // This might now be a UID or 'all'
+    draftedTeamFilter.innerHTML = '<option value="all">All Teams</option>';
 
-if (currentTeams && Object.keys(currentTeams).length > 0) {
-const sortedTeams = Object.values(currentTeams).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-sortedTeams.forEach(team => {
-// Use team NAME as value for filtering, as stored in draftedPlayer object
-const option = document.createElement('option');
-option.value = team.name || ''; // Ensure value is string
-option.textContent = team.name || `Unnamed Team`;
-if(option.value) { // Only add if name is not empty
-draftedTeamFilter.appendChild(option);
-}
-});
-}
+    if (currentTeams && Object.keys(currentTeams).length > 0) {
+        // Sort teams by name for display
+        const sortedTeamEntries = Object.entries(currentTeams)
+                                       .sort(([, teamA], [, teamB]) => (teamA.name || '').localeCompare(teamB.name || ''));
 
-const optionExists = [...draftedTeamFilter.options].some(opt => opt.value === currentFilterValue);
-if (optionExists) {
-draftedTeamFilter.value = currentFilterValue;
-} else if (currentUser && currentTeams[currentUser.uid]?.name) {
-draftedTeamFilter.value = currentTeams[currentUser.uid].name; // Default to user's team
-} else {
-draftedTeamFilter.value = 'all'; // Default to all
-}
-filterDraftedPlayers(); // Refresh drafted players list
+        sortedTeamEntries.forEach(([uid, team]) => {
+            // Use UID as value, Name as text content
+            const option = document.createElement('option');
+            option.value = uid; // Use the unique team UID as the value
+            option.textContent = team.name || `Unnamed Team (${uid.substring(0,4)})`; // Display name
+            if (team.name) { // Only add if name is not empty
+                draftedTeamFilter.appendChild(option);
+            }
+        });
+    }
+
+    // Try to restore previous selection (might be UID or 'all')
+    const optionExists = [...draftedTeamFilter.options].some(opt => opt.value === currentFilterValue);
+    if (optionExists) {
+        draftedTeamFilter.value = currentFilterValue;
+    } else if (currentUser && currentTeams[currentUser.uid]) {
+        // Default to user's team UID if their previous selection isn't available
+        draftedTeamFilter.value = currentUser.uid;
+    } else {
+        draftedTeamFilter.value = 'all'; // Default to all
+    }
+
+    // Make sure an option is actually selected if the user's UID wasn't found (edge case)
+    if (draftedTeamFilter.selectedIndex === -1) {
+        draftedTeamFilter.value = 'all';
+    }
+
+    filterDraftedPlayers(); // Refresh drafted players list with potentially new filter value
 }
 
 // --- Player Data Handling ---
@@ -1570,13 +1581,14 @@ row.innerHTML = `
         // Filter and display the DRAFTED players list
         function filterDraftedPlayers() {
             if (!draftedTableBody) return;
-            const teamFilter = draftedTeamFilter.value; // Filter by team name
+            const teamFilter = draftedTeamFilter.value; // Filter by team UID now, or 'all'
             draftedTableBody.innerHTML = '';
 
             // Use the globally sorted and numbered draftedPlayers array
             let filtered = draftedPlayers;
             if (teamFilter !== 'all') {
-                filtered = filtered.filter(player => player.Team === teamFilter);
+                // Filter by the teamUid property of the drafted player object
+                filtered = filtered.filter(player => player.teamUid === teamFilter);
             }
 
             const fragment = document.createDocumentFragment();
@@ -1586,11 +1598,21 @@ row.innerHTML = `
                 row.innerHTML = `<td colspan="6" style="text-align: center;">${teamFilter === 'all' ? 'No players drafted yet.' : 'No players drafted for this team yet.'}</td>`;
                 fragment.appendChild(row);
             } else {
-                filtered.forEach((player) => {
+                // Determine the key of the last drafted player (highest pick number, or last in timestamp-sorted array)
+                // The global `draftedPlayers` is already sorted by pickNumber (via timestamp).
+                 const lastDraftedPlayer = draftedPlayers.length > 0 ? draftedPlayers[draftedPlayers.length - 1] : null;
+                 const lastDraftedPlayerKey = lastDraftedPlayer?.firebaseKey;
+
+                filtered.forEach((player) => { // 'filtered' here depends on the team dropdown selection
                     const row = document.createElement('tr');
-                    const canRemove = isCommissioner; // Only commissioner can remove
-                    // Sanitize name for the remove button function call
-                    const safePlayerName = (player.Player || 'N/A').replace(/\'/g, "\\'").replace(/"/g, '&quot;');
+
+                    // Determine if *this* player is the absolute last pick overall
+                    const isOverallLastPick = player.firebaseKey === lastDraftedPlayerKey;
+                    // Button is shown only if commissioner AND this player is the overall last pick
+                    const canUndo = isCommissioner && isOverallLastPick;
+
+                    // Sanitize name for the function call
+                    const safePlayerName = (player.Player || 'N/A').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
                     row.innerHTML = `
                         <td style="width: 5%; text-align: center;">${player.draftNumber || '-'}</td>
@@ -1599,7 +1621,7 @@ row.innerHTML = `
                         <td class="hide-mobile">${player["NHL Team"] || 'N/A'}</td>
                         <td>${player.Team || 'N/A'}</td>
                         <td>
-                            ${canRemove ? `<button class="remove-button btn danger" onclick="removeDraftedPlayer('${player.firebaseKey}', '${safePlayerName}')">Remove</button>` : ''}
+                             ${canUndo ? `<button class="undo-button btn danger" onclick="undoLastDraftPick('${player.firebaseKey}', '${safePlayerName}', ${player.pickNumber || 0}, '${player.teamUid || ''}', '${player.Team || ''}')">Undo Pick</button>` : ''}
                         </td>
                     `;
                     fragment.appendChild(row);
