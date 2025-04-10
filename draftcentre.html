@@ -981,9 +981,10 @@ leagueData = snapshot.val();
 console.log("League data loaded:", leagueData);
 
 if (!leagueData.teams || !leagueData.teams[currentUser.uid]) {
-console.warn(`User ${currentUser.uid} not a member of league ${leagueId}`);
-handleNoAccessToLeague(leagueData);
-return;
+    console.warn("League teams object:", leagueData.teams);
+    console.warn("Current user UID:", currentUser.uid);
+    handleNoAccessToLeague(leagueData);
+    return;
 }
 
 isCommissioner = leagueData.teams[currentUser.uid]?.isCommissioner ?? false;
@@ -1893,19 +1894,30 @@ row.innerHTML = `
         function handleNoAccessToLeague(leagueDataToShow) {
             resetUIState();
             leagueSelectContainer.classList.remove('hidden'); // Show selection area
+
+            const leagueName = leagueDataToShow?.name ?? 'this league';
+            const teams = leagueDataToShow?.teams || {};
+            const teamUids = Object.keys(teams);
+            const currentUid = currentUser?.uid || 'unknown';
+
+            console.warn(`Access denied. User UID: ${currentUid}`);
+            console.warn(`League Teams:`, teamUids);
+
             if (leagueListEl) {
-                const name = leagueDataToShow?.name ?? 'this league';
                 leagueListEl.innerHTML = `
                     <div class="card" style="border-color: #dc3545;">
                         <h2>Access Denied</h2>
-                        <p>You are not currently a member of "${name}".</p>
-                        <p>Join via the Manage Leagues page if you have an invite or password.</p>
-                         <a href="manage-leagues.html" class="btn secondary">Go to Manage Leagues</a>
+                        <p>You are not a member of "${leagueName}".</p>
+                        <p>Your account (${currentUser?.email}) is not listed under the league's teams.</p>
+                        <p>If this is unexpected, ensure you're signed in with the correct Google account or rejoin from the Manage Leagues page.</p>
+                        <a href="manage-leagues.html" class="btn secondary">Go to Manage Leagues</a>
                     </div>`;
             }
+
             cleanupListeners();
             leagueId = null;
         }
+
 
         function showNotification(message, duration = 5000) {
             const existing = document.querySelector('.notification');
