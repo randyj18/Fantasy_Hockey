@@ -1480,7 +1480,7 @@
                     <td class="goalie-stat">${position === 'G' ? shutouts : '-'}</td>
                     <td>
                         <button class="draft-button" data-player-id="${playerIdStr}"
-                                data-player-name="${fullName.replace(/"/g, '&quot;')}" <!-- Escape quotes for attribute -->
+                                data-player-name="${fullName.replace(/"/g, '&quot;')}"
                                 data-player-pos="${position}"
                                 data-player-team="${team}"
                                 ${draftButtonEnabled ? '' : 'disabled'}>
