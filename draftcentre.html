@@ -714,10 +714,9 @@
 <div class="table-container">
 <table id="draftedTable">
     <thead>
-        <tr>
-            <!-- Issue 1: Add Draft Pick # column -->
-            <th data-sort="draftNumber" style="width: 5%;">Pick#</th>
-            <th data-sort="Player">Name</th>
+         <tr>
+             <th data-sort="draftNumber" style="width: 5%;">Pick#</th>
+             <th data-sort="Player">Name</th>
             <th data-sort="Position">Pos</th>
             <th data-sort="NHL Team" class="hide-mobile">NHL Team</th>
             <th data-sort="Team">Fantasy Team</th>
@@ -1586,9 +1585,8 @@ row.innerHTML = `
                 filtered.forEach((player) => {
                     const row = document.createElement('tr');
                     const canRemove = isCommissioner; // Only commissioner can remove
-
                     // Sanitize name for the remove button function call
-                    const safePlayerName = (player.Player || 'N/A').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const safePlayerName = (player.Player || 'N/A').replace(/\'/g, "\\'").replace(/"/g, '&quot;');
 
                     row.innerHTML = `
                         <td style="width: 5%; text-align: center;">${player.draftNumber || '-'}</td>
