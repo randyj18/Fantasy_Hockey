@@ -820,8 +820,8 @@ const chatSend = document.getElementById('chat-send');
 const chatHeader = document.getElementById('chat-header');
 const chatToggle = document.getElementById('chat-toggle');
 const backToLeagueLink = document.getElementById('back-to-league-link');
-const commissionerControls = document.getElementById('commissioner-controls'); // Issue 4: Get the controls div
-const commissionerModeToggle = document.getElementById('commissioner-mode-toggle'); // Issue 4: Get the toggle checkbox
+const commissionerControls = document.getElementById('commissioner-controls'); 
+const commissionerModeToggle = document.getElementById('commissioner-mode-toggle');
 
 // --- Initialization ---
 const urlParams = new URLSearchParams(window.location.search);
@@ -1064,64 +1064,64 @@ startDraftBtn.addEventListener('click', startDraft);
 
 // Issue 4: Setup commissioner controls visibility and toggle listener
 function setupCommissionerControls() {
-if (isCommissioner) {
-commissionerControls.classList.remove('hidden');
-commissionerModeToggle.checked = commissionerModeActive; // Set initial state
-commissionerModeToggle.removeEventListener('change', handleCommissionerToggle); // Remove old listener
-commissionerModeToggle.addEventListener('change', handleCommissionerToggle);
-} else {
-commissionerControls.classList.add('hidden');
-commissionerModeActive = false; // Ensure mode is off if not commissioner
-}
+    if (isCommissioner) {
+        commissionerControls.classList.remove('hidden');
+        commissionerModeToggle.checked = commissionerModeActive; // Set initial state
+        commissionerModeToggle.removeEventListener('change', handleCommissionerToggle); // Remove old listener
+        commissionerModeToggle.addEventListener('change', handleCommissionerToggle);
+    } else {
+        commissionerControls.classList.add('hidden');
+        commissionerModeActive = false; // Ensure mode is off if not commissioner
+    }
 }
 // Issue 4: Handle commissioner toggle change
 function handleCommissionerToggle() {
-commissionerModeActive = commissionerModeToggle.checked;
-console.log(`Commissioner Mode ${commissionerModeActive ? 'Enabled' : 'Disabled'}`);
-// Re-filter players to update draft button enabled state based on the new mode
-filterPlayers();
-// Optional: Show notification
-showNotification(`Commissioner Mode ${commissionerModeActive ? 'ON' : 'OFF'}`, 2000);
+    commissionerModeActive = commissionerModeToggle.checked;
+    console.log(`Commissioner Mode ${commissionerModeActive ? 'Enabled' : 'Disabled'}`);
+    // Re-filter players to update draft button enabled state based on the new mode
+    filterPlayers();
+    // Optional: Show notification
+    showNotification(`Commissioner Mode ${commissionerModeActive ? 'ON' : 'OFF'}`, 2000);
 }
 
 function updateDraftStatusUI(draftStatus) {
-const draftIsActive = draftStatus?.active ?? false;
+    const draftIsActive = draftStatus?.active ?? false;
 
-if (draftIsActive) {
-startDraftBtn.classList.add('hidden');
-currentDrafterContainer.classList.remove('hidden');
+    if (draftIsActive) {
+        startDraftBtn.classList.add('hidden');
+        currentDrafterContainer.classList.remove('hidden');
 
-const currentDrafterUid = draftStatus.currentDrafter;
-const currentRound = draftStatus.round || 1;
-const pickNumber = draftStatus.pickNumber || '?'; // Overall pick number
+        const currentDrafterUid = draftStatus.currentDrafter;
+        const currentRound = draftStatus.round || 1;
+        const pickNumber = draftStatus.pickNumber || '?'; // Overall pick number
 
-if (currentDrafterUid && currentTeams[currentDrafterUid]) {
-const drafterTeamName = currentTeams[currentDrafterUid].name;
-let drafterText = `<strong>${drafterTeamName}</strong> (Round ${currentRound}, Pick ${pickNumber})`;
+        if (currentDrafterUid && currentTeams[currentDrafterUid]) {
+            const drafterTeamName = currentTeams[currentDrafterUid].name;
+            let drafterText = `<strong>${drafterTeamName}</strong> (Round ${currentRound}, Pick ${pickNumber})`;
 
-if (currentDrafterUid === currentUser.uid) {
-currentDrafterContainer.classList.add('my-turn');
-drafterText += ' - <strong>Your Turn!</strong>';
-} else {
-currentDrafterContainer.classList.remove('my-turn');
-}
-currentDrafterName.innerHTML = drafterText; // Use innerHTML for bolding
-} else {
-console.warn("Current drafter UID not found in teams data:", currentDrafterUid);
-currentDrafterName.textContent = `Waiting... (Round ${currentRound})`;
-currentDrafterContainer.classList.remove('my-turn');
-}
-} else {
-// Draft is not active
-if (isCommissioner) {
-startDraftBtn.classList.remove('hidden'); // Show start button if commissioner
-} else {
-startDraftBtn.classList.add('hidden');
-}
-currentDrafterContainer.classList.add('hidden');
-currentDrafterName.textContent = 'Draft not started';
-currentDrafterContainer.classList.remove('my-turn');
-}
+            if (currentDrafterUid === currentUser.uid) {
+                currentDrafterContainer.classList.add('my-turn');
+                drafterText += ' - <strong>Your Turn!</strong>';
+            } else {
+                currentDrafterContainer.classList.remove('my-turn');
+            }
+            currentDrafterName.innerHTML = drafterText; // Use innerHTML for bolding
+        } else {
+            console.warn("Current drafter UID not found in teams data:", currentDrafterUid);
+            currentDrafterName.textContent = `Waiting... (Round ${currentRound})`;
+            currentDrafterContainer.classList.remove('my-turn');
+        }
+    } else {
+        // Draft is not active
+        if (isCommissioner) {
+            startDraftBtn.classList.remove('hidden'); // Show start button if commissioner
+        } else {
+            startDraftBtn.classList.add('hidden');
+        }
+        currentDrafterContainer.classList.add('hidden');
+        currentDrafterName.textContent = 'Draft not started';
+        currentDrafterContainer.classList.remove('my-turn');
+    }
 }
 
 // --- Firebase Listeners ---
@@ -1346,7 +1346,7 @@ return;
 
 const draftIsActive = leagueData?.draftStatus?.active ?? false;
 const isMyTurn = draftIsActive && leagueData?.draftStatus?.currentDrafter === currentUser?.uid;
-// Issue 4: Check commissioner mode toggle as well
+// Check commissioner mode toggle as well
 const iCanDraftAnyPlayer = draftIsActive && (isMyTurn || (isCommissioner && commissionerModeActive));
 
 const fragment = document.createDocumentFragment();
@@ -1436,19 +1436,19 @@ row.innerHTML = `
 
             const currentDrafterUid = leagueData.draftStatus.currentDrafter;
             const isMyTurn = currentDrafterUid === currentUser.uid;
-             // Issue 4: Determine if commissioner mode allows drafting
+            // Determine if commissioner mode allows drafting
             const commissionerDrafting = isCommissioner && commissionerModeActive;
 
             // Who is the pick assigned to?
-             let teamUidToAssign = null;
-             if (isMyTurn || commissionerDrafting) {
-                 // If it's my turn OR commissioner is overriding, the pick belongs to the *current* official drafter
-                 teamUidToAssign = currentDrafterUid;
-             } else {
-                 showNotification("It's not your turn to draft.");
-                 filterPlayers(); // Re-enable button if wrongly disabled
-                 return;
-             }
+            let teamUidToAssign = null;
+            if (isMyTurn || commissionerDrafting) {
+                // If it's my turn OR commissioner is overriding, the pick belongs to the *current* official drafter
+                teamUidToAssign = currentDrafterUid;
+            } else {
+                showNotification("It's not your turn to draft.");
+                filterPlayers(); // Re-enable button if wrongly disabled
+                return;
+            }
 
              const teamNameToAssign = currentTeams[teamUidToAssign]?.name;
              const drafterDisplayName = currentUser.displayName; // User performing the action
@@ -1484,7 +1484,7 @@ row.innerHTML = `
                 draftedByName: drafterDisplayName, // Name of user clicking button
                 draftedAt: serverTimestamp(), // Use server time for consistency
                 round: currentRound,
-                pickNumber: currentPickNumber // Issue 1: Store overall pick number
+                pickNumber: currentPickNumber // Store overall pick number
             };
             console.log("Drafted player record:", draftedPlayerRecord);
 
@@ -1569,10 +1569,10 @@ row.innerHTML = `
             draftedTableBody.innerHTML = '';
 
             // Use the globally sorted and numbered draftedPlayers array
-             let filtered = draftedPlayers;
-             if (teamFilter !== 'all') {
-                 filtered = draftedPlayers.filter(player => player.Team === teamFilter);
-             }
+            let filtered = draftedPlayers;
+            if (teamFilter !== 'all') {
+                filtered = filtered.filter(player => player.Team === teamFilter);
+            }
 
             const fragment = document.createDocumentFragment();
 
@@ -1581,7 +1581,6 @@ row.innerHTML = `
                 row.innerHTML = `<td colspan="6" style="text-align: center;">${teamFilter === 'all' ? 'No players drafted yet.' : 'No players drafted for this team yet.'}</td>`;
                 fragment.appendChild(row);
             } else {
-                // Issue 0: Fix drafted player display - Use sorted `filtered` array
                 filtered.forEach((player) => {
                     const row = document.createElement('tr');
                     const canRemove = isCommissioner; // Only commissioner can remove
@@ -1829,7 +1828,7 @@ row.innerHTML = `
             const fragment = document.createDocumentFragment();
 
             const sortedKeys = Object.keys(messagesObject).sort((keyA, keyB) =>
-                 (messagesObject[keyA]?.timestamp ?? 0) - (messagesObject[keyB]?.timestamp ?? 0)
+                (messagesObject[keyA]?.timestamp ?? 0) - (messagesObject[keyB]?.timestamp ?? 0)
             );
 
             sortedKeys.forEach(key => {
@@ -1845,7 +1844,7 @@ row.innerHTML = `
                 } else {
                     messageEl.className = 'chat-message';
                     // Format timestamp (locale-specific)
-                     const timeStr = message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
+                    const timeStr = message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
 
                     const safeName = sanitize(message.name || 'User');
                     const safeText = sanitize(message.text);
@@ -1867,15 +1866,16 @@ row.innerHTML = `
             chatMessages.appendChild(fragment);
             if (shouldScroll) scrollToChatBottom(true); // Force scroll if was at bottom
         }
-         // Simple hash function for placeholder color
-         function getUserColor(uid) {
-             let hash = 0;
-             for (let i = 0; i < (uid?.length || 0); i++) {
-                 hash = uid.charCodeAt(i) + ((hash << 5) - hash);
-             }
-             const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
-             return "#" + "00000".substring(0, 6 - c.length) + c;
-         }
+
+        // Simple hash function for placeholder color
+        function getUserColor(uid) {
+            let hash = 0;
+            for (let i = 0; i < (uid?.length || 0); i++) {
+                hash = uid.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+            return "#" + "00000".substring(0, 6 - c.length) + c;
+        }
 
         function scrollToChatBottom(force = false) {
             if (!chatMessages) return;
