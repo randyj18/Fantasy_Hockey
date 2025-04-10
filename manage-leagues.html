@@ -696,8 +696,8 @@
                 });
         });
         
-        // Find league by code
-        window.findLeagueByCode = function () {
+        // Modified findLeagueByCode function to use the new joinFoundLeague function
+        window.findLeagueByCode = function() {
             if (!currentUser) {
                 showNotification("You must be signed in to join a league");
                 return;
@@ -747,9 +747,9 @@
                     throw new Error("This league is full");
                 }
 
-                // Render the league using the same UI as invites
+                // Render the league info
                 const invitationsEl = document.getElementById('league-invitations');
-                invitationsEl.innerHTML = ''; // Clear old invites
+                invitationsEl.innerHTML = '';
 
                 const leagueItem = document.createElement('div');
                 leagueItem.className = 'league-item';
@@ -764,7 +764,7 @@
                         ${league.description ? `<br>${league.description}` : ''}
                     </div>
                     <div class="league-action">
-                        <button onclick="acceptInvitation('${foundLeagueId}')">Join</button>
+                        <button onclick="joinFoundLeague('${foundLeagueId}')">Join</button>
                         <button onclick="clearJoinSearch()" class="remove-btn">Cancel</button>
                     </div>
                 `;
@@ -779,72 +779,92 @@
 
         
         // Join the found league
-        window.joinFoundLeague = function(buttonElement) {
-            // Retrieve data from the button's dataset
-            const leagueToJoinId = buttonElement.dataset.leagueId;
-            const leagueNameToJoin = buttonElement.dataset.leagueName;
-            const leagueCodeToJoin = buttonElement.dataset.leagueCode;
-            const passwordRequired = buttonElement.dataset.passwordRequired === 'true';
-            const leaguePassword = buttonElement.dataset.passwordValue;
-            const isInvited = buttonElement.dataset.isInvited === 'true';
-
-            if (!leagueToJoinId) {
-                showNotification("League ID not found on button");
+        window.joinFoundLeague = function(leagueId) {
+            if (!currentUser) {
+                showNotification("You must be signed in to join a league");
                 return;
             }
             
-            // Check if password is required
-            if (passwordRequired && !isInvited && leaguePassword) {
-                const passwordEl = document.getElementById('join-password');
-                const enteredPassword = passwordEl.value.trim();
+            // Find the league first to get fresh data
+            findLeagueById(leagueId).then(league => {
+                if (!league) {
+                    throw new Error("League not found");
+                }
                 
-                if (enteredPassword !== leaguePassword) {
-                    document.getElementById('join-status').innerHTML = `<div class="error">Incorrect password</div>`;
+                // Check if already a member
+                if (league.teams && league.teams[currentUser.uid]) {
+                    showNotification("You're already a member of this league");
                     return;
                 }
-            }
-            
-            // Make sure we're writing to the correct path in the database
-            const teamRef = ref(database, `leagues/${leagueToJoinId}/teams/${currentUser.uid}`);
-            
-            set(teamRef, {
-                name: currentUser.displayName,
-                uid: currentUser.uid,
-                email: currentUser.email,
-                isCommissioner: false,
-                joinedAt: new Date().toISOString()
-            }).then(() => {
-                // Add league to user's leagues
-                const userLeagueRef = ref(database, `users/${currentUser.uid}/leagues/${leagueToJoinId}`);
-                return set(userLeagueRef, {
-                    leagueId: leagueToJoinId,
-                    name: leagueNameToJoin,
-                    code: leagueCodeToJoin,
-                    role: 'manager',
-                    joinedAt: new Date().toISOString()
-                });
-            }).then(() => {
-                // Remove from invited managers if they were invited
-                let cleanupPromise = Promise.resolve();
-                if (isInvited) {
-                    cleanupPromise = removeInvitation(leagueToJoinId, currentUser.email);
+                
+                // Check if league is full
+                const teamCount = Object.keys(league.teams || {}).length;
+                if (teamCount >= league.maxTeams) {
+                    throw new Error("This league is full");
                 }
                 
-                // Chain the chat message after the potential invitation removal
-                return cleanupPromise.then(() => {
-                    return addChatMessage(leagueToJoinId, {
+                // Check if user is invited (doesn't need password)
+                const isInvited = (league.invitedManagers || []).some(m => 
+                    m.email === currentUser.email
+                );
+                
+                if (!isInvited) {
+                    // Not invited, so prompt for password
+                    const passwordPrompt = prompt(`Please enter the password for league "${league.name}":`, "");
+                    
+                    if (passwordPrompt === null) {
+                        // User cancelled the prompt
+                        return;
+                    }
+                    
+                    if (passwordPrompt.trim() !== league.password) {
+                        showNotification("Incorrect password");
+                        return;
+                    }
+                }
+                
+                // Password correct or user is invited, proceed with joining
+                const teamRef = ref(database, `leagues/${leagueId}/teams/${currentUser.uid}`);
+                
+                set(teamRef, {
+                    name: currentUser.displayName,
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    isCommissioner: false,
+                    joinedAt: new Date().toISOString()
+                }).then(() => {
+                    // Add league to user's leagues
+                    const userLeagueRef = ref(database, `users/${currentUser.uid}/leagues/${leagueId}`);
+                    return set(userLeagueRef, {
+                        leagueId: leagueId,
+                        name: league.name,
+                        code: league.code,
+                        role: 'manager',
+                        joinedAt: new Date().toISOString()
+                    });
+                }).then(() => {
+                    // Remove from invited managers if they were invited
+                    if (isInvited) {
+                        return removeInvitation(leagueId, currentUser.email);
+                    }
+                    return Promise.resolve();
+                }).then(() => {
+                    // Add system message to chat
+                    return addChatMessage(leagueId, {
                         type: 'system',
                         text: `${currentUser.displayName} joined the league`,
                         timestamp: new Date().toISOString()
                     });
+                }).then(() => {
+                    showNotification("You've joined the league successfully!");
+                    window.location.href = `draftcentre.html?league=${leagueId}`;
+                }).catch(error => {
+                    console.error("Error joining league:", error);
+                    showNotification(`Error: ${error.message}`);
                 });
-            }).then(() => {
-                // All database operations successful, now show notification and redirect
-                showNotification("You've joined the league successfully!");
-                window.location.href = `draftcentre.html?league=${leagueToJoinId}`;
             }).catch(error => {
-                console.error("Error joining league:", error);
-                document.getElementById('join-status').innerHTML = `<div class="error">${error.message}</div>`;
+                console.error("Error finding league:", error);
+                showNotification(`Error: ${error.message}`);
             });
         };
         
