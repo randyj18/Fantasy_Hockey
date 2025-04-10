@@ -326,26 +326,7 @@
                     <button style="width: 100px; margin-left: 10px;" onclick="findLeagueByCode()">Find</button>
                 </div>
             </div>
-            
-            <div id="league-details" class="hidden">
-                <div class="league-item">
-                    <div class="league-name" id="found-league-name"></div>
-                    <div class="league-details" id="found-league-info"></div>
-                    
-                    <div id="join-password-required" class="join-password-group hidden">
-                        <label for="join-password">League Password:</label>
-                        <div class="password-toggle">
-                            <input type="password" id="join-password" placeholder="Enter league password">
-                            <span class="toggle-password" onclick="togglePasswordVisibility('join-password')">Show</span>
-                        </div>
-                    </div>
-                    
-                    <div class="league-action">
-                        <button id="join-league-btn" onclick="joinFoundLeague(this)">Join League</button>
-                    </div>
-                </div>
-            </div>
-            
+                        
             <div id="join-status"></div>
         </div>
         
@@ -716,31 +697,27 @@
         });
         
         // Find league by code
-        window.findLeagueByCode = function() {
+        window.findLeagueByCode = function () {
             if (!currentUser) {
                 showNotification("You must be signed in to join a league");
                 return;
             }
-            
+
             const leagueCode = document.getElementById('league-code').value.trim();
-            
             if (!leagueCode) {
                 showNotification("Please enter a league code");
                 return;
             }
-            
-            // Find league with this code
+
             const leaguesRef = ref(database, 'leagues');
-            
             get(leaguesRef).then((snapshot) => {
                 if (!snapshot.exists()) {
                     throw new Error("No leagues found");
                 }
-                
+
                 const leagues = snapshot.val();
                 let foundLeagueId = null;
-                
-                // Find the league with matching code
+
                 Object.keys(leagues).forEach(leagueId => {
                     if (leagues[leagueId].code === leagueCode) {
                         foundLeagueId = leagueId;
@@ -750,62 +727,56 @@
                         };
                     }
                 });
-                
+
                 if (!foundLeagueId) {
                     throw new Error("League not found with this code");
                 }
-                
-                // Check if user is already in this league
-                if (foundLeague.teams && foundLeague.teams[currentUser.uid]) {
+
+                const league = foundLeague;
+
+                // Check if already a member
+                if (league.teams && league.teams[currentUser.uid]) {
                     showNotification("You're already a member of this league");
                     window.location.href = `draftcentre.html?league=${foundLeagueId}`;
                     return;
                 }
-                
-                // Check if team limit is reached
-                const currentTeamCount = Object.keys(foundLeague.teams || {}).length;
-                if (currentTeamCount >= foundLeague.maxTeams) {
+
+                // Check if league is full
+                const teamCount = Object.keys(league.teams || {}).length;
+                if (teamCount >= league.maxTeams) {
                     throw new Error("This league is full");
                 }
-                
-                // Display the league details for confirmation
-                const leagueDetailsEl = document.getElementById('league-details');
-                const leagueNameEl = document.getElementById('found-league-name');
-                const leagueInfoEl = document.getElementById('found-league-info');
-                const passwordGroupEl = document.getElementById('join-password-required');
-                const joinButton = document.getElementById('join-league-btn');
-                
-                leagueNameEl.textContent = foundLeague.name;
-                leagueInfoEl.innerHTML = `
-                    Teams: ${currentTeamCount}/${foundLeague.maxTeams}
-                    ${foundLeague.description ? `<br>${foundLeague.description}` : ''}
+
+                // Render the league using the same UI as invites
+                const invitationsEl = document.getElementById('league-invitations');
+                invitationsEl.innerHTML = ''; // Clear old invites
+
+                const leagueItem = document.createElement('div');
+                leagueItem.className = 'league-item';
+                leagueItem.innerHTML = `
+                    <div class="league-name">
+                        ${league.name}
+                        <span class="league-status status-invitation">League Found</span>
+                    </div>
+                    <div class="league-details">
+                        Teams: ${teamCount}/${league.maxTeams}
+                        <br>From: ${league.createdBy?.name || 'Unknown'}
+                        ${league.description ? `<br>${league.description}` : ''}
+                    </div>
+                    <div class="league-action">
+                        <button onclick="acceptInvitation('${foundLeagueId}')">Join</button>
+                        <button onclick="clearJoinSearch()" class="remove-btn">Cancel</button>
+                    </div>
                 `;
-                
-                // Check if user is invited (doesn't need password)
-                const isInvited = (foundLeague.invitedManagers || []).some(m => 
-                    m.email === currentUser.email
-                );
-                
-                if (isInvited) {
-                    passwordGroupEl.classList.add('hidden');
-                } else {
-                    passwordGroupEl.classList.remove('hidden');
-                }
-                
-                leagueDetailsEl.classList.remove('hidden');
-                
-                // Store data directly on the button
-                joinButton.dataset.leagueId = foundLeagueId;
-                joinButton.dataset.leagueName = foundLeague.name;
-                joinButton.dataset.leagueCode = foundLeague.code;
-                joinButton.dataset.passwordRequired = !isInvited;
-                joinButton.dataset.passwordValue = foundLeague.password;
-                joinButton.dataset.isInvited = isInvited;
+
+                invitationsEl.appendChild(leagueItem);
+                openTab(null, 'my-leagues');
             }).catch(error => {
                 console.error("Error finding league:", error);
                 document.getElementById('join-status').innerHTML = `<div class="error">${error.message}</div>`;
             });
         };
+
         
         // Join the found league
         window.joinFoundLeague = function(buttonElement) {
@@ -948,6 +919,12 @@
                 console.error("Error declining invitation:", error);
                 showNotification(`Error: ${error.message}`);
             });
+        };
+
+        //clear join search
+        window.clearJoinSearch = function () {
+            foundLeague = null;
+            document.getElementById('league-invitations').innerHTML = '<p>No pending invitations.</p>';
         };
         
         // Load user's leagues
