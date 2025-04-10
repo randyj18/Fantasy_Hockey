@@ -1457,23 +1457,27 @@
                 const fullName = player.fullName || 'N/A';
                 const position = player.position || 'N/A';
                 const team = player.teamAbbreviation || 'N/A';
-                const games = player.gamesPlayed ?? 0;
-                const goals = player.goals ?? '-';
-                const assists = player.assists ?? '-';
-                const points = player.points ?? '-';
-                const wins = player.wins ?? '-';
-                const shutouts = player.shutouts ?? '-';
+                // Use more robust check for dash display (null, undefined, 0, "")
+                const formatStat = (val) => (val == null || val === 0 || val === "") ? '-' : val;
+
+                const games = formatStat(player.gamesPlayed);
+                const goals = formatStat(player.goals);
+                const assists = formatStat(player.assists);
+                const points = formatStat(player.points);
+                const wins = formatStat(player.wins);
+                const shutouts = formatStat(player.shutouts);
+
 
                 row.innerHTML = `
                     <td>${fullName}</td>
                     <td>${position}</td>
                     <td>${team}</td>
-                    <td>${games || '-'}</td>
-                    <td class="skater-stat">${position !== 'G' ? (goals || '-') : '-'}</td>
-                    <td class="skater-stat">${position !== 'G' ? (assists || '-') : '-'}</td>
-                    <td class="skater-stat">${position !== 'G' ? (points || '-') : '-'}</td>
-                    <td class="goalie-stat">${position === 'G' ? (wins || '-') : '-'}</td>
-                    <td class="goalie-stat">${position === 'G' ? (shutouts || '-') : '-'}</td>
+                    <td>${games}</td>
+                    <td class="skater-stat">${position !== 'G' ? goals : '-'}</td>
+                    <td class="skater-stat">${position !== 'G' ? assists : '-'}</td>
+                    <td class="skater-stat">${position !== 'G' ? points : '-'}</td>
+                    <td class="goalie-stat">${position === 'G' ? wins : '-'}</td>
+                    <td class="goalie-stat">${position === 'G' ? shutouts : '-'}</td>
                     <td>
                         <button class="draft-button" data-player-id="${playerIdStr}"
                                 data-player-name="${fullName.replace(/"/g, '&quot;')}" <!-- Escape quotes for attribute -->
@@ -1485,17 +1489,7 @@
                     </td>
                 `;
 
-
-                // Hide stats columns based on position (CSS could also handle this)
-                const skaterStats = row.querySelectorAll('.skater-stat');
-                const goalieStats = row.querySelectorAll('.goalie-stat');
-                if (position === 'G') {
-                    skaterStats.forEach(cell => cell.style.display = 'none');
-                    goalieStats.forEach(cell => cell.style.display = 'table-cell');
-                } else {
-                    skaterStats.forEach(cell => cell.style.display = 'table-cell');
-                    goalieStats.forEach(cell => cell.style.display = 'none');
-                }
+                // REMOVED THE CODE BLOCK THAT WAS HIDING COLUMNS BASED ON POSITION
 
                 fragment.appendChild(row);
             });
@@ -1503,10 +1497,7 @@
             tableBody.appendChild(fragment);
 
             // Add event listeners to draft buttons AFTER adding them to the DOM
-            // Use event delegation on the table body for potentially better performance with many rows
-            // However, direct attachment is simpler here.
             tableBody.querySelectorAll('.draft-button:not(:disabled)').forEach(button => {
-                // Only add listener if button is enabled initially
                 button.addEventListener('click', handleDraftClick);
             });
         }
