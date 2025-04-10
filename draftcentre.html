@@ -1542,42 +1542,6 @@ row.innerHTML = `
             });
         }
 
-         // Remove a player from the drafted list (Commissioner only)
-         function removeDraftedPlayer(firebaseKey, playerNameForMessage) {
-             if (!isCommissioner) {
-                 showNotification("Only the commissioner can remove drafted players.");
-                 return;
-             }
-             if (!firebaseKey) {
-                 console.error("Cannot remove player: Firebase key is missing.");
-                 showNotification("Error: Cannot remove player without key.");
-                 return;
-             }
-
-             const name = playerNameForMessage || 'this player';
-             if (!confirm(`Are you sure you want to UNDO the draft pick for ${name}? This cannot be easily reversed.`)) {
-                 return;
-             }
-
-             console.log(`Commissioner removing player with key: ${firebaseKey}`);
-             const playerRef = ref(database, `leagues/${leagueId}/draftedPlayers/${firebaseKey}`);
-
-             set(playerRef, null).then(() => {
-                 console.log(`Player ${name} removed successfully.`);
-                 showNotification(`${name} removed from draft.`);
-                 addChatMessage({
-                     type: 'system',
-                     text: `${currentUser.displayName} (Commish) removed ${name} from the draft list.`,
-                     timestamp: serverTimestamp()
-                 });
-                 // Data updates via onValue listener
-             }).catch(error => {
-                 console.error(`Error removing player (Key: ${firebaseKey}):`, error);
-                 showNotification(`Error removing player: ${error.message}`, 7000);
-             });
-         }
-
-
         // Filter and display the DRAFTED players list
         function filterDraftedPlayers() {
             if (!draftedTableBody) return;
@@ -2002,9 +1966,60 @@ row.innerHTML = `
 
         // Make functions globally accessible for inline HTML calls
         window.draftPlayer = draftPlayer;
-        window.removeDraftedPlayer = removeDraftedPlayer;
         window.filterPlayers = filterPlayers;
         window.filterDraftedPlayers = filterDraftedPlayers;
+
+        // Undo the last draft pick (Commissioner only)
+        function undoLastDraftPick(firebaseKey, playerNameForMessage, pickNumberToUndo, roundToRestore, teamUidToRestore, teamNameToRestore) {
+            if (!isCommissioner) {
+                showNotification("Only the commissioner can undo draft picks.");
+                return;
+            }
+            if (!firebaseKey || pickNumberToUndo <= 0 || roundToRestore <= 0 || !teamUidToRestore) {
+                console.error("Cannot undo pick: Missing required data.", { firebaseKey, pickNumberToUndo, roundToRestore, teamUidToRestore });
+                showNotification("Error: Cannot undo pick due to missing data.");
+                return;
+            }
+
+            // Verify it's actually the last pick that was made overall
+            const actualLastPickNumber = draftedPlayers.length; // Since pick numbers start at 1
+            if (pickNumberToUndo !== actualLastPickNumber) {
+                console.warn(`Undo attempt on pick #${pickNumberToUndo}, but last pick was #${actualLastPickNumber}. Aborting.`);
+                showNotification(`Cannot undo pick #${pickNumberToUndo}. Only the very last pick (#${actualLastPickNumber}) can be undone.`);
+                return; // Prevent undoing historical picks
+            }
+
+            const name = playerNameForMessage || 'last player';
+            const teamName = teamNameToRestore || 'the previous team';
+            if (!confirm(`Are you sure you want to UNDO the last pick (#${pickNumberToUndo} - ${name} by ${teamName})? This will revert the draft to Pick #${pickNumberToUndo} (Round ${roundToRestore}, ${teamName}'s turn).`)) {
+                return;
+            }
+
+            console.log(`Commissioner undoing pick #${pickNumberToUndo} (Key: ${firebaseKey})`);
+
+            // Prepare atomic update
+            const updates = {};
+            updates[`leagues/${leagueId}/draftedPlayers/${firebaseKey}`] = null; // Remove player
+            updates[`leagues/${leagueId}/draftStatus/currentDrafter`] = teamUidToRestore; // Revert drafter
+            updates[`leagues/${leagueId}/draftStatus/pickNumber`] = pickNumberToUndo; // Revert pick number
+            updates[`leagues/${leagueId}/draftStatus/round`] = roundToRestore; // Revert round
+
+            // Execute atomic update
+            const dbRef = ref(database);
+            update(dbRef, updates).then(() => {
+                console.log(`Pick #${pickNumberToUndo} (${name}) undone successfully.`);
+                showNotification(`Pick #${pickNumberToUndo} (${name}) undone. It's now ${teamName}'s turn.`);
+                addChatMessage({
+                    type: 'system',
+                    text: `${currentUser.displayName} (Commish) undid the last pick (#${pickNumberToUndo} - ${name}). Reverted to Pick #${pickNumberToUndo} (${teamName}'s turn).`,
+                    timestamp: serverTimestamp()
+                });
+                // Data updates via onValue listener will refresh UI
+            }).catch(error => {
+                console.error(`Error undoing pick #${pickNumberToUndo} (Key: ${firebaseKey}):`, error);
+                showNotification(`Error undoing pick: ${error.message}`, 7000);
+            });
+        }
 
     </script>
 </body>
