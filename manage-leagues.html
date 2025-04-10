@@ -562,7 +562,7 @@
                         }
                         
                         // Store data directly on the button
-                        joinButton.dataset.leagueId = league.id;
+                        joinButton.dataset.leagueId = leagueIdFromUrl;
                         joinButton.dataset.leagueName = league.name;
                         joinButton.dataset.leagueCode = league.code;
                         joinButton.dataset.passwordRequired = !isInvited;
@@ -621,7 +621,7 @@
             const leagueData = {
                 name: leagueName,
                 code: leagueCode,
-                password: password, // Store the password for joining
+                password: password,
                 description: description,
                 maxTeams: maxTeams,
                 createdBy: {
@@ -630,20 +630,21 @@
                     email: currentUser.email
                 },
                 createdAt: new Date().toISOString(),
-                teams: {
-                    [currentUser.uid]: {
-                        name: currentUser.displayName,
-                        uid: currentUser.uid,
-                        email: currentUser.email,
-                        isCommissioner: true,
-                        joinedAt: new Date().toISOString()
-                    }
-                },
+                teams: {}, // Ensure teams always exists
                 invitedManagers: invitedManagers,
                 settings: {
                     status: 'active', // active, completed, etc.
                     draftStatus: 'pending' // pending, scheduled, completed
                 }
+            };
+
+            // Set the team structure explicitly after
+            leagueData.teams[currentUser.uid] = {
+                name: currentUser.displayName,
+                uid: currentUser.uid,
+                email: currentUser.email,
+                isCommissioner: true,
+                joinedAt: new Date().toISOString()
             };
             
             // Save to Firebase
@@ -1137,7 +1138,10 @@
             const leagueRef = ref(database, `leagues/${leagueId}`);
             return get(leagueRef).then(snapshot => {
                 if (snapshot.exists()) {
-                    return snapshot.val();
+                    const league = snapshot.val();
+                    if (!league.teams) league.teams = {};
+                    if (!league.settings) league.settings = {};
+                    return league;
                 }
                 return null;
             });
