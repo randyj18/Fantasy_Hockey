@@ -1631,23 +1631,46 @@ row.innerHTML = `
             if (!isCommissioner) {
                 showNotification("Only the commissioner can start the draft."); return;
             }
+            
             const teamUids = Object.keys(currentTeams || {});
             if (teamUids.length < 2) { // Require at least 2 teams
                 showNotification("Need at least 2 teams to start a draft."); return;
             }
+            
+            // Debug info about teams before randomization
+            console.log("Teams before randomization:");
+            teamUids.forEach(uid => {
+                console.log(`- ${uid}: ${currentTeams[uid].name} ${uid === currentUser.uid ? '(Commissioner)' : ''}`);
+            });
+            
             if (!confirm(`Start the draft for "${leagueData?.name ?? 'this league'}"? Draft order will be randomized.`)) {
                 return;
             }
             console.log("Commissioner starting draft...");
 
-            // Randomize draft order (Fisher-Yates shuffle)
+            // Enhanced Fisher-Yates shuffle with more entropy
             let draftOrder = [...teamUids];
-            for (let i = draftOrder.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [draftOrder[i], draftOrder[j]] = [draftOrder[j], draftOrder[i]];
+            
+            // Add extra randomness - do multiple shuffles
+            for (let shuffle = 0; shuffle < 3; shuffle++) {
+                for (let i = draftOrder.length - 1; i > 0; i--) {
+                    // Use a more complex random seed
+                    const randomSeed = Math.random() * Date.now() % 10000;
+                    const j = Math.floor(randomSeed % (i + 1));
+                    [draftOrder[i], draftOrder[j]] = [draftOrder[j], draftOrder[i]];
+                }
             }
-            console.log("Randomized draft order:", draftOrder);
+            
+            // Debug the results of randomization
+            console.log("Randomized draft order:");
+            draftOrder.forEach((uid, index) => {
+                console.log(`${index+1}: ${currentTeams[uid].name} ${uid === currentUser.uid ? '(Commissioner)' : ''}`);
+            });
 
+            // Log commissioner position for verification
+            const commissionerIndex = draftOrder.indexOf(currentUser.uid);
+            console.log(`Commissioner is position ${commissionerIndex + 1} out of ${draftOrder.length}`);
+            
             const initialDraftStatus = {
                 active: true,
                 startedAt: serverTimestamp(),
@@ -1656,14 +1679,10 @@ row.innerHTML = `
                 currentDrafter: draftOrder[0], // First pick
                 round: 1,
                 pickNumber: 1, // Overall pick number
-                // Add other settings like 'snakeDraft: false' if needed later
+                randomizationTime: Date.now(), // Add this for audit/debug
             };
 
-            // --- Write to Firebase ---
-             // Consider clearing previous draft picks here if desired
-             // const draftedPlayersRef = ref(database, `leagues/${leagueId}/draftedPlayers`);
-             // set(draftedPlayersRef, null).then(...)
-
+            // Save to Firebase
             const draftStatusRef = ref(database, `leagues/${leagueId}/draftStatus`);
             set(draftStatusRef, initialDraftStatus).then(() => {
                 console.log("Draft status set, draft started.");
