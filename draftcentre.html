@@ -970,15 +970,19 @@ console.error("Cannot load league without user or league ID");
 loadUserLeagues();
 return;
 }
-leagueId = leagueIdToLoad; // Set global leagueId
+resetUIState(); // Clear previous league state FIRST
+leagueId = leagueIdToLoad; // Set global leagueId AFTER resetting
 console.log(`Loading league: ${leagueId}`);
-resetUIState(); // Clear previous league state
 
 const leagueRef = ref(database, `leagues/${leagueId}`);
 get(leagueRef).then((snapshot) => {
 if (snapshot.exists()) {
 leagueData = snapshot.val();
 console.log("League data loaded:", leagueData);
+
+// ADD DEBUG LOGS HERE
+console.log("Current user UID:", currentUser.uid);
+console.log("Team IDs:", leagueData.teams ? Object.keys(leagueData.teams) : "No teams data found");
 
 if (!leagueData.teams || !leagueData.teams[currentUser.uid]) {
     console.warn("League teams object:", leagueData.teams);
