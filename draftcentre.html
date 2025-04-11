@@ -371,6 +371,16 @@
         .draft-actions {
             display: flex;
             gap: 10px;
+            align-items: center;
+        }
+        
+        #bank-pick-btn {
+            background-color: #795548; /* Brown color to differentiate */
+            border-color: #5d4037;
+        }
+        #bank-pick-btn:hover {
+            background-color: #6d4c41;
+            border-color: #5d4037;
         }
 
 
@@ -579,6 +589,22 @@
         .eliminated-player {
             text-decoration: line-through;
             color: #999;
+            position: relative;
+        }
+        .eliminated-player::after {
+            content: 'ELIMINATED';
+            position: absolute;
+            right: 10px;
+            font-size: 0.7rem;
+            background-color: #dc3545;
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            opacity: 0.8;
+        }
+        /* Hide label in smaller cells */
+        .eliminated-player td:nth-child(2)::after {
+            display: none;
         }
 
         .notification {
@@ -1412,7 +1438,16 @@ function handleSaveDraftOrder() {
     }
     
     // Confirm before proceeding
-    if (!confirm(`Are you sure you want to save this draft order and start Round ${currentRound + 1}?`)) {
+    const nextRound = currentRound + 1;
+    const confirmMessage = 
+        `Are you sure you want to save this draft order and start Round ${nextRound}?\n\n` +
+        `Important: This will:\n` +
+        `1. Start Round ${nextRound} with the draft order you've set\n` +
+        `2. Update player stats to show playoff statistics\n` +
+        `3. Prevent eliminated players from being drafted\n` +
+        `4. Allow teams to bank picks for future rounds`;
+        
+    if (!confirm(confirmMessage)) {
         return;
     }
     
@@ -1477,6 +1512,9 @@ function handleSaveDraftOrder() {
             });
             
             // Local UI will be updated through the onValue listeners
+            // Reload player data to get playoff stats
+            allPlayers = []; // Clear player data to force reload
+            loadPlayerData();
         })
         .catch((error) => {
             console.error("Error saving draft order:", error);
@@ -1515,8 +1553,8 @@ function updateDraftStatusUI(draftStatus) {
                 currentDrafterContainer.classList.add('my-turn');
                 drafterText += ' - <strong>Your Turn!</strong>';
                 
-                // Show bank pick button when it's the user's turn
-                if (bankPickBtn) {
+                // Show bank pick button when it's the user's turn and not round 1
+                if (bankPickBtn && currentRound > 1) {
                     bankPickBtn.classList.remove('hidden');
                 }
             } else {
@@ -1761,10 +1799,19 @@ filterPlayers(); return;
 console.log("Loading player data...");
 if(playerTableBody) playerTableBody.innerHTML = `<tr><td colspan="10" style="text-align: center;"><div class="loader"></div></td></tr>`;
 
-fetch('data/nhl_players.json')
+// Determine which data source to use based on playoff round
+const dataSource = currentRound > 1 ? 'data/nhl_playoff_players.json' : 'data/nhl_players.json';
+console.log(`Loading player data from ${dataSource} (Round ${currentRound})`);
+
+fetch(dataSource)
 .then(response => {
-if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-return response.json();
+    // If the playoff data file isn't available yet, fall back to regular season
+    if (!response.ok && dataSource.includes('playoff')) {
+        console.log("Playoff stats not available yet, falling back to regular season stats");
+        return fetch('data/nhl_players.json');
+    }
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return response.json();
 })
 .then(data => {
 if (!Array.isArray(data)) throw new Error("Player data is not an array.");
@@ -1798,8 +1845,14 @@ if (searchTerm) {
 filtered = filtered.filter(player => (player.fullName || '').toLowerCase().includes(searchTerm));
 }
 
-// Get drafted player IDs (ensure player IDs are strings for comparison)
+// Get drafted player IDs and eliminated player IDs (ensure IDs are strings for comparison)
 const draftedIdsSet = new Set(draftedPlayers.map(dp => dp.playerId?.toString()));
+
+// In subsequent rounds, filter out eliminated players unless "Show Drafted" is checked
+// This will prevent users from drafting eliminated players
+if (currentRound > 1 && !showDrafted) {
+    filtered = filtered.filter(player => !eliminatedPlayers.has(player.id?.toString()));
+}
 
 // Filter out drafted unless 'Show Drafted' is checked
 if (!showDrafted) {
@@ -2547,6 +2600,12 @@ function cleanupListeners() {
 
         // Handle the bank pick button click
         function handleBankPick() {
+            // Check if we're past round 1
+            if (currentRound <= 1) {
+                showNotification("Banking picks is only available after the first round.");
+                return;
+            }
+            
             // Check if it's actually the user's turn
             const currentDrafterUid = leagueData?.draftStatus?.currentDrafter;
             
@@ -2556,7 +2615,7 @@ function cleanupListeners() {
             }
             
             // Confirm before banking
-            if (!confirm("Are you sure you want to bank this pick for a future round? You will skip this pick.")) {
+            if (!confirm("Are you sure you want to bank this pick for a future round? You will skip this pick and gain an extra pick in a later round.")) {
                 return;
             }
             
