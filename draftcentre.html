@@ -570,6 +570,16 @@
             font-weight: bold;
             color: var(--primary-color);
         }
+        .banked-pick-row {
+            background-color: #e8f4ff !important; /* Light blue background */
+        }
+        .banked-pick-row:hover {
+            background-color: #d1e7ff !important; /* Slightly darker blue on hover */
+        }
+        .undo-banked-pick-button {
+            background-color: #795548 !important; /* Brown color to match bank button */
+            border-color: #5d4037 !important;
+        }
         .banked-picks-instructions {
             background-color: #fff3cd;
             border: 1px solid #ffeeba;
@@ -1503,6 +1513,9 @@ function handleDrop(e) {
                 newElement.addEventListener('dragleave', handleDragLeave);
                 newElement.addEventListener('dragend', handleDragEnd);
                 
+                // Add a unique ID to prevent multiple drags of the same item
+                newElement.dataset.uniqueId = `${draggedUid}-${pickType}-${Date.now()}`;
+                
                 // Insert at the right position
                 if (this.parentElement.id === 'draft-order-list') {
                     // If dropping onto an item in the draft order list
@@ -1511,6 +1524,9 @@ function handleDrop(e) {
                     // If dropping onto the draft order list container itself
                     draftOrderList.appendChild(newElement);
                 }
+                
+                // Remove the original item from banked picks to prevent multiple drags
+                draggedElement.remove();
             }
         } else {
             // For items being reordered within the draft order list
@@ -1642,10 +1658,13 @@ function checkIfRoundComplete() {
     const draftStatus = leagueData?.draftStatus;
     if (!draftStatus || !draftStatus.active) return false;
     
+    // Round 1 (initial draft) should never be considered "complete" - it continues until commissioner ends it
+    if (currentRound <= 1) return false;
+    
     const draftOrder = draftStatus.draftOrder || [];
     const currentPickIndex = (draftStatus.pickNumber || 1) - 1;
     
-    // If we've reached the end of the draft order, all picks are made
+    // For rounds 2-4, if we've reached the end of the draft order, all picks are made
     return currentPickIndex >= draftOrder.length;
 }
 
@@ -2357,16 +2376,37 @@ row.innerHTML = `
                         }
                     }
                     
-                    row.innerHTML = `
-                        <td style="width: 5%; text-align: center;">${player.draftNumber || '-'}</td>
-                        <td>${player.Player || 'N/A'}${eliminationLabel}</td>
-                        <td>${player.Position || 'N/A'}</td>
-                        <td class="hide-mobile">${player["NHL Team"] || 'N/A'}${isTeamEliminated ? ' ❌' : ''}</td>
-                        <td>${player.Team || 'N/A'}<span class="round-indicator" style="font-size: 0.7em; padding: 1px 4px;">R${draftRound}</span></td>
-                        <td>
-                            ${canUndo ? `<button class="undo-button btn danger" data-key="${player.firebaseKey}">Undo Pick</button>` : ''}
-                        </td>
-                    `;
+                    // Check if this is a banked pick (not a real player)
+                    const isBankedPick = player.isBankedPick === true;
+                    
+                    if (isBankedPick) {
+                        // Special styling for banked picks
+                        row.classList.add('banked-pick-row');
+                        row.style.backgroundColor = '#e8f4ff';
+                        
+                        row.innerHTML = `
+                            <td style="width: 5%; text-align: center;">${player.draftNumber || '-'}</td>
+                            <td><strong>BANKED PICK</strong> (Saved for future round)</td>
+                            <td>-</td>
+                            <td class="hide-mobile">-</td>
+                            <td>${player.Team || 'N/A'}<span class="round-indicator" style="font-size: 0.7em; padding: 1px 4px;">R${draftRound}</span></td>
+                            <td>
+                                ${canUndo ? `<button class="undo-banked-pick-button btn danger" data-key="${player.firebaseKey}">Undo Bank</button>` : ''}
+                            </td>
+                        `;
+                    } else {
+                        // Regular player pick
+                        row.innerHTML = `
+                            <td style="width: 5%; text-align: center;">${player.draftNumber || '-'}</td>
+                            <td>${player.Player || 'N/A'}${eliminationLabel}</td>
+                            <td>${player.Position || 'N/A'}</td>
+                            <td class="hide-mobile">${player["NHL Team"] || 'N/A'}${isTeamEliminated ? ' ❌' : ''}</td>
+                            <td>${player.Team || 'N/A'}<span class="round-indicator" style="font-size: 0.7em; padding: 1px 4px;">R${draftRound}</span></td>
+                            <td>
+                                ${canUndo ? `<button class="undo-button btn danger" data-key="${player.firebaseKey}">Undo Pick</button>` : ''}
+                            </td>
+                        `;
+                    }
                     fragment.appendChild(row);
                 });
             }
@@ -2376,6 +2416,12 @@ row.innerHTML = `
             draftedTableBody.querySelectorAll('.undo-button').forEach(button => {
                 button.removeEventListener('click', handleUndoClick); // Remove any existing handlers
                 button.addEventListener('click', handleUndoClick);
+            });
+            
+            // Add event listeners to undo banked pick buttons
+            draftedTableBody.querySelectorAll('.undo-banked-pick-button').forEach(button => {
+                button.removeEventListener('click', handleUndoBankedPickClick); // Remove any existing handlers
+                button.addEventListener('click', handleUndoBankedPickClick);
             });
         }
         
@@ -2906,24 +2952,48 @@ function cleanupListeners() {
             // Get current banked picks for this team
             const teamUid = currentDrafterUid;
             const currentBankedPicks = bankedPicks[teamUid] || 0;
+            const drafterTeamName = currentTeams[teamUid]?.name || "Unknown Team";
+            
+            // Create a banked pick record to add to draftedPlayers
+            const bankedPickRecord = {
+                isBankedPick: true, // Flag to identify this as a banked pick, not a player
+                teamUid: teamUid,
+                Team: drafterTeamName,
+                Player: "BANKED PICK", // Placeholder for display
+                Position: "-",
+                "NHL Team": "-",
+                draftedByUid: currentUser.uid,
+                draftedByName: currentUser.displayName,
+                draftedAt: serverTimestamp(),
+                round: currentRound,
+                pickNumber: leagueData.draftStatus.pickNumber || 1
+            };
             
             // Prepare updates
             const updates = {};
             
-            // Increment banked picks
+            // Increment banked picks counter
             updates[`leagues/${leagueId}/playoffRound/bankedPicks/${teamUid}`] = currentBankedPicks + 1;
             
             // Add a chat message
-            const drafterTeamName = currentTeams[teamUid]?.name || "Unknown Team";
             const chatMessage = { 
                 type: 'system', 
                 text: `${drafterTeamName} banked their pick for a future round.`, 
                 timestamp: serverTimestamp() 
             };
             
-            // Apply the updates and move to next drafter
-            const dbRef = ref(database);
-            update(dbRef, updates)
+            // Add the banked pick record to draftedPlayers
+            const draftedPlayersRef = ref(database, `leagues/${leagueId}/draftedPlayers`);
+            const newBankedPickRef = push(draftedPlayersRef);
+            
+            // First add the banked pick record
+            set(newBankedPickRef, bankedPickRecord)
+                .then(() => {
+                    console.log(`Banked pick recorded for team ${drafterTeamName}`);
+                    
+                    // Then update the banked picks counter
+                    return update(ref(database), updates);
+                })
                 .then(() => {
                     console.log(`Pick banked for team ${drafterTeamName}`);
                     showNotification(`Pick banked for future round`);
@@ -2947,11 +3017,70 @@ function cleanupListeners() {
                 });
         }
         
+        // Handle undoing a banked pick
+        function handleUndoBankedPickClick(event) {
+            const button = event.target;
+            const key = button.dataset.key;
+            const row = button.closest('tr');
+            if (!key || !row) return;
+            
+            // Find the banked pick data from our global array
+            const bankedPickData = draftedPlayers.find(p => p.firebaseKey === key);
+            if (!bankedPickData || !bankedPickData.isBankedPick) {
+                console.error("Could not find banked pick data or this is not a banked pick:", key);
+                showNotification("Error: Could not find banked pick data");
+                return;
+            }
+            
+            // Get team UID for this banked pick
+            const teamUid = bankedPickData.teamUid;
+            const teamName = bankedPickData.Team || 'Unknown Team';
+            const pickNumber = bankedPickData.draftNumber || 0;
+            
+            // Confirm the action
+            if (!confirm(`Are you sure you want to undo banked pick #${pickNumber} for ${teamName}? This will revert the draft to this point and decrement this team's banked pick count.`)) {
+                return;
+            }
+            
+            // Prepare atomic updates
+            const updates = {};
+            
+            // 1. Remove the banked pick entry
+            updates[`leagues/${leagueId}/draftedPlayers/${key}`] = null;
+            
+            // 2. Decrement the banked picks count for this team
+            const currentBankedPicks = bankedPicks[teamUid] || 0;
+            if (currentBankedPicks > 0) {
+                updates[`leagues/${leagueId}/playoffRound/bankedPicks/${teamUid}`] = currentBankedPicks - 1;
+            }
+            
+            // 3. Revert the draft state - same as undoing a regular pick
+            updates[`leagues/${leagueId}/draftStatus/currentDrafter`] = teamUid;
+            updates[`leagues/${leagueId}/draftStatus/pickNumber`] = pickNumber;
+            
+            // Execute atomic update
+            const dbRef = ref(database);
+            update(dbRef, updates).then(() => {
+                console.log(`Banked pick #${pickNumber} for ${teamName} undone successfully.`);
+                showNotification(`Banked pick undone. It's now ${teamName}'s turn again.`);
+                addChatMessage({
+                    type: 'system',
+                    text: `${currentUser.displayName} (Commish) undid banked pick #${pickNumber} by ${teamName}.`,
+                    timestamp: serverTimestamp()
+                });
+                // Data updates via onValue listener will refresh UI
+            }).catch(error => {
+                console.error(`Error undoing banked pick #${pickNumber}:`, error);
+                showNotification(`Error undoing banked pick: ${error.message}`, 7000);
+            });
+        }
+        
         // Make functions globally accessible for inline HTML calls
         window.draftPlayer = draftPlayer;
         window.filterPlayers = filterPlayers;
         window.filterDraftedPlayers = filterDraftedPlayers;
         window.handleUndoClick = handleUndoClick;
+        window.handleUndoBankedPickClick = handleUndoBankedPickClick;
 
         // Undo the last draft pick (Commissioner only)
         function undoLastDraftPick(firebaseKey, playerNameForMessage, pickNumberToUndo, roundToRestore, teamUidToRestore, teamNameToRestore) {
