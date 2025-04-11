@@ -1637,6 +1637,47 @@ function handleCancelDraftOrder() {
     }
 }
 
+// Check if all picks for the current round have been made
+function checkIfRoundComplete() {
+    const draftStatus = leagueData?.draftStatus;
+    if (!draftStatus || !draftStatus.active) return false;
+    
+    const draftOrder = draftStatus.draftOrder || [];
+    const currentPickIndex = (draftStatus.pickNumber || 1) - 1;
+    
+    // If we've reached the end of the draft order, all picks are made
+    return currentPickIndex >= draftOrder.length;
+}
+
+// Update conclude round button state based on round completion
+function updateConcludeRoundButton() {
+    if (!isCommissioner || !concludeRoundBtn) return;
+    
+    const isRoundComplete = checkIfRoundComplete();
+    const draftIsActive = leagueData?.draftStatus?.active ?? false;
+    
+    if (isRoundComplete && draftIsActive) {
+        // Highlight the button if round is complete
+        concludeRoundBtn.style.backgroundColor = '#28a745'; // Success green
+        concludeRoundBtn.style.borderColor = '#28a745';
+        concludeRoundBtn.style.fontWeight = 'bold';
+        concludeRoundBtn.textContent = '✓ Conclude Round - All Picks Complete';
+        
+        // Show notification to commissioner (only once per round)
+        const notificationKey = `round_complete_${leagueId}_${currentRound}`;
+        if (!sessionStorage.getItem(notificationKey)) {
+            sessionStorage.setItem(notificationKey, 'true');
+            showNotification("Round complete! Please click 'Conclude Round' to set up the next round.", 10000);
+        }
+    } else {
+        // Reset button style
+        concludeRoundBtn.style.backgroundColor = '';
+        concludeRoundBtn.style.borderColor = '';
+        concludeRoundBtn.style.fontWeight = '';
+        concludeRoundBtn.textContent = 'Conclude Round';
+    }
+}
+
 function updateDraftStatusUI(draftStatus) {
     const draftIsActive = draftStatus?.active ?? false;
 
@@ -1648,10 +1689,13 @@ function updateDraftStatusUI(draftStatus) {
         const draftRound = draftStatus.round || 1;
         const pickNumber = draftStatus.pickNumber || '?'; // Overall pick number
         
-        // Update round display
+        // Update round display - use the global currentRound to ensure consistency
         if (roundDisplay) {
             roundDisplay.textContent = `Round ${currentRound}`;
         }
+        
+        // Update conclude round button based on round completion
+        updateConcludeRoundButton();
 
         if (currentDrafterUid && currentTeams[currentDrafterUid]) {
             const drafterTeamName = currentTeams[currentDrafterUid].name;
@@ -1815,6 +1859,7 @@ const playoffRoundRef = ref(database, `leagues/${leagueId}/playoffRound`);
 playerListeners.playoffRound = onValue(playoffRoundRef, (snapshot) => {
 console.log("Playoff round data received.");
 const playoffData = snapshot.val() || {};
+const previousRound = currentRound; // Store previous round to detect changes
 currentRound = playoffData.currentRound || 1;
 bankedPicks = playoffData.bankedPicks || {};
 nextRoundDraftOrder = playoffData.nextRoundDraftOrder || [];
@@ -1829,6 +1874,17 @@ if (roundDisplay) {
 }
 if (currentRoundNumber) {
     currentRoundNumber.textContent = currentRound.toString();
+}
+
+// If the round has changed, reload player data for everyone
+if (previousRound !== currentRound) {
+    console.log(`Round changed from ${previousRound} to ${currentRound}, reloading player data...`);
+    // Clear existing player data to force reload
+    allPlayers = []; 
+    // Reload with appropriate data for the new round
+    loadPlayerData();
+    // Show notification about the round change
+    showNotification(`Round ${currentRound} has started! Player stats updated.`, 5000);
 }
 
 // Update banked picks display if it's the current drafter's turn
@@ -1997,6 +2053,18 @@ if (!showDrafted) {
 filtered = filtered.filter(player => !draftedIdsSet.has(player.id?.toString()));
 }
 
+// Check if all picks for the round have been made - if so, disable drafting and show message to commissioner
+const draftStatus = leagueData?.draftStatus;
+const isRoundComplete = checkIfRoundComplete();
+if (isRoundComplete && draftStatus?.active) {
+    // Show notification only once (using a session storage flag)
+    const notificationKey = `round_complete_${leagueId}_${currentRound}`;
+    if (!sessionStorage.getItem(notificationKey) && isCommissioner) {
+        sessionStorage.setItem(notificationKey, 'true');
+        showNotification("Round complete! Please click 'Conclude Round' to set up the next round.", 10000);
+    }
+}
+
 // Apply sorting
 if (currentSortColumn) {
 filtered.sort((a, b) => {
@@ -2050,8 +2118,11 @@ const isEliminated = isPlayerEliminated || isTeamEliminated;
 row.classList.toggle('drafted', isDrafted);
 row.classList.toggle('eliminated-player', isEliminated);
 
-// Button enabled if: I can draft *any* player AND this specific player is not drafted AND not eliminated
-const draftButtonEnabled = iCanDraftAnyPlayer && !isDrafted && !isEliminated;
+// Check if the round is complete (all picks made)
+const isRoundComplete = checkIfRoundComplete();
+
+// Button enabled if: I can draft *any* player AND this specific player is not drafted AND not eliminated AND round is not complete
+const draftButtonEnabled = iCanDraftAnyPlayer && !isDrafted && !isEliminated && !isRoundComplete;
 
 const formatStat = (val) => (val == null || val === "" || val === 0) ? '-' : val;
 const position = player.position || 'N/A';
@@ -2358,6 +2429,9 @@ row.innerHTML = `
                 return;
             }
             console.log("Commissioner starting draft...");
+            
+            // Reset round to 1 and pick number to 1 to ensure we start fresh
+            currentRound = 1;
 
             // Enhanced Fisher-Yates shuffle with more entropy
             let draftOrder = [...teamUids];
@@ -2382,6 +2456,7 @@ row.innerHTML = `
             const commissionerIndex = draftOrder.indexOf(currentUser.uid);
             console.log(`Commissioner is position ${commissionerIndex + 1} out of ${draftOrder.length}`);
             
+            // Set initial draft status
             const initialDraftStatus = {
                 active: true,
                 startedAt: serverTimestamp(),
@@ -2392,15 +2467,31 @@ row.innerHTML = `
                 pickNumber: 1, // Overall pick number
                 randomizationTime: Date.now(), // Add this for audit/debug
             };
+            
+            // Also set playoff round data to ensure round is set to 1
+            const playoffRoundData = {
+                currentRound: 1,
+                bankedPicks: {},
+                nextRoundDraftOrder: []
+            };
 
-            // Save to Firebase
-            const draftStatusRef = ref(database, `leagues/${leagueId}/draftStatus`);
-            set(draftStatusRef, initialDraftStatus).then(() => {
+            // Save to Firebase - use update to update multiple nodes atomically
+            const updates = {};
+            updates[`leagues/${leagueId}/draftStatus`] = initialDraftStatus;
+            updates[`leagues/${leagueId}/playoffRound`] = playoffRoundData;
+            
+            const dbRef = ref(database);
+            update(dbRef, updates).then(() => {
                 console.log("Draft status set, draft started.");
                 const firstDrafterName = currentTeams[draftOrder[0]]?.name ?? 'First Pick';
                 const startMessage = `Draft started by ${currentUser.displayName}! Draft order randomized. ${firstDrafterName} is up first.`;
                 addChatMessage({ type: 'system', text: startMessage, timestamp: serverTimestamp() });
-                showNotification("Draft started!");
+                showNotification("Round 1 started!");
+                
+                // Force a reload of player data
+                allPlayers = [];
+                loadPlayerData();
+                
                 // UI updates handled by onValue listener
             }).catch((error) => {
                 console.error("Error starting draft:", error);
@@ -2458,6 +2549,12 @@ row.innerHTML = `
                  // Add slight delay? Or just rely on listener? Rely on listener for now.
                  // addChatMessage({ type: 'system', text: `It's now ${nextDrafterName}'s turn (Pick ${nextPickNumber})` });
 
+                 // Check if this completes the round and update conclude button
+                 if (nextPickNumber > draftOrder.length && isCommissioner) {
+                     // All picks completed - update conclude round button
+                     updateConcludeRoundButton();
+                 }
+                
                  // Show notification if it's my turn now
                  if (nextDrafterUid === currentUser?.uid) {
                      showNotification("It's your turn to draft!", 7000);
@@ -2784,6 +2881,12 @@ function cleanupListeners() {
                 return;
             }
             
+            // Check if round is already complete
+            if (checkIfRoundComplete()) {
+                showNotification("This round is already complete. The commissioner needs to conclude it.");
+                return;
+            }
+            
             // Check if it's actually the user's turn
             const currentDrafterUid = leagueData?.draftStatus?.currentDrafter;
             
@@ -2828,8 +2931,11 @@ function cleanupListeners() {
                     // Add chat message
                     addChatMessage(chatMessage);
                     
-                    // Move to next drafter
+                    // Move to next drafter - this skips the current pick
                     moveToNextDrafter();
+                    
+                    // Update conclude round button if this completes the round
+                    updateConcludeRoundButton();
                     
                     // Re-enable the button
                     bankPickBtn.disabled = false;
