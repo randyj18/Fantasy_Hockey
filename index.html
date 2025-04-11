@@ -5,28 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fantasy Hockey League Hub</title>
     <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #0055a4; /* Slightly lighter blue */
+            --accent-color: #ffd700; /* Gold */
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+            --light-text: #f8f9fa;
+            --border-color: #dee2e6;
+            --hover-bg: #e9ecef;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             margin: 0;
             padding: 0;
-            color: #333;
+            color: var(--dark-text);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #f4f7f6; /* Light background */
+            background-color: var(--light-bg);
         }
         header {
-            background-color: #003366; /* Dark blue */
-            color: white;
+            background-color: var(--primary-color);
+            color: var(--light-text);
             padding: 1rem 0;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-         header h1 {
+        header h1 {
             margin: 0;
             font-size: 2rem;
-         }
+        }
         .container {
             max-width: 1100px; /* Slightly wider */
             margin: 20px auto; /* Add margin top/bottom */
@@ -77,29 +88,28 @@
         }
         .btn, button { /* Style buttons consistently */
             display: inline-block;
-            background-color: #005ea5; /* Slightly lighter blue */
-            color: white;
+            background-color: var(--primary-color);
+            color: var(--light-text);
             text-decoration: none;
-            padding: 10px 20px; /* Adjusted padding */
-            border-radius: 5px;
-            font-size: 16px;
-            transition: background-color 0.2s, box-shadow 0.2s;
-            border: none; /* Remove default border for buttons */
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid var(--primary-color);
             cursor: pointer;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
         .btn:hover, button:hover {
-            background-color: #003366; /* Darker blue on hover */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
         }
-        .btn-outline {
+        .btn-outline, .btn.secondary {
             background-color: transparent;
-            border: 2px solid #005ea5;
-            color: #005ea5;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
         }
-        .btn-outline:hover {
-            background-color: #005ea5;
-            color: white;
+        .btn-outline:hover, .btn.secondary:hover {
+            background-color: var(--hover-bg);
         }
         button.hidden, .btn.hidden { /* Class to hide elements */
              display: none;
@@ -113,15 +123,31 @@
         }
         .feature {
             text-align: center;
-            padding: 25px; /* Increased padding */
-            border-radius: 8px;
-            background-color: #fff; /* White background for features */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            border-radius: 0.25rem;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
             transition: transform 0.2s, box-shadow 0.2s;
         }
         .feature:hover {
             transform: translateY(-5px);
             box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
+            .cta-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            .cta-buttons .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+                text-align: center;
+            }
         }
         .feature h3 {
             color: #003366;
@@ -200,10 +226,37 @@
     </div>
 
     <footer>
-        &copy; 2024 Fantasy Hockey Hub | Built with Firebase
-        <!-- Optional: Link to GitHub Repo -->
-        <!-- | <a href="https://github.com/your-username/fantasy-hockey-app" target="_blank" rel="noopener noreferrer">GitHub</a> -->
+        <p>&copy; 2025 Fantasy Hockey League | Built with Firebase</p>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="manage-leagues.html">Manage Leagues</a>
+            <a href="draftcentre.html">Draft Centre</a>
+            <a href="league.html">League Details</a>
+        </div>
     </footer>
+    
+    <style>
+        footer {
+            background-color: var(--light-bg);
+            padding: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+        }
+        .footer-links {
+            margin-top: 10px;
+        }
+        .footer-links a {
+            margin: 0 10px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
 
     <!-- Firebase Configuration -->
     <script src="firebaseConfig.js"></script>

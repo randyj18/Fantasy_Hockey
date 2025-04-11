@@ -5,23 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fantasy Hockey League Manager</title>
     <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #0055a4;
+            --accent-color: #ffd700;
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+            --light-text: #f8f9fa;
+            --border-color: #dee2e6;
+            --hover-bg: #e9ecef;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            color: var(--dark-text);
+            background-color: var(--light-bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        main {
             max-width: 800px;
             margin: 0 auto;
-            color: #333;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            flex-grow: 1;
         }
+        
         h1, h2 {
-            color: #003366;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
         }
         .container {
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: #fff;
+            border-radius: 0.25rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            main {
+                padding: 15px;
+            }
+            .container {
+                padding: 1rem;
+            }
+            .tab button {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            .league-action {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .league-action button {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .tab {
+                display: flex;
+                flex-direction: column;
+            }
+            .tab button {
+                width: 100%;
+                border-radius: 0;
+                border-bottom: 1px solid #ccc;
+            }
+            .tab button:last-child {
+                border-bottom: none;
+            }
         }
         .form-group {
             margin-bottom: 20px;
@@ -33,22 +96,36 @@
         }
         input, select, textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+            transition: all 0.2s ease-in-out;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
         }
         button {
-            background-color: #003366;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 4px;
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            border: 1px solid var(--primary-color);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease-in-out;
         }
         button:hover {
-            background-color: #002244;
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        button:disabled {
+            background-color: #cccccc;
+            border-color: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.7;
         }
         .managers-list {
             margin-top: 15px;
@@ -71,12 +148,18 @@
             cursor: pointer;
         }
         .auth-container {
+            background-color: #fff;
+            padding: 1rem 15px;
             text-align: center;
-            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
         }
         #auth-status {
-            margin: 10px 0;
+            margin: 0.5rem 0 0 0;
             font-style: italic;
+            color: #6c757d;
+            font-size: 0.9rem;
         }
         .hidden {
             display: none;

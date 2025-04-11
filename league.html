@@ -7,12 +7,27 @@
     <title>Fantasy Hockey League</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #0055a4; /* Slightly lighter blue */
+            --accent-color: #ffd700; /* Gold */
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+            --light-text: #f8f9fa;
+            --border-color: #dee2e6;
+            --hover-bg: #e9ecef;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             margin: 0;
             padding: 0;
-            color: #333;
+            color: var(--dark-text);
+            background-color: var(--light-bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         .container {
             max-width: 1200px;
@@ -20,9 +35,10 @@
             padding: 20px;
         }
         header {
-            background-color: #003366;
-            color: white;
+            background-color: var(--primary-color);
+            color: var(--light-text);
             padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .header-content {
             max-width: 1200px;
@@ -30,6 +46,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 15px;
         }
         h1, h2, h3 {
             margin-top: 0;
@@ -49,21 +66,87 @@
             min-width: 500px;
             height: 400px;
         }
+        .table-container {
+            overflow-x: auto; /* Horizontal scroll on small screens */
+            max-height: 450px; /* Max height */
+            overflow-y: auto; /* Vertical scroll */
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            background-color: #fff;
+            margin-bottom: 1rem;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 0;
         }
         th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 0.6rem 0.75rem;
+            border: none;
+            border-bottom: 1px solid var(--border-color);
             text-align: left;
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: var(--light-bg);
+            position: sticky;
+            top: 0;
+            font-weight: 600;
+            z-index: 1;
+        }
+        th:hover {
+            background-color: var(--hover-bg);
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
         }
         tbody tr:hover {
-            background-color: #f5f5f5;
+            background-color: var(--hover-bg);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .standings-container {
+                flex-direction: column;
+            }
+            .standings-chart {
+                min-width: 100%;
+            }
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .league-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .league-actions {
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: center;
+            }
+            .tabs {
+                flex-wrap: wrap;
+            }
+            .tab {
+                flex-grow: 1;
+                text-align: center;
+                margin-bottom: 5px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 10px;
+            }
+            th, td {
+                font-size: 0.8rem;
+                padding: 0.5rem 0.6rem;
+            }
+            .hide-mobile {
+                display: none;
+            }
         }
         .tabs {
             display: flex;
@@ -152,29 +235,35 @@
         }
         .btn {
             display: inline-block;
-            background-color: #003366;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 4px;
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
             text-decoration: none;
-            border: none;
+            border: 1px solid var(--primary-color);
             cursor: pointer;
-            font-size: 14px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease-in-out;
         }
         .btn:hover {
-            background-color: #002244;
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
         }
         .btn.secondary {
             background-color: #6c757d;
+            border-color: #6c757d;
         }
         .btn.secondary:hover {
             background-color: #5a6268;
+            border-color: #545b62;
         }
         .btn.danger {
             background-color: #dc3545;
+            border-color: #dc3545;
         }
         .btn.danger:hover {
             background-color: #c82333;
+            border-color: #bd2130;
         }
         .members-list {
             display: flex;
@@ -1752,5 +1841,38 @@
         window.loadTeamRoster = loadTeamRoster;
         window.loadTeamBreakdown = loadTeamBreakdown;
     </script>
+    
+    <footer>
+        <p>&copy; 2025 Fantasy Hockey League | Built with Firebase</p>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="manage-leagues.html">Manage Leagues</a>
+            <a href="draftcentre.html">Draft Centre</a>
+            <a href="league.html">League Details</a>
+        </div>
+    </footer>
+    
+    <style>
+        footer {
+            background-color: var(--light-bg);
+            padding: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+        }
+        .footer-links {
+            margin-top: 10px;
+        }
+        .footer-links a {
+            margin: 0 10px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </body>
 </html>
