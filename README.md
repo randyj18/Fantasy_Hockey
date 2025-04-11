@@ -1,4 +1,4 @@
-# NHL Fantasy Hockey Stats Web App
+# NHL Playoff Fantasy Hockey Stats Web App
 
 A zero-cost fantasy hockey tracker that uses GitHub Pages for hosting and GitHub Actions for automated data updates. This web app allows you to track NHL player stats, calculate fantasy points, and display team standings without any hosting costs.
 
@@ -11,6 +11,14 @@ A zero-cost fantasy hockey tracker that uses GitHub Pages for hosting and GitHub
 - ⚡ Live updates during games (when your players are playing)
 - 📉 Interactive charts and visualizations
 - 💰 Zero hosting or maintenance costs
+
+## Playoff Draft Features
+
+- **Multiple Round Drafts**: Support for subsequent drafts as playoff rounds progress
+- **Bank Pick System**: Teams can skip current picks to bank them for future rounds
+- **Elimination Tracking**: Visualizations for eliminated players and teams
+- **Round Management**: Commissioners can manually conclude rounds and set draft order
+- **Team Roster Management**: Track which players are active or eliminated
 
 ## Setup Instructions
 
@@ -48,6 +56,16 @@ Click the "Fork" button in the top-right corner of this repository to create you
 1. `fetch_stats.py` retrieves player statistics from the NHL API
 2. `calculate_standings.py` processes the data and calculates fantasy points
 3. Results are stored as JSON files in the `data/` directory
+
+### Playoff Draft System
+
+1. Teams complete an initial draft at the start of the playoffs
+2. As NHL teams are eliminated, players become unavailable for future drafts
+3. When a playoff round concludes, commissioners can:
+   - Mark the round as complete
+   - Set custom draft order for the next round
+   - Incorporate banked picks into the draft order
+4. Teams can choose to bank picks for future rounds
 
 ### Scoring System
 

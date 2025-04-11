@@ -367,7 +367,11 @@
             border-left-color: var(--success-border);
         }
         .current-drafter p { margin: 0; }
-        #start-draft-btn { margin-bottom: 0; } /* Align with status */
+        #start-draft-btn, #bank-pick-btn { margin-bottom: 0; } /* Align with status */
+        .draft-actions {
+            display: flex;
+            gap: 10px;
+        }
 
 
         /* --- Action Buttons --- */
@@ -510,6 +514,73 @@
             0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); }
         }
 
+        /* --- Draft Order Management --- */
+        .draft-order-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .draft-team-item {
+            padding: 8px 12px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .draft-team-item:hover {
+            background-color: #f4f6f9;
+        }
+        .draft-team-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        .draft-team-name {
+            font-weight: bold;
+        }
+        .draft-team-picks {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        .banked-pick-item {
+            background-color: #e8f4ff;
+            border: 1px solid #b8daff;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .banked-pick-count {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .empty-message {
+            color: #999;
+            font-style: italic;
+            text-align: center;
+            padding: 15px;
+        }
+        .round-indicator {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-left: 5px;
+        }
+        .eliminated-player {
+            text-decoration: line-through;
+            color: #999;
+        }
+
         .notification {
             position: fixed; top: 20px; right: 20px;
             background-color: var(--primary-color); color: white;
@@ -612,15 +683,48 @@
 
                 <!-- Commissioner Controls - Placed near the top -->
                 <div id="commissioner-controls" class="commissioner-controls card hidden full-width-section">
-                    <strong>Commissioner Mode:</strong>
-                    <div class="commish-toggle-container">
-                        <label class="switch">
-                            <input type="checkbox" id="commissioner-mode-toggle">
-                            <span class="slider"></span>
-                        </label>
-                        <label for="commissioner-mode-toggle">Draft for any team</label>
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;">
+                        <div>
+                            <strong>Commissioner Mode:</strong>
+                            <div class="commish-toggle-container">
+                                <label class="switch">
+                                    <input type="checkbox" id="commissioner-mode-toggle">
+                                    <span class="slider"></span>
+                                </label>
+                                <label for="commissioner-mode-toggle">Draft for any team</label>
+                            </div>
+                            <span style="font-size: 0.85rem; color: #6c757d;">(Allows drafting when it's not your turn, assigns pick to the current team)</span>
+                        </div>
+                        <div style="border-left: 1px solid #e0d9b8; padding-left: 15px;">
+                            <strong>Playoff Round Management:</strong>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                                <span id="current-round-display" style="font-size: 0.9rem; color: #856404;">Current Round: <span id="current-round-number">1</span></span>
+                                <button id="conclude-round-btn" class="btn">Conclude Round</button>
+                            </div>
+                        </div>
                     </div>
-                    <span style="font-size: 0.85rem; color: #6c757d;">(Allows drafting when it's not your turn, assigns pick to the current team)</span>
+                    <div id="draft-order-manager" class="hidden" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0d9b8;">
+                        <strong>Next Round Draft Order Management:</strong>
+                        <div style="margin-top: 10px; display: flex; gap: 10px; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <label for="draft-order-list" style="display: block; margin-bottom: 5px;">Drag teams to set order:</label>
+                                <div id="draft-order-list" class="draft-order-container" style="border: 1px solid #ddd; padding: 10px; min-height: 100px; border-radius: 4px; background: #f8f8f8;">
+                                    <!-- Teams will be added here as draggable items -->
+                                </div>
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="banked-picks-list" style="display: block; margin-bottom: 5px;">Teams with banked picks:</label>
+                                <div id="banked-picks-list" style="border: 1px solid #ddd; padding: 10px; min-height: 100px; border-radius: 4px; background: #f8f8f8;">
+                                    <!-- Teams with banked picks will be shown here -->
+                                    <div class="empty-message">No banked picks yet</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <button id="save-draft-order-btn" class="btn">Save Draft Order & Start Next Round</button>
+                            <button id="cancel-draft-order-btn" class="btn secondary">Cancel</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="full-width-section">
@@ -642,9 +746,18 @@
                  <!-- Status Section: Current Drafter & Start Button -->
                 <div class="status-section card full-width-section">
                     <div id="current-drafter" class="current-drafter hidden">
-                        <p><strong>Current Pick:</strong> <span id="current-drafter-name">Waiting to start draft...</span></p>
+                        <p>
+                            <strong>Current Pick:</strong> <span id="current-drafter-name">Waiting to start draft...</span>
+                            <span id="round-display" class="round-indicator">Round 1</span>
+                        </p>
+                        <p id="banked-picks-info" class="hidden" style="margin-top: 5px; font-size: 0.85rem; color: #0055a4;">
+                            <span id="current-team-banked-picks">0</span> banked picks available
+                        </p>
                     </div>
-                    <button id="start-draft-btn" class="btn hidden">Start Draft</button>
+                    <div class="draft-actions">
+                        <button id="start-draft-btn" class="btn hidden">Start Draft</button>
+                        <button id="bank-pick-btn" class="btn secondary hidden">Bank This Pick</button>
+                    </div>
                 </div>
 
                 <!-- Control Section: Search, Filters, Options -->
@@ -784,6 +897,7 @@ const database = getDatabase();
 let currentUser = null;
 let allPlayers = [];
 let draftedPlayers = []; // Holds { ..., firebaseKey: '...', draftNumber: X }
+let eliminatedPlayers = new Set(); // Track eliminated players
 let leagueData = null;
 let leagueId = null;
 let currentPositionFilter = 'all';
@@ -791,10 +905,16 @@ let currentSortColumn = null; // For available players table
 let currentSortDirection = 'asc'; // For available players table
 let currentTeams = {}; // { uid: { name, isCommissioner, photoURL }, ... }
 let isCommissioner = false;
-let commissionerModeActive = false; // Issue 4: State for the toggle
+let commissionerModeActive = false; // State for the toggle
 let chatListeners = {};
 let playerListeners = {};
 let draftStatusListener = null; // Ref to the draft status listener
+let eliminatedPlayersListener = null; // Ref to the eliminated players listener
+
+// Playoff round draft state
+let currentRound = 1; // Current playoff round
+let bankedPicks = {}; // { uid: count } - Number of banked picks per team
+let nextRoundDraftOrder = []; // Array of team UIDs for the next round
 
 // --- DOM Elements ---
 const loginBtn = document.getElementById('login-btn');
@@ -823,10 +943,28 @@ const backToLeagueLink = document.getElementById('back-to-league-link');
 const commissionerControls = document.getElementById('commissioner-controls'); 
 const commissionerModeToggle = document.getElementById('commissioner-mode-toggle');
 
+// New playoff round draft elements
+const roundDisplay = document.getElementById('round-display');
+const currentRoundNumber = document.getElementById('current-round-number');
+const concludeRoundBtn = document.getElementById('conclude-round-btn');
+const bankPickBtn = document.getElementById('bank-pick-btn');
+const bankedPicksInfo = document.getElementById('banked-picks-info');
+const currentTeamBankedPicks = document.getElementById('current-team-banked-picks');
+const draftOrderManager = document.getElementById('draft-order-manager');
+const draftOrderList = document.getElementById('draft-order-list');
+const bankedPicksList = document.getElementById('banked-picks-list');
+const saveDraftOrderBtn = document.getElementById('save-draft-order-btn');
+const cancelDraftOrderBtn = document.getElementById('cancel-draft-order-btn');
+
 // --- Initialization ---
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has('league')) {
 leagueId = urlParams.get('league');
+}
+
+// Bank pick button event listener
+if (bankPickBtn) {
+    bankPickBtn.addEventListener('click', handleBankPick);
 }
 
 // --- Auth ---
@@ -1067,19 +1205,42 @@ startDraftBtn.removeEventListener('click', startDraft); // Remove previous liste
 startDraftBtn.addEventListener('click', startDraft);
 }
 
-// Issue 4: Setup commissioner controls visibility and toggle listener
+// Setup commissioner controls visibility and listeners
 function setupCommissionerControls() {
     if (isCommissioner) {
         commissionerControls.classList.remove('hidden');
         commissionerModeToggle.checked = commissionerModeActive; // Set initial state
         commissionerModeToggle.removeEventListener('change', handleCommissionerToggle); // Remove old listener
         commissionerModeToggle.addEventListener('change', handleCommissionerToggle);
+        
+        // Set up conclude round button
+        if (concludeRoundBtn) {
+            concludeRoundBtn.removeEventListener('click', handleConcludeRound);
+            concludeRoundBtn.addEventListener('click', handleConcludeRound);
+        }
+        
+        // Setup draft order manager save/cancel buttons
+        if (saveDraftOrderBtn) {
+            saveDraftOrderBtn.removeEventListener('click', handleSaveDraftOrder);
+            saveDraftOrderBtn.addEventListener('click', handleSaveDraftOrder);
+        }
+        
+        if (cancelDraftOrderBtn) {
+            cancelDraftOrderBtn.removeEventListener('click', handleCancelDraftOrder);
+            cancelDraftOrderBtn.addEventListener('click', handleCancelDraftOrder);
+        }
+        
+        // Update current round display
+        if (currentRoundNumber) {
+            currentRoundNumber.textContent = currentRound.toString();
+        }
     } else {
         commissionerControls.classList.add('hidden');
         commissionerModeActive = false; // Ensure mode is off if not commissioner
     }
 }
-// Issue 4: Handle commissioner toggle change
+
+// Handle commissioner toggle change
 function handleCommissionerToggle() {
     commissionerModeActive = commissionerModeToggle.checked;
     console.log(`Commissioner Mode ${commissionerModeActive ? 'Enabled' : 'Disabled'}`);
@@ -1087,6 +1248,247 @@ function handleCommissionerToggle() {
     filterPlayers();
     // Optional: Show notification
     showNotification(`Commissioner Mode ${commissionerModeActive ? 'ON' : 'OFF'}`, 2000);
+}
+
+// Handle conclude round button click
+function handleConcludeRound() {
+    if (!isCommissioner) {
+        showNotification("Only the commissioner can conclude rounds.");
+        return;
+    }
+    
+    // Check if draft is active
+    if (!leagueData?.draftStatus?.active) {
+        showNotification("Cannot conclude round: Draft is not active.");
+        return;
+    }
+    
+    // Confirm before proceeding
+    if (!confirm(`Are you sure you want to conclude Round ${currentRound}? This will pause the draft and allow you to set up the next round.`)) {
+        return;
+    }
+    
+    // Pause the current draft
+    const draftStatusRef = ref(database, `leagues/${leagueId}/draftStatus`);
+    update(draftStatusRef, { active: false })
+        .then(() => {
+            console.log(`Round ${currentRound} concluded.`);
+            showNotification(`Round ${currentRound} concluded. Set up the next round.`);
+            
+            // Show the draft order manager
+            if (draftOrderManager) {
+                draftOrderManager.classList.remove('hidden');
+                populateDraftOrderManager();
+            }
+            
+            // Add system chat message
+            addChatMessage({ 
+                type: 'system', 
+                text: `Round ${currentRound} concluded by commissioner. Preparing for Round ${currentRound + 1}.`, 
+                timestamp: serverTimestamp() 
+            });
+        })
+        .catch((error) => {
+            console.error("Error concluding round:", error);
+            showNotification(`Error concluding round: ${error.message}`, 7000);
+        });
+}
+
+// Populate the draft order manager with teams and banked picks
+function populateDraftOrderManager() {
+    if (!draftOrderList || !bankedPicksList) return;
+    
+    // Clear existing items
+    draftOrderList.innerHTML = '';
+    bankedPicksList.innerHTML = '';
+    
+    // Get the teams with their banked picks
+    const teamsWithBanks = Object.entries(currentTeams).map(([uid, team]) => ({
+        uid,
+        name: team.name,
+        bankedPicks: bankedPicks[uid] || 0
+    }));
+    
+    // Sort teams by name
+    teamsWithBanks.sort((a, b) => a.name.localeCompare(b.name));
+    
+    // Populate the draft order list
+    teamsWithBanks.forEach(team => {
+        const teamItem = document.createElement('div');
+        teamItem.className = 'draft-team-item';
+        teamItem.dataset.uid = team.uid;
+        teamItem.draggable = true;
+        
+        teamItem.innerHTML = `
+            <div class="draft-team-name">${team.name}</div>
+            <div class="draft-team-picks">${team.bankedPicks > 0 ? `+${team.bankedPicks} banked` : ''}</div>
+        `;
+        
+        // Add drag events
+        teamItem.addEventListener('dragstart', handleDragStart);
+        teamItem.addEventListener('dragover', handleDragOver);
+        teamItem.addEventListener('drop', handleDrop);
+        teamItem.addEventListener('dragenter', handleDragEnter);
+        teamItem.addEventListener('dragleave', handleDragLeave);
+        teamItem.addEventListener('dragend', handleDragEnd);
+        
+        draftOrderList.appendChild(teamItem);
+    });
+    
+    // Populate the banked picks list
+    const teamsWithBankedPicks = teamsWithBanks.filter(team => team.bankedPicks > 0);
+    
+    if (teamsWithBankedPicks.length === 0) {
+        bankedPicksList.innerHTML = '<div class="empty-message">No banked picks yet</div>';
+    } else {
+        teamsWithBankedPicks.forEach(team => {
+            const pickItem = document.createElement('div');
+            pickItem.className = 'banked-pick-item';
+            pickItem.innerHTML = `
+                <div>${team.name}</div>
+                <div class="banked-pick-count">${team.bankedPicks} pick${team.bankedPicks !== 1 ? 's' : ''}</div>
+            `;
+            bankedPicksList.appendChild(pickItem);
+        });
+    }
+    
+    // Collect the current draft order to use as initial order
+    nextRoundDraftOrder = Array.from(draftOrderList.querySelectorAll('.draft-team-item'))
+        .map(item => item.dataset.uid);
+}
+
+// Drag and drop event handlers
+function handleDragStart(e) {
+    this.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', this.dataset.uid);
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+}
+
+function handleDragEnter(e) {
+    e.preventDefault();
+    this.classList.add('drag-over');
+}
+
+function handleDragLeave() {
+    this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    this.classList.remove('drag-over');
+    
+    const draggedUid = e.dataTransfer.getData('text/plain');
+    const draggedElement = document.querySelector(`.draft-team-item[data-uid="${draggedUid}"]`);
+    
+    if (draggedElement && this !== draggedElement) {
+        // If dropping onto another team, insert before that team
+        draftOrderList.insertBefore(draggedElement, this);
+    }
+    
+    // Update nextRoundDraftOrder based on the new order
+    nextRoundDraftOrder = Array.from(draftOrderList.querySelectorAll('.draft-team-item'))
+        .map(item => item.dataset.uid);
+    
+    console.log("Updated draft order:", nextRoundDraftOrder);
+}
+
+function handleDragEnd() {
+    this.classList.remove('dragging');
+    document.querySelectorAll('.draft-team-item').forEach(item => {
+        item.classList.remove('drag-over');
+    });
+}
+
+// Handle save draft order button
+function handleSaveDraftOrder() {
+    if (!isCommissioner) {
+        showNotification("Only the commissioner can save the draft order.");
+        return;
+    }
+    
+    // Confirm before proceeding
+    if (!confirm(`Are you sure you want to save this draft order and start Round ${currentRound + 1}?`)) {
+        return;
+    }
+    
+    // Create the draft order including extra entries for teams with banked picks
+    const fullDraftOrder = [];
+    
+    // Get all team items in the current visual order
+    const teamItems = Array.from(draftOrderList.querySelectorAll('.draft-team-item'));
+    
+    // For each team, add it to the draft order plus additional entries for banked picks
+    teamItems.forEach(item => {
+        const uid = item.dataset.uid;
+        
+        // Add the team once for their regular pick
+        fullDraftOrder.push(uid);
+        
+        // Add additional entries for banked picks
+        const bankedPickCount = bankedPicks[uid] || 0;
+        for (let i = 0; i < bankedPickCount; i++) {
+            fullDraftOrder.push(uid);
+        }
+    });
+    
+    // Prepare the updates
+    const updates = {};
+    
+    // Update playoff round data
+    updates[`leagues/${leagueId}/playoffRound/currentRound`] = currentRound + 1;
+    updates[`leagues/${leagueId}/playoffRound/nextRoundDraftOrder`] = nextRoundDraftOrder;
+    
+    // Reset banked picks since they are now incorporated into the draft order
+    const resetBankedPicks = {};
+    Object.keys(bankedPicks).forEach(uid => {
+        resetBankedPicks[uid] = 0;
+    });
+    updates[`leagues/${leagueId}/playoffRound/bankedPicks`] = resetBankedPicks;
+    
+    // Update draft status for the new round
+    updates[`leagues/${leagueId}/draftStatus/active`] = true;
+    updates[`leagues/${leagueId}/draftStatus/round`] = currentRound + 1;
+    updates[`leagues/${leagueId}/draftStatus/pickNumber`] = 1;
+    updates[`leagues/${leagueId}/draftStatus/draftOrder`] = fullDraftOrder;
+    updates[`leagues/${leagueId}/draftStatus/currentDrafter`] = fullDraftOrder[0];
+    
+    // Apply all updates atomically
+    const dbRef = ref(database);
+    update(dbRef, updates)
+        .then(() => {
+            console.log(`Round ${currentRound + 1} started with new draft order.`);
+            showNotification(`Round ${currentRound + 1} started!`);
+            
+            // Hide the draft order manager
+            if (draftOrderManager) {
+                draftOrderManager.classList.add('hidden');
+            }
+            
+            // Add system chat message
+            addChatMessage({ 
+                type: 'system', 
+                text: `Round ${currentRound + 1} started by commissioner. Draft is now active.`, 
+                timestamp: serverTimestamp() 
+            });
+            
+            // Local UI will be updated through the onValue listeners
+        })
+        .catch((error) => {
+            console.error("Error saving draft order:", error);
+            showNotification(`Error saving draft order: ${error.message}`, 7000);
+        });
+}
+
+// Handle cancel draft order button
+function handleCancelDraftOrder() {
+    if (draftOrderManager) {
+        draftOrderManager.classList.add('hidden');
+    }
 }
 
 function updateDraftStatusUI(draftStatus) {
@@ -1097,24 +1499,48 @@ function updateDraftStatusUI(draftStatus) {
         currentDrafterContainer.classList.remove('hidden');
 
         const currentDrafterUid = draftStatus.currentDrafter;
-        const currentRound = draftStatus.round || 1;
+        const draftRound = draftStatus.round || 1;
         const pickNumber = draftStatus.pickNumber || '?'; // Overall pick number
+        
+        // Update round display
+        if (roundDisplay) {
+            roundDisplay.textContent = `Round ${currentRound}`;
+        }
 
         if (currentDrafterUid && currentTeams[currentDrafterUid]) {
             const drafterTeamName = currentTeams[currentDrafterUid].name;
-            let drafterText = `<strong>${drafterTeamName}</strong> (Round ${currentRound}, Pick ${pickNumber})`;
+            let drafterText = `<strong>${drafterTeamName}</strong> (Round ${draftRound}, Pick ${pickNumber})`;
 
             if (currentDrafterUid === currentUser.uid) {
                 currentDrafterContainer.classList.add('my-turn');
                 drafterText += ' - <strong>Your Turn!</strong>';
+                
+                // Show bank pick button when it's the user's turn
+                if (bankPickBtn) {
+                    bankPickBtn.classList.remove('hidden');
+                }
             } else {
                 currentDrafterContainer.classList.remove('my-turn');
+                
+                // Hide bank pick button when it's not the user's turn
+                if (bankPickBtn) {
+                    bankPickBtn.classList.add('hidden');
+                }
             }
             currentDrafterName.innerHTML = drafterText; // Use innerHTML for bolding
+            
+            // Update banked picks display
+            updateBankedPicksDisplay();
+            
         } else {
             console.warn("Current drafter UID not found in teams data:", currentDrafterUid);
-            currentDrafterName.textContent = `Waiting... (Round ${currentRound})`;
+            currentDrafterName.textContent = `Waiting... (Round ${draftRound})`;
             currentDrafterContainer.classList.remove('my-turn');
+            
+            // Hide bank pick button
+            if (bankPickBtn) {
+                bankPickBtn.classList.add('hidden');
+            }
         }
     } else {
         // Draft is not active
@@ -1126,6 +1552,11 @@ function updateDraftStatusUI(draftStatus) {
         currentDrafterContainer.classList.add('hidden');
         currentDrafterName.textContent = 'Draft not started';
         currentDrafterContainer.classList.remove('my-turn');
+        
+        // Hide bank pick button
+        if (bankPickBtn) {
+            bankPickBtn.classList.add('hidden');
+        }
     }
 }
 
@@ -1191,7 +1622,56 @@ if(chatMessages) chatMessages.innerHTML = '<div class="chat-system error-message
 });
 console.log("Added chat listener.");
 
-// Listener 4: Online Presence (listen to a presence node)
+// Listener 4: Eliminated Players
+const eliminatedPlayersRef = ref(database, `leagues/${leagueId}/eliminatedPlayers`);
+eliminatedPlayersListener = onValue(eliminatedPlayersRef, (snapshot) => {
+console.log("Eliminated players data received.");
+eliminatedPlayers = new Set();
+const eliminatedData = snapshot.val() || {};
+Object.entries(eliminatedData).forEach(([playerId, isEliminated]) => {
+    if (isEliminated === true) {
+        eliminatedPlayers.add(playerId);
+    }
+});
+console.log(`${eliminatedPlayers.size} eliminated players loaded.`);
+// Re-filter players to show eliminated status
+filterPlayers();
+filterDraftedPlayers();
+}, (error) => {
+console.error("Error reading eliminated players:", error);
+showNotification("Error loading eliminated players list.", 7000);
+});
+console.log("Added eliminated players listener.");
+
+// Listener 5: Playoff Round Data
+const playoffRoundRef = ref(database, `leagues/${leagueId}/playoffRound`);
+playerListeners.playoffRound = onValue(playoffRoundRef, (snapshot) => {
+console.log("Playoff round data received.");
+const playoffData = snapshot.val() || {};
+currentRound = playoffData.currentRound || 1;
+bankedPicks = playoffData.bankedPicks || {};
+nextRoundDraftOrder = playoffData.nextRoundDraftOrder || [];
+
+console.log(`Current playoff round: ${currentRound}`);
+console.log(`Banked picks:`, bankedPicks);
+console.log(`Next round draft order:`, nextRoundDraftOrder);
+
+// Update UI to reflect current round
+if (roundDisplay) {
+    roundDisplay.textContent = `Round ${currentRound}`;
+}
+if (currentRoundNumber) {
+    currentRoundNumber.textContent = currentRound.toString();
+}
+
+// Update banked picks display if it's the current drafter's turn
+updateBankedPicksDisplay();
+}, (error) => {
+console.error("Error reading playoff round data:", error);
+});
+console.log("Added playoff round data listener.");
+
+// Listener 6: Online Presence (listen to a presence node)
 // Update user's own presence on connect/disconnect
 const presenceRef = ref(database, `leagues/${leagueId}/presence/${currentUser.uid}`);
 const connectedRef = ref(database, '.info/connected');
@@ -1204,9 +1684,8 @@ console.log("User presence set to online.");
 }
 });
 console.log("Added presence listener.");
-// Note: We might need another listener on the main `presence` node to display other users' status if desired.
 
-// Listener 5: Draft Status (already set up in showDraftInterface, managed by draftStatusListener)
+// Listener 7: Draft Status (already set up in showDraftInterface, managed by draftStatusListener)
 }
 
 function detectJoinLeave(previousTeams, newTeams) {
@@ -1371,11 +1850,14 @@ playersToRender.forEach(player => {
 const row = document.createElement('tr');
 const playerIdStr = player.id?.toString();
 const isDrafted = draftedIdsSet.has(playerIdStr);
+const isEliminated = eliminatedPlayers.has(playerIdStr);
 
-row.classList.toggle('drafted', isDrafted); // Add/remove drafted class
+// Apply classes for drafted and eliminated status
+row.classList.toggle('drafted', isDrafted);
+row.classList.toggle('eliminated-player', isEliminated);
 
-// Button enabled if: I can draft *any* player AND this specific player is not drafted
-const draftButtonEnabled = iCanDraftAnyPlayer && !isDrafted;
+// Button enabled if: I can draft *any* player AND this specific player is not drafted AND not eliminated
+const draftButtonEnabled = iCanDraftAnyPlayer && !isDrafted && !isEliminated;
 
 const formatStat = (val) => (val == null || val === "" || val === 0) ? '-' : val;
 const position = player.position || 'N/A';
@@ -1389,7 +1871,7 @@ row.dataset.playerPosition = position;
 row.dataset.playerTeam = team;
 
 row.innerHTML = `
-<td>${fullName}</td>
+<td>${fullName}${isEliminated ? ' (Eliminated)' : ''}</td>
 <td>${position}</td>
 <td>${team}</td>
 <td class="hide-mobile">${formatStat(player.gamesPlayed)}</td>
@@ -1400,7 +1882,7 @@ row.innerHTML = `
 <td class="goalie-stat hide-mobile">${position === 'G' ? formatStat(player.shutouts) : '-'}</td>
                     <td>
                         <button class="draft-button btn" ${draftButtonEnabled ? '' : 'disabled'}>
-                            ${isDrafted ? 'Drafted' : 'Draft'}
+                            ${isDrafted ? 'Drafted' : (isEliminated ? 'Eliminated' : 'Draft')}
                         </button>
                     </td>
                 `;
@@ -1569,18 +2051,27 @@ row.innerHTML = `
 
                 filtered.forEach((player) => { // 'filtered' here depends on the team dropdown selection
                     const row = document.createElement('tr');
+                    
+                    // Check if player is eliminated
+                    const isEliminated = eliminatedPlayers.has(player.playerId?.toString());
+                    if (isEliminated) {
+                        row.classList.add('eliminated-player');
+                    }
 
                     // Determine if *this* player is the absolute last pick overall
                     const isOverallLastPick = player.firebaseKey === lastDraftedPlayerKey;
                     // Button is shown only if commissioner AND this player is the overall last pick
                     const canUndo = isCommissioner && isOverallLastPick;
+                    
+                    // Get draft round info
+                    const draftRound = player.round || 1;
 
                     row.innerHTML = `
                         <td style="width: 5%; text-align: center;">${player.draftNumber || '-'}</td>
-                        <td>${player.Player || 'N/A'}</td>
+                        <td>${player.Player || 'N/A'}${isEliminated ? ' (Eliminated)' : ''}</td>
                         <td>${player.Position || 'N/A'}</td>
                         <td class="hide-mobile">${player["NHL Team"] || 'N/A'}</td>
-                        <td>${player.Team || 'N/A'}</td>
+                        <td>${player.Team || 'N/A'}<span class="round-indicator" style="font-size: 0.7em; padding: 1px 4px;">R${draftRound}</span></td>
                         <td>
                             ${canUndo ? `<button class="undo-button btn danger" data-key="${player.firebaseKey}">Undo Pick</button>` : ''}
                         </td>
@@ -1975,7 +2466,36 @@ row.innerHTML = `
             }, duration - 500);
         }
 
-        function cleanupListeners() {
+        function updateBankedPicksDisplay() {
+    if (!bankedPicks || !currentUser) return;
+    
+    // Get the number of banked picks for the current user
+    const myBankedPicks = bankedPicks[currentUser.uid] || 0;
+    
+    // Get the current drafter UID
+    const currentDrafterUid = leagueData?.draftStatus?.currentDrafter;
+    
+    // Show banked picks info if it's the current user's turn
+    if (currentDrafterUid === currentUser.uid) {
+        if (myBankedPicks > 0) {
+            // User has banked picks
+            bankedPicksInfo.classList.remove('hidden');
+            currentTeamBankedPicks.textContent = myBankedPicks;
+        } else {
+            // User doesn't have banked picks
+            bankedPicksInfo.classList.add('hidden');
+        }
+        
+        // Show bank pick button if it's the user's turn
+        bankPickBtn.classList.remove('hidden');
+    } else {
+        // Not the user's turn
+        bankedPicksInfo.classList.add('hidden');
+        bankPickBtn.classList.add('hidden');
+    }
+}
+
+function cleanupListeners() {
             console.log("Cleaning up Firebase listeners...");
             let cleanedCount = 0;
              const cleanup = (listenersObj, type) => {
@@ -2000,6 +2520,17 @@ row.innerHTML = `
                  } catch (e) { console.error("Error unsubscribing draft status listener:", e); }
                  draftStatusListener = null;
              }
+             
+            // Clean up eliminated players listener
+            if (eliminatedPlayersListener && leagueId) {
+                try {
+                    const eliminatedPlayersRef = ref(database, `leagues/${leagueId}/eliminatedPlayers`);
+                    off(eliminatedPlayersRef, 'value', eliminatedPlayersListener);
+                    console.log(" - Unsubscribed from eliminated players listener.");
+                    cleanedCount++;
+                } catch (e) { console.error("Error unsubscribing eliminated players listener:", e); }
+                eliminatedPlayersListener = null;
+            }
 
             // Clean up presence listener (handled by Firebase on disconnect)
             window.removeEventListener('beforeunload', handlePageLeave);
@@ -2014,6 +2545,65 @@ row.innerHTML = `
             if (leagueId && !currentUser) console.log("League ID found, waiting for auth...");
         });
 
+        // Handle the bank pick button click
+        function handleBankPick() {
+            // Check if it's actually the user's turn
+            const currentDrafterUid = leagueData?.draftStatus?.currentDrafter;
+            
+            if (currentDrafterUid !== currentUser.uid && !commissionerModeActive) {
+                showNotification("You can only bank picks during your turn.");
+                return;
+            }
+            
+            // Confirm before banking
+            if (!confirm("Are you sure you want to bank this pick for a future round? You will skip this pick.")) {
+                return;
+            }
+            
+            // Disable the bank pick button to prevent double-clicks
+            bankPickBtn.disabled = true;
+            
+            // Get current banked picks for this team
+            const teamUid = currentDrafterUid;
+            const currentBankedPicks = bankedPicks[teamUid] || 0;
+            
+            // Prepare updates
+            const updates = {};
+            
+            // Increment banked picks
+            updates[`leagues/${leagueId}/playoffRound/bankedPicks/${teamUid}`] = currentBankedPicks + 1;
+            
+            // Add a chat message
+            const drafterTeamName = currentTeams[teamUid]?.name || "Unknown Team";
+            const chatMessage = { 
+                type: 'system', 
+                text: `${drafterTeamName} banked their pick for a future round.`, 
+                timestamp: serverTimestamp() 
+            };
+            
+            // Apply the updates and move to next drafter
+            const dbRef = ref(database);
+            update(dbRef, updates)
+                .then(() => {
+                    console.log(`Pick banked for team ${drafterTeamName}`);
+                    showNotification(`Pick banked for future round`);
+                    
+                    // Add chat message
+                    addChatMessage(chatMessage);
+                    
+                    // Move to next drafter
+                    moveToNextDrafter();
+                    
+                    // Re-enable the button
+                    bankPickBtn.disabled = false;
+                })
+                .catch((error) => {
+                    console.error("Error banking pick:", error);
+                    showNotification(`Error banking pick: ${error.message}`, 7000);
+                    bankPickBtn.disabled = false;
+                });
+        }
+        
         // Make functions globally accessible for inline HTML calls
         window.draftPlayer = draftPlayer;
         window.filterPlayers = filterPlayers;
