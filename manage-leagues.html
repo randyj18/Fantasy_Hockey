@@ -1264,13 +1264,20 @@
                 return;
             }
             
-            const joinLink = `${window.location.origin}/Fantasy_Hockey/manage-leagues.html`;
+            // Create a more specific join link with the league ID and code
+            const joinLink = `${window.location.origin}/Fantasy_Hockey/manage-leagues.html?action=join&league=${leagueId}&code=${leagueCode}`;
+            
+            // Show summary notification
+            showNotification(`Sending invitations to ${invitedManagers.length} managers...`);
+            
+            // Process emails sequentially with a chain of promises
+            let emailChain = Promise.resolve();
             
             // Send an email to each invited manager
-            invitedManagers.forEach(manager => {
+            invitedManagers.forEach((manager, index) => {
                 const email = manager.email;
                 
-                // Create the email content
+                // Create the email content with a direct link that includes the league ID and code
                 const emailContent = `
                     <html>
                         <body>
@@ -1284,8 +1291,24 @@
                     </html>
                 `;
                 
-                // Use improved function to send email
-                sendEmail(email, `Fantasy Hockey League Invitation: ${leagueName}`, emailContent);
+                // Chain the email sends with a delay between them
+                emailChain = emailChain.then(() => {
+                    return new Promise(resolve => {
+                        // Show notification for each email being sent
+                        showNotification(`Sending invitation to ${email} (${index + 1}/${invitedManagers.length})...`);
+                        
+                        // Small delay between emails to prevent rate limiting
+                        setTimeout(() => {
+                            sendEmail(email, `Fantasy Hockey League Invitation: ${leagueName}`, emailContent);
+                            resolve();
+                        }, 1000); // 1 second delay between sends
+                    });
+                });
+            });
+            
+            // Final notification after all emails have been processed
+            emailChain.then(() => {
+                showNotification(`Finished sending ${invitedManagers.length} invitations!`);
             });
         }
 
@@ -1293,8 +1316,9 @@
         function sendEmail(to, subject, bodyHtml) {
             console.log("Starting email send process to:", to);
             
-            // Show a notification to the user
-            showNotification("Preparing to send invitation to " + to);
+            // Check if we already have access or need to request it
+            const hasGrantedAccess = gapi.client.getToken() !== null;
+            console.log("Has granted access:", hasGrantedAccess);
             
             // Check if the necessary libraries are loaded
             if (!window.gapi) {
