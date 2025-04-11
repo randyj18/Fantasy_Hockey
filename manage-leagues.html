@@ -1267,49 +1267,28 @@
             // Create a more specific join link with the league ID and code
             const joinLink = `${window.location.origin}/Fantasy_Hockey/manage-leagues.html?action=join&league=${leagueId}&code=${leagueCode}`;
             
-            // Show summary notification
-            showNotification(`Sending invitations to ${invitedManagers.length} managers...`);
+            // Create comma-separated list of all recipient emails
+            const allEmails = invitedManagers.map(manager => manager.email).join(', ');
             
-            // Process emails sequentially with a chain of promises
-            let emailChain = Promise.resolve();
+            // Create the email content with a direct link that includes the league ID and code
+            const emailContent = `
+                <html>
+                    <body>
+                        <h2>You've been invited to join a Fantasy Hockey League!</h2>
+                        <p>You've been invited by ${currentUser.displayName} to join the league "${leagueName}".</p>
+                        <p>To join this league, simply click the link below:</p>
+                        <p><a href="${joinLink}">Join "${leagueName}" League</a></p>
+                        <p>Or you can join manually with this code: <strong>${leagueCode}</strong></p>
+                        <p>Good luck!</p>
+                    </body>
+                </html>
+            `;
             
-            // Send an email to each invited manager
-            invitedManagers.forEach((manager, index) => {
-                const email = manager.email;
-                
-                // Create the email content with a direct link that includes the league ID and code
-                const emailContent = `
-                    <html>
-                        <body>
-                            <h2>You've been invited to join a Fantasy Hockey League!</h2>
-                            <p>You've been invited by ${currentUser.displayName} to join the league "${leagueName}".</p>
-                            <p>To join this league, simply click the link below:</p>
-                            <p><a href="${joinLink}">Join "${leagueName}" League</a></p>
-                            <p>Or you can join manually with this code: <strong>${leagueCode}</strong></p>
-                            <p>Good luck!</p>
-                        </body>
-                    </html>
-                `;
-                
-                // Chain the email sends with a delay between them
-                emailChain = emailChain.then(() => {
-                    return new Promise(resolve => {
-                        // Show notification for each email being sent
-                        showNotification(`Sending invitation to ${email} (${index + 1}/${invitedManagers.length})...`);
-                        
-                        // Small delay between emails to prevent rate limiting
-                        setTimeout(() => {
-                            sendEmail(email, `Fantasy Hockey League Invitation: ${leagueName}`, emailContent);
-                            resolve();
-                        }, 1000); // 1 second delay between sends
-                    });
-                });
-            });
+            // Show notification
+            showNotification(`Sending invitation to ${invitedManagers.length} recipients...`);
             
-            // Final notification after all emails have been processed
-            emailChain.then(() => {
-                showNotification(`Finished sending ${invitedManagers.length} invitations!`);
-            });
+            // Send a single email to all recipients
+            sendEmail(allEmails, `Fantasy Hockey League Invitation: ${leagueName}`, emailContent);
         }
 
         // Send an email using the Gmail API with Google Identity Services
