@@ -558,8 +558,8 @@
             font-size: 0.8rem;
         }
         .banked-pick-item {
-            background-color: #e8f4ff;
-            border: 1px solid #b8daff;
+            background-color: #e8f4ff !important;
+            border: 1px solid #b8daff !important;
             padding: 8px 12px;
             margin-bottom: 8px;
             border-radius: 4px;
@@ -569,6 +569,21 @@
         .banked-pick-count {
             font-weight: bold;
             color: var(--primary-color);
+        }
+        .banked-picks-instructions {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .draft-team-pick-type {
+            font-size: 0.8rem;
+            color: #666;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background-color: #f0f0f0;
         }
         .empty-message {
             color: #999;
@@ -923,7 +938,8 @@ const database = getDatabase();
 let currentUser = null;
 let allPlayers = [];
 let draftedPlayers = []; // Holds { ..., firebaseKey: '...', draftNumber: X }
-let eliminatedPlayers = new Set(); // Track eliminated players
+let eliminatedPlayers = new Set(); // Track eliminated player IDs
+let eliminatedNHLTeams = new Set(); // Track eliminated NHL team codes (BOS, NYR, etc.)
 let leagueData = null;
 let leagueId = null;
 let currentPositionFilter = 'all';
@@ -936,11 +952,12 @@ let chatListeners = {};
 let playerListeners = {};
 let draftStatusListener = null; // Ref to the draft status listener
 let eliminatedPlayersListener = null; // Ref to the eliminated players listener
+let eliminatedTeamsListener = null; // Ref to the eliminated NHL teams listener
 
 // Playoff round draft state
 let currentRound = 1; // Current playoff round
 let bankedPicks = {}; // { uid: count } - Number of banked picks per team
-let nextRoundDraftOrder = []; // Array of team UIDs for the next round
+let nextRoundDraftOrder = []; // Array of objects with uid and pickType properties
 
 // --- DOM Elements ---
 const loginBtn = document.getElementById('login-btn');
@@ -1289,6 +1306,17 @@ function handleConcludeRound() {
         return;
     }
     
+    // Verify all picks for the round have been made or banked
+    const draftOrder = leagueData?.draftStatus?.draftOrder || [];
+    const currentPickIndex = (leagueData?.draftStatus?.pickNumber || 1) - 1;
+    
+    if (currentPickIndex < draftOrder.length) {
+        // There are still picks remaining in this round
+        const remainingPicks = draftOrder.length - currentPickIndex;
+        showNotification(`Cannot conclude round: There are still ${remainingPicks} picks remaining.`, 7000);
+        return;
+    }
+    
     // Confirm before proceeding
     if (!confirm(`Are you sure you want to conclude Round ${currentRound}? This will pause the draft and allow you to set up the next round.`)) {
         return;
@@ -1338,16 +1366,18 @@ function populateDraftOrderManager() {
     // Sort teams by name
     teamsWithBanks.sort((a, b) => a.name.localeCompare(b.name));
     
-    // Populate the draft order list
+    // Populate the draft order list - One entry per team (base picks)
     teamsWithBanks.forEach(team => {
+        // Create a standard pick for each team
         const teamItem = document.createElement('div');
         teamItem.className = 'draft-team-item';
         teamItem.dataset.uid = team.uid;
+        teamItem.dataset.pickType = 'standard'; // Mark as a standard pick
         teamItem.draggable = true;
         
         teamItem.innerHTML = `
             <div class="draft-team-name">${team.name}</div>
-            <div class="draft-team-picks">${team.bankedPicks > 0 ? `+${team.bankedPicks} banked` : ''}</div>
+            <div class="draft-team-pick-type">Standard Pick</div>
         `;
         
         // Add drag events
@@ -1361,32 +1391,71 @@ function populateDraftOrderManager() {
         draftOrderList.appendChild(teamItem);
     });
     
-    // Populate the banked picks list
+    // Populate the banked picks section (these can be dragged to the draft order)
     const teamsWithBankedPicks = teamsWithBanks.filter(team => team.bankedPicks > 0);
     
     if (teamsWithBankedPicks.length === 0) {
         bankedPicksList.innerHTML = '<div class="empty-message">No banked picks yet</div>';
     } else {
         teamsWithBankedPicks.forEach(team => {
-            const pickItem = document.createElement('div');
-            pickItem.className = 'banked-pick-item';
-            pickItem.innerHTML = `
-                <div>${team.name}</div>
-                <div class="banked-pick-count">${team.bankedPicks} pick${team.bankedPicks !== 1 ? 's' : ''}</div>
-            `;
-            bankedPicksList.appendChild(pickItem);
+            // Create banked pick items for each banked pick
+            for (let i = 0; i < team.bankedPicks; i++) {
+                const pickItem = document.createElement('div');
+                pickItem.className = 'draft-team-item banked-pick-item';
+                pickItem.dataset.uid = team.uid;
+                pickItem.dataset.pickType = 'banked'; // Mark as a banked pick
+                pickItem.draggable = true;
+                
+                pickItem.innerHTML = `
+                    <div class="draft-team-name">${team.name}</div>
+                    <div class="draft-team-pick-type">Banked Pick ${i + 1}</div>
+                `;
+                
+                // Add drag events
+                pickItem.addEventListener('dragstart', handleDragStart);
+                pickItem.addEventListener('dragover', handleDragOver);
+                pickItem.addEventListener('drop', handleDrop);
+                pickItem.addEventListener('dragenter', handleDragEnter);
+                pickItem.addEventListener('dragleave', handleDragLeave);
+                pickItem.addEventListener('dragend', handleDragEnd);
+                
+                bankedPicksList.appendChild(pickItem);
+            }
         });
+        
+        // Add instructions
+        const instructions = document.createElement('div');
+        instructions.className = 'banked-picks-instructions';
+        instructions.innerHTML = '<p><strong>Drag banked picks to the draft order list above to include them in the next round</strong></p>';
+        bankedPicksList.prepend(instructions);
     }
     
     // Collect the current draft order to use as initial order
+    // We only include items currently in the draft order list
+    updateNextRoundDraftOrder();
+}
+
+// Update the next round draft order based on the current UI state
+function updateNextRoundDraftOrder() {
     nextRoundDraftOrder = Array.from(draftOrderList.querySelectorAll('.draft-team-item'))
-        .map(item => item.dataset.uid);
+        .map(item => ({
+            uid: item.dataset.uid,
+            pickType: item.dataset.pickType
+        }));
+    
+    console.log("Updated draft order:", nextRoundDraftOrder);
 }
 
 // Drag and drop event handlers
 function handleDragStart(e) {
     this.classList.add('dragging');
-    e.dataTransfer.setData('text/plain', this.dataset.uid);
+    // Store both the team ID and whether this is a banked pick
+    const data = {
+        uid: this.dataset.uid,
+        pickType: this.dataset.pickType,
+        sourceContainer: this.parentElement.id
+    };
+    e.dataTransfer.setData('text/plain', JSON.stringify(data));
     e.dataTransfer.effectAllowed = 'move';
 }
 
@@ -1408,19 +1477,55 @@ function handleDrop(e) {
     e.preventDefault();
     this.classList.remove('drag-over');
     
-    const draggedUid = e.dataTransfer.getData('text/plain');
-    const draggedElement = document.querySelector(`.draft-team-item[data-uid="${draggedUid}"]`);
-    
-    if (draggedElement && this !== draggedElement) {
-        // If dropping onto another team, insert before that team
-        draftOrderList.insertBefore(draggedElement, this);
+    try {
+        // Parse the data to get team ID and pick type
+        const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+        const draggedUid = data.uid;
+        const pickType = data.pickType;
+        const sourceContainer = data.sourceContainer;
+        
+        // Get the dragged element - need to be more specific now
+        const draggedSelector = `.draft-team-item[data-uid="${draggedUid}"][data-pick-type="${pickType}"]`;
+        let draggedElement;
+        
+        // If it's from banked picks list, we need to handle it differently
+        if (sourceContainer === 'banked-picks-list') {
+            // For banked picks being moved to draft order, clone the element
+            draggedElement = document.querySelector(`#${sourceContainer} ${draggedSelector}`);
+            if (draggedElement) {
+                const newElement = draggedElement.cloneNode(true);
+                
+                // Re-add event listeners to the clone
+                newElement.addEventListener('dragstart', handleDragStart);
+                newElement.addEventListener('dragover', handleDragOver);
+                newElement.addEventListener('drop', handleDrop);
+                newElement.addEventListener('dragenter', handleDragEnter);
+                newElement.addEventListener('dragleave', handleDragLeave);
+                newElement.addEventListener('dragend', handleDragEnd);
+                
+                // Insert at the right position
+                if (this.parentElement.id === 'draft-order-list') {
+                    // If dropping onto an item in the draft order list
+                    draftOrderList.insertBefore(newElement, this);
+                } else {
+                    // If dropping onto the draft order list container itself
+                    draftOrderList.appendChild(newElement);
+                }
+            }
+        } else {
+            // For items being reordered within the draft order list
+            draggedElement = document.querySelector(`#${sourceContainer} ${draggedSelector}`);
+            if (draggedElement && this !== draggedElement && this.parentElement.id === 'draft-order-list') {
+                // If dropping onto another team, insert before that team
+                draftOrderList.insertBefore(draggedElement, this);
+            }
+        }
+    } catch (err) {
+        console.error("Error processing drag data:", err);
     }
     
     // Update nextRoundDraftOrder based on the new order
-    nextRoundDraftOrder = Array.from(draftOrderList.querySelectorAll('.draft-team-item'))
-        .map(item => item.dataset.uid);
-    
-    console.log("Updated draft order:", nextRoundDraftOrder);
+    updateNextRoundDraftOrder();
 }
 
 function handleDragEnd() {
@@ -1451,25 +1556,28 @@ function handleSaveDraftOrder() {
         return;
     }
     
-    // Create the draft order including extra entries for teams with banked picks
+    // Create the draft order directly from the ordered items in the UI
     const fullDraftOrder = [];
     
     // Get all team items in the current visual order
     const teamItems = Array.from(draftOrderList.querySelectorAll('.draft-team-item'));
     
-    // For each team, add it to the draft order plus additional entries for banked picks
+    // For each item in the draft order, add the team UID to the draft order
     teamItems.forEach(item => {
         const uid = item.dataset.uid;
-        
-        // Add the team once for their regular pick
         fullDraftOrder.push(uid);
-        
-        // Add additional entries for banked picks
-        const bankedPickCount = bankedPicks[uid] || 0;
-        for (let i = 0; i < bankedPickCount; i++) {
-            fullDraftOrder.push(uid);
-        }
     });
+    
+    // Verify we have enough picks 
+    const teamCount = Object.keys(currentTeams).length;
+    const expectedMinimumPicks = teamCount; // At minimum, we should have one pick per team
+    
+    if (fullDraftOrder.length < expectedMinimumPicks) {
+        const missingPicks = expectedMinimumPicks - fullDraftOrder.length;
+        if (!confirm(`Warning: You have ${missingPicks} fewer picks than expected for this round. Some teams may not have a pick. Continue anyway?`)) {
+            return;
+        }
+    }
     
     // Prepare the updates
     const updates = {};
@@ -1681,6 +1789,27 @@ showNotification("Error loading eliminated players list.", 7000);
 });
 console.log("Added eliminated players listener.");
 
+// Listener 5: Eliminated NHL Teams
+const eliminatedTeamsRef = ref(database, `leagues/${leagueId}/eliminatedNHLTeams`);
+eliminatedTeamsListener = onValue(eliminatedTeamsRef, (snapshot) => {
+console.log("Eliminated NHL teams data received.");
+eliminatedNHLTeams = new Set();
+const eliminatedData = snapshot.val() || {};
+Object.entries(eliminatedData).forEach(([teamCode, isEliminated]) => {
+    if (isEliminated === true) {
+        eliminatedNHLTeams.add(teamCode);
+    }
+});
+console.log(`${eliminatedNHLTeams.size} eliminated NHL teams loaded:`, Array.from(eliminatedNHLTeams));
+// Re-filter players to show eliminated teams
+filterPlayers();
+filterDraftedPlayers();
+}, (error) => {
+console.error("Error reading eliminated NHL teams:", error);
+showNotification("Error loading eliminated NHL teams list.", 7000);
+});
+console.log("Added eliminated NHL teams listener.");
+
 // Listener 5: Playoff Round Data
 const playoffRoundRef = ref(database, `leagues/${leagueId}/playoffRound`);
 playerListeners.playoffRound = onValue(playoffRoundRef, (snapshot) => {
@@ -1848,10 +1977,19 @@ filtered = filtered.filter(player => (player.fullName || '').toLowerCase().inclu
 // Get drafted player IDs and eliminated player IDs (ensure IDs are strings for comparison)
 const draftedIdsSet = new Set(draftedPlayers.map(dp => dp.playerId?.toString()));
 
-// In subsequent rounds, filter out eliminated players unless "Show Drafted" is checked
-// This will prevent users from drafting eliminated players
+// In subsequent rounds, filter out eliminated players and players from eliminated teams
+// unless "Show Drafted" is checked
 if (currentRound > 1 && !showDrafted) {
-    filtered = filtered.filter(player => !eliminatedPlayers.has(player.id?.toString()));
+    filtered = filtered.filter(player => {
+        // Check if the player ID is directly in the eliminated players set
+        const isPlayerEliminated = eliminatedPlayers.has(player.id?.toString());
+        
+        // Check if the player's team is in the eliminated NHL teams set
+        const isTeamEliminated = eliminatedNHLTeams.has(player.teamAbbreviation);
+        
+        // Keep the player if neither they nor their team is eliminated
+        return !isPlayerEliminated && !isTeamEliminated;
+    });
 }
 
 // Filter out drafted unless 'Show Drafted' is checked
@@ -1903,7 +2041,10 @@ playersToRender.forEach(player => {
 const row = document.createElement('tr');
 const playerIdStr = player.id?.toString();
 const isDrafted = draftedIdsSet.has(playerIdStr);
-const isEliminated = eliminatedPlayers.has(playerIdStr);
+// Check both individual player elimination and team elimination
+const isPlayerEliminated = eliminatedPlayers.has(playerIdStr);
+const isTeamEliminated = eliminatedNHLTeams.has(player.teamAbbreviation);
+const isEliminated = isPlayerEliminated || isTeamEliminated;
 
 // Apply classes for drafted and eliminated status
 row.classList.toggle('drafted', isDrafted);
@@ -1923,10 +2064,20 @@ row.dataset.playerName = fullName;
 row.dataset.playerPosition = position;
 row.dataset.playerTeam = team;
 
+// Determine the elimination reason
+let eliminationLabel = '';
+if (isEliminated) {
+    if (isTeamEliminated) {
+        eliminationLabel = ` (Team Eliminated)`;
+    } else {
+        eliminationLabel = ` (Player Eliminated)`;
+    }
+}
+
 row.innerHTML = `
-<td>${fullName}${isEliminated ? ' (Eliminated)' : ''}</td>
+<td>${fullName}${eliminationLabel}</td>
 <td>${position}</td>
-<td>${team}</td>
+<td>${team}${isTeamEliminated ? ' ❌' : ''}</td>
 <td class="hide-mobile">${formatStat(player.gamesPlayed)}</td>
 <td class="skater-stat">${position !== 'G' ? formatStat(player.goals) : '-'}</td>
 <td class="skater-stat">${position !== 'G' ? formatStat(player.assists) : '-'}</td>
@@ -2105,8 +2256,14 @@ row.innerHTML = `
                 filtered.forEach((player) => { // 'filtered' here depends on the team dropdown selection
                     const row = document.createElement('tr');
                     
-                    // Check if player is eliminated
-                    const isEliminated = eliminatedPlayers.has(player.playerId?.toString());
+                    // Check both individual player elimination and team elimination
+                    const playerId = player.playerId?.toString();
+                    const teamCode = player["NHL Team"]; // This should be the team abbreviation
+                    
+                    const isPlayerEliminated = eliminatedPlayers.has(playerId);
+                    const isTeamEliminated = eliminatedNHLTeams.has(teamCode);
+                    const isEliminated = isPlayerEliminated || isTeamEliminated;
+                    
                     if (isEliminated) {
                         row.classList.add('eliminated-player');
                     }
@@ -2119,11 +2276,21 @@ row.innerHTML = `
                     // Get draft round info
                     const draftRound = player.round || 1;
 
+                    // Determine the elimination reason
+                    let eliminationLabel = '';
+                    if (isEliminated) {
+                        if (isTeamEliminated) {
+                            eliminationLabel = ` (Team Eliminated)`;
+                        } else if (isPlayerEliminated) {
+                            eliminationLabel = ` (Player Eliminated)`;
+                        }
+                    }
+                    
                     row.innerHTML = `
                         <td style="width: 5%; text-align: center;">${player.draftNumber || '-'}</td>
-                        <td>${player.Player || 'N/A'}${isEliminated ? ' (Eliminated)' : ''}</td>
+                        <td>${player.Player || 'N/A'}${eliminationLabel}</td>
                         <td>${player.Position || 'N/A'}</td>
-                        <td class="hide-mobile">${player["NHL Team"] || 'N/A'}</td>
+                        <td class="hide-mobile">${player["NHL Team"] || 'N/A'}${isTeamEliminated ? ' ❌' : ''}</td>
                         <td>${player.Team || 'N/A'}<span class="round-indicator" style="font-size: 0.7em; padding: 1px 4px;">R${draftRound}</span></td>
                         <td>
                             ${canUndo ? `<button class="undo-button btn danger" data-key="${player.firebaseKey}">Undo Pick</button>` : ''}
@@ -2583,6 +2750,17 @@ function cleanupListeners() {
                     cleanedCount++;
                 } catch (e) { console.error("Error unsubscribing eliminated players listener:", e); }
                 eliminatedPlayersListener = null;
+            }
+            
+            // Clean up eliminated NHL teams listener
+            if (eliminatedTeamsListener && leagueId) {
+                try {
+                    const eliminatedTeamsRef = ref(database, `leagues/${leagueId}/eliminatedNHLTeams`);
+                    off(eliminatedTeamsRef, 'value', eliminatedTeamsListener);
+                    console.log(" - Unsubscribed from eliminated NHL teams listener.");
+                    cleanedCount++;
+                } catch (e) { console.error("Error unsubscribing eliminated NHL teams listener:", e); }
+                eliminatedTeamsListener = null;
             }
 
             // Clean up presence listener (handled by Firebase on disconnect)
