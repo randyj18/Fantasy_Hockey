@@ -96,10 +96,17 @@ def main():
     """Generate database of all NHL players"""
     
     # Define the list of team abbreviations
-    team_abbreviations = ['NJD', 'NYI', 'NYR', 'PHI', 'PIT', 'BOS', 'BUF', 'MTL', 'OTT', 'TOR', 
-                         'CAR', 'FLA', 'TBL', 'WSH', 'CHI', 'DET', 'NSH', 'STL', 'CGY', 'COL', 
-                         'EDM', 'VAN', 'ANA', 'DAL', 'LAK', 'SJS', 'CBJ', 'MIN', 'WPG', 
-                         'VGK', 'SEA', 'UTA']  # Removed 'ARI'
+    
+    team_abbreviations = ['NJD', 'MTL', 'OTT', 'TOR', 
+                         'CAR', 'FLA', 'TBL', 'WSH', 'STL', 'COL', 
+                         'EDM', 'DAL', 'LAK', 'MIN', 'WPG', 
+                         'VGK']
+
+    # This is the entire list of teams. I'm removing non-playoff teams each year, but this will be preserved to be re-used each year.
+    #team_abbreviations = ['NJD', 'NYI', 'NYR', 'PHI', 'PIT', 'BOS', 'BUF', 'MTL', 'OTT', 'TOR', 
+    #                     'CAR', 'FLA', 'TBL', 'WSH', 'CHI', 'DET', 'NSH', 'STL', 'CGY', 'COL', 
+    #                     'EDM', 'VAN', 'ANA', 'DAL', 'LAK', 'SJS', 'CBJ', 'MIN', 'WPG', 
+    #                     'VGK', 'SEA', 'UTA']
 
     # Base URL for the API
     base_url = "https://api-web.nhle.com/v1/roster/"
