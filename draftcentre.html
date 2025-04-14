@@ -4119,7 +4119,6 @@
                 const queueItem = document.createElement('li');
                 queueItem.className = 'queue-item';
                 queueItem.setAttribute('data-player-id', player.id);
-                queueItem.setAttribute('data-index', index);
                 queueItem.draggable = true;
                 
                 // Position-specific stats
@@ -4129,11 +4128,6 @@
                 } else {
                     statsHtml = `G: ${player.goals || 0}, A: ${player.assists || 0}, PTS: ${player.points || 0}`;
                 }
-                
-                // Create the drop indicator (hidden by default)
-                const dropIndicator = document.createElement('div');
-                dropIndicator.className = 'drop-indicator';
-                draftQueueList.appendChild(dropIndicator);
                 
                 queueItem.innerHTML = `
                     <div class="queue-item-info">
@@ -4150,6 +4144,7 @@
                             <button class="move-up-button" title="Move Up" ${index === 0 ? 'disabled' : ''}>&uarr;</button>
                             <button class="move-down-button" title="Move Down" ${index === myDraftQueue.length - 1 ? 'disabled' : ''}>&darr;</button>
                         </div>
+                        <button class="draft-queue-button" title="Draft this player">Draft</button>
                         <button class="remove-from-queue" data-player-id="${player.id}">Remove</button>
                     </div>
                 `;
@@ -4157,11 +4152,27 @@
                 // Add drag event listeners
                 queueItem.addEventListener('dragstart', handleQueueDragStart);
                 queueItem.addEventListener('dragend', handleQueueDragEnd);
+                queueItem.addEventListener('dragover', handleQueueDragOver);
+                queueItem.addEventListener('dragenter', handleQueueDragEnter);
+                queueItem.addEventListener('dragleave', handleQueueDragLeave);
+                queueItem.addEventListener('drop', handleQueueDrop);
                 
                 // Add click event to select player in main list - clicking on name or details
                 queueItem.querySelector('.queue-item-info').addEventListener('click', function(event) {
-                    selectPlayerFromQueue(player.id);
+                    highlightPlayerInAvailableList(player);
                 });
+                
+                // Add click event for draft button
+                const draftBtn = queueItem.querySelector('.draft-queue-button');
+                if (draftBtn) {
+                    draftBtn.addEventListener('click', function() {
+                        // Select this player in the available list and attempt to draft them
+                        const success = draftPlayerFromQueue(player);
+                        if (!success) {
+                            showNotification("Unable to draft this player - they may already be drafted or unavailable", 3000);
+                        }
+                    });
+                }
                 
                 // Add click event for remove button
                 const removeBtn = queueItem.querySelector('.remove-from-queue');
@@ -4199,62 +4210,6 @@
                 }
                 
                 draftQueueList.appendChild(queueItem);
-            });
-            
-            // Setup shared drop listeners on the list itself to better handle drops
-            draftQueueList.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                
-                const closest = getClosestDropTarget(e.clientY);
-                if (closest) {
-                    // Show drop indicator
-                    updateDropIndicator(closest.element, closest.position);
-                }
-            });
-            
-            draftQueueList.addEventListener('drop', function(e) {
-                e.preventDefault();
-                
-                const draggedId = e.dataTransfer.getData('text/plain');
-                const closest = getClosestDropTarget(e.clientY);
-                
-                if (closest && draggedId) {
-                    const draggedIndex = myDraftQueue.findIndex(p => p.id === draggedId);
-                    if (draggedIndex !== -1) {
-                        let newIndex;
-                        
-                        if (closest.position === 'before') {
-                            newIndex = parseInt(closest.element.getAttribute('data-index'));
-                            // If dropping before an element that's after the dragged item, 
-                            // we need to adjust the index since removing the dragged item shifts indexes
-                            if (draggedIndex < newIndex) {
-                                newIndex--;
-                            }
-                        } else { // position === 'after'
-                            newIndex = parseInt(closest.element.getAttribute('data-index')) + 1;
-                            // If dropping after an element that's after the dragged item,
-                            // no need to adjust the index
-                        }
-                        
-                        // Move the player in the queue
-                        const [player] = myDraftQueue.splice(draggedIndex, 1);
-                        myDraftQueue.splice(newIndex, 0, player);
-                        
-                        // Save and update
-                        saveDraftQueue();
-                        renderDraftQueue();
-                    }
-                }
-                
-                // Hide drop indicator
-                hideDropIndicator();
-            });
-            
-            draftQueueList.addEventListener('dragleave', function(e) {
-                // Only hide the indicator if we're leaving the list
-                if (!draftQueueList.contains(e.relatedTarget)) {
-                    hideDropIndicator();
-                }
             });
         }
         
@@ -4314,7 +4269,7 @@
             }
         }
         
-        // Simplified queue drag-and-drop functions
+        // Revert to a simpler drag-and-drop implementation that works more reliably
         function handleQueueDragStart(e) {
             // Mark this element as the one being dragged
             this.classList.add('dragging');
@@ -4325,29 +4280,110 @@
             // Set effectAllowed to move
             e.dataTransfer.effectAllowed = 'move';
             
-            // For better UX on some browsers
-            if (e.dataTransfer.setDragImage && this.querySelector('.queue-item-name')) {
-                const nameEl = this.querySelector('.queue-item-name');
-                e.dataTransfer.setDragImage(nameEl, 0, 0);
-            }
+            console.log('Started dragging player:', this.getAttribute('data-player-id'));
         }
         
         function handleQueueDragEnd(e) {
             // Remove the dragging class
             this.classList.remove('dragging');
             
-            // Hide the drop indicator
-            hideDropIndicator();
+            // Clean up any over classes
+            document.querySelectorAll('.queue-item').forEach(item => {
+                item.classList.remove('over');
+            });
+            
+            console.log('Ended drag operation');
         }
         
-        // Find and select a player in the main table based on their ID
-        function selectPlayerFromQueue(playerId) {
-            const playerRows = document.querySelectorAll('#playerTableBody tr');
+        function handleQueueDragOver(e) {
+            // This is necessary to allow dropping
+            e.preventDefault();
+            
+            // Set the drop effect to move
+            e.dataTransfer.dropEffect = 'move';
+            
+            // Add over class to the queue item
+            this.classList.add('over');
+            
+            return false;
+        }
+        
+        function handleQueueDragEnter(e) {
+            // Highlight potential drop target
+            this.classList.add('over');
+        }
+        
+        function handleQueueDragLeave(e) {
+            // Remove highlight
+            this.classList.remove('over');
+        }
+        
+        function handleQueueDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Remove highlight
+            this.classList.remove('over');
+            
+            try {
+                // Get the dragged player ID from dataTransfer
+                const draggedPlayerId = e.dataTransfer.getData('text/plain');
+                if (!draggedPlayerId) {
+                    console.error('No player ID found in drop data');
+                    return false;
+                }
+                
+                const dropTarget = this;
+                const targetPlayerId = dropTarget.getAttribute('data-player-id');
+                
+                console.log('Dropping player', draggedPlayerId, 'onto', targetPlayerId);
+                
+                // Don't do anything if dropping on the same item
+                if (draggedPlayerId === targetPlayerId) {
+                    console.log('Same player, ignoring drop');
+                    return false;
+                }
+                
+                // Find the indices of the dragged and target items
+                const draggedIndex = myDraftQueue.findIndex(p => p.id === draggedPlayerId);
+                const targetIndex = myDraftQueue.findIndex(p => p.id === targetPlayerId);
+                
+                console.log('Found indices:', draggedIndex, targetIndex);
+                
+                if (draggedIndex !== -1 && targetIndex !== -1) {
+                    // Reorder the array - insert before the target
+                    const [removedItem] = myDraftQueue.splice(draggedIndex, 1);
+                    myDraftQueue.splice(targetIndex, 0, removedItem);
+                    
+                    console.log('Reordered queue:', myDraftQueue.map(p => p.fullName));
+                    
+                    // Save to Firebase
+                    saveDraftQueue();
+                    
+                    // Render the updated queue
+                    renderDraftQueue();
+                    
+                    console.log('Queue updated after drop');
+                } else {
+                    console.error('Could not find indices for drag and drop operation');
+                }
+            } catch (error) {
+                console.error('Error in drop handler:', error);
+            }
+            
+            return false;
+        }
+        
+        // Find and highlight a player in the main table
+        function highlightPlayerInAvailableList(player) {
+            // First try to find by data-player-id attribute
+            let playerRows = document.querySelectorAll('#playerTableBody tr');
             let playerFound = false;
             
+            // Try to find the player by ID
             playerRows.forEach(row => {
-                const id = row.getAttribute('data-player-id');
-                if (id === playerId) {
+                const id = row.getAttribute('data-player-id') || row.getAttribute('data-id');
+                if (id === player.id || id === player.id.toString()) {
                     // Highlight the row
                     playerRows.forEach(r => r.classList.remove('selected-player'));
                     row.classList.add('selected-player');
@@ -4359,9 +4395,58 @@
                 }
             });
             
+            // If not found by ID, try to find by player name (as fallback)
             if (!playerFound) {
-                showNotification("Player not found in available players list", 3000);
+                playerRows.forEach(row => {
+                    const nameCell = row.querySelector('td:first-child');
+                    if (nameCell && nameCell.textContent.trim() === player.fullName) {
+                        // Highlight the row
+                        playerRows.forEach(r => r.classList.remove('selected-player'));
+                        row.classList.add('selected-player');
+                        
+                        // Scroll to the player
+                        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        playerFound = true;
+                    }
+                });
             }
+            
+            if (!playerFound) {
+                showNotification("Player not found in available players list - they may have been drafted already", 3000);
+            }
+            
+            return playerFound;
+        }
+        
+        // Draft a player from the queue
+        function draftPlayerFromQueue(player) {
+            // First try to find and highlight the player
+            const playerFound = highlightPlayerInAvailableList(player);
+            if (!playerFound) {
+                return false;
+            }
+            
+            // Get the selected player row
+            const selectedRow = document.querySelector('#playerTableBody tr.selected-player');
+            if (!selectedRow) {
+                return false;
+            }
+            
+            // Find the draft button in the row
+            const draftButton = selectedRow.querySelector('.draft-button');
+            if (!draftButton) {
+                return false;
+            }
+            
+            // Check if button is disabled
+            if (draftButton.disabled) {
+                return false;
+            }
+            
+            // Click the draft button
+            draftButton.click();
+            return true;
         }
         
         // Clear the draft queue when round is concluded
@@ -4538,10 +4623,30 @@
                 z-index: 10;
             }
             
+            .queue-item.over {
+                border: 2px dashed var(--primary-color);
+                padding: calc(0.75rem - 1px);
+                background-color: #f0f8ff;
+            }
+            
             .queue-item-actions {
                 display: flex;
                 align-items: center;
                 gap: 8px;
+            }
+            
+            .draft-queue-button {
+                background-color: var(--primary-color);
+                color: white;
+                border: none;
+                border-radius: 0.25rem;
+                padding: 0.25rem 0.5rem;
+                font-size: 0.8rem;
+                cursor: pointer;
+            }
+            
+            .draft-queue-button:hover {
+                background-color: var(--secondary-color);
             }
             
             .queue-item-move-buttons {
