@@ -2305,8 +2305,29 @@
                     updateBankedPicksDisplay();
 
                 } else {
-                    console.warn("Current drafter UID not found in teams data:", currentDrafterUid);
-                    currentDrafterName.textContent = `Waiting... (Round ${draftRound})`;
+                    // Check if we need to load team data for this UID
+                    if (currentDrafterUid) {
+                        // Try to load the team data if it's missing
+                        const teamRef = ref(database, `leagues/${leagueId}/teams/${currentDrafterUid}`);
+                        get(teamRef).then((snapshot) => {
+                            if (snapshot.exists()) {
+                                // Add the team to our local teams data
+                                const teamData = snapshot.val();
+                                currentTeams[currentDrafterUid] = teamData;
+                                console.log("Loaded missing team data for:", currentDrafterUid);
+                                
+                                // Update UI now that we have the team data
+                                updateDraftStatusUI(draftStatus);
+                            } else {
+                                console.warn("Current drafter UID not found in database:", currentDrafterUid);
+                            }
+                        }).catch(error => {
+                            console.error("Error loading team data:", error);
+                        });
+                    }
+                    
+                    console.debug("Current drafter UID not in local teams data:", currentDrafterUid);
+                    currentDrafterName.textContent = `Updating... (Round ${draftRound})`;
                     currentDrafterContainer.classList.remove('my-turn');
 
                     // Hide bank pick button
@@ -4149,58 +4170,111 @@
             });
         }
         
-        // Queue drag-and-drop functions
+        // Queue drag-and-drop functions - Improved implementation
         function handleQueueDragStart(e) {
+            // Mark this element as the one being dragged
             this.classList.add('dragging');
+            
+            // Store the player ID in the dataTransfer
             e.dataTransfer.setData('text/plain', this.getAttribute('data-player-id'));
+            
+            // Set effectAllowed to move
+            e.dataTransfer.effectAllowed = 'move';
+            
+            // For better UX on some browsers
+            if (e.dataTransfer.setDragImage && this.querySelector('.queue-item-name')) {
+                const nameEl = this.querySelector('.queue-item-name');
+                e.dataTransfer.setDragImage(nameEl, 0, 0);
+            }
+            
+            // Log for debugging
+            console.log('Started dragging player:', this.getAttribute('data-player-id'));
         }
         
         function handleQueueDragEnd(e) {
+            // Remove the dragging class
             this.classList.remove('dragging');
+            
+            // Clean up any over classes
             document.querySelectorAll('.queue-item').forEach(item => {
                 item.classList.remove('over');
             });
+            
+            console.log('Ended drag operation');
         }
         
         function handleQueueDragOver(e) {
+            // This is necessary to allow dropping
             e.preventDefault();
+            
+            // Set the drop effect to move
+            e.dataTransfer.dropEffect = 'move';
             return false;
         }
         
         function handleQueueDragEnter(e) {
+            // Highlight potential drop target
             this.classList.add('over');
         }
         
         function handleQueueDragLeave(e) {
+            // Remove highlight
             this.classList.remove('over');
         }
         
         function handleQueueDrop(e) {
             e.preventDefault();
+            e.stopPropagation();
+            
+            // Remove highlight
             this.classList.remove('over');
             
-            const draggedPlayerId = e.dataTransfer.getData('text/plain');
-            const dropTarget = this;
-            
-            // Don't do anything if dropping on the same item
-            if (draggedPlayerId === dropTarget.getAttribute('data-player-id')) {
-                return false;
-            }
-            
-            // Find the indices of the dragged and target items
-            const draggedIndex = myDraftQueue.findIndex(p => p.id === draggedPlayerId);
-            const targetIndex = myDraftQueue.findIndex(p => p.id === dropTarget.getAttribute('data-player-id'));
-            
-            if (draggedIndex !== -1 && targetIndex !== -1) {
-                // Reorder the array
-                const [removedItem] = myDraftQueue.splice(draggedIndex, 1);
-                myDraftQueue.splice(targetIndex, 0, removedItem);
+            try {
+                // Get the dragged player ID from dataTransfer
+                const draggedPlayerId = e.dataTransfer.getData('text/plain');
+                if (!draggedPlayerId) {
+                    console.error('No player ID found in drop data');
+                    return false;
+                }
                 
-                // Save to Firebase
-                saveDraftQueue();
+                const dropTarget = this;
+                const targetPlayerId = dropTarget.getAttribute('data-player-id');
                 
-                // Render the updated queue
-                renderDraftQueue();
+                console.log('Dropping player', draggedPlayerId, 'onto', targetPlayerId);
+                
+                // Don't do anything if dropping on the same item
+                if (draggedPlayerId === targetPlayerId) {
+                    console.log('Same player, ignoring drop');
+                    return false;
+                }
+                
+                // Find the indices of the dragged and target items
+                const draggedIndex = myDraftQueue.findIndex(p => p.id === draggedPlayerId);
+                const targetIndex = myDraftQueue.findIndex(p => p.id === targetPlayerId);
+                
+                console.log('Found indices:', draggedIndex, targetIndex);
+                
+                if (draggedIndex !== -1 && targetIndex !== -1) {
+                    // Reorder the array
+                    const [removedItem] = myDraftQueue.splice(draggedIndex, 1);
+                    myDraftQueue.splice(targetIndex, 0, removedItem);
+                    
+                    console.log('Reordered queue:', myDraftQueue.map(p => p.fullName));
+                    
+                    // Save to Firebase
+                    saveDraftQueue();
+                    
+                    // Render the updated queue
+                    renderDraftQueue();
+                    
+                    console.log('Queue updated after drop');
+                } else {
+                    console.error('Could not find indices for drag and drop operation', 
+                                 { draggedId: draggedPlayerId, targetId: targetPlayerId, 
+                                   draggedIndex, targetIndex, queueLength: myDraftQueue.length });
+                }
+            } catch (error) {
+                console.error('Error in drop handler:', error);
             }
             
             return false;
@@ -4397,10 +4471,30 @@
             .queue-item.dragging {
                 opacity: 0.5;
                 cursor: grabbing;
+                background-color: #e8f4ff;
+                transform: scale(1.02);
+                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+                position: relative;
+                z-index: 10;
             }
             
             .queue-item.over {
-                border: 1px dashed var(--primary-color);
+                border: 2px dashed var(--primary-color);
+                padding: calc(0.75rem - 1px);
+                background-color: #f0f8ff;
+                position: relative;
+            }
+            
+            .queue-item.over::before {
+                content: '';
+                position: absolute;
+                top: -5px;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background-color: var(--primary-color);
+                opacity: 0.5;
+                border-radius: 4px;
             }
             
             .queue-item-info {
