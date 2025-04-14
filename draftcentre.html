@@ -1473,7 +1473,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, set, push, onValue, get, update, off, query, limitToLast, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"; // Added serverTimestamp
+        import { getDatabase, ref, set, push, onValue, get, update, off, query, limitToLast, serverTimestamp, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"; // Added serverTimestamp and onDisconnect
 
         // Placeholder Firebase configuration
         const fallbackFirebaseConfig = {
@@ -2487,7 +2487,7 @@
                 if (snap.val() === true) {
                     set(presenceRef, { online: true, lastSeen: serverTimestamp() });
                     // On disconnect, set presence to offline
-                    presenceRef.onDisconnect().set({ online: false, lastSeen: serverTimestamp() });
+                    onDisconnect(presenceRef).set({ online: false, lastSeen: serverTimestamp() });
                     console.log("User presence set to online.");
                 }
             });
@@ -3888,30 +3888,34 @@
         
         // Function to add "Add to Queue" buttons to player rows
         function addQueueButtonsToPlayerRows() {
-            console.log("Adding queue buttons to player rows");
+            // Count unprocessed rows
+            const unprocessedRows = document.querySelectorAll('#playerTableBody tr:not([data-queue-processed])');
+            if (unprocessedRows.length === 0) return; // No work to do
             
-            // Find all table rows in the player table body
-            const playerRows = document.querySelectorAll('#playerTableBody tr');
-            console.log(`Found ${playerRows.length} player rows`);
+            // Find all table rows in the player table body that need processing
+            const playerRows = document.querySelectorAll('#playerTableBody tr:not([data-queue-processed])');
             
+            let processedCount = 0;
             playerRows.forEach(row => {
-                // Skip if row is already processed or is a header/footer
-                if (row.hasAttribute('data-queue-processed')) {
-                    return;
-                }
-                
                 // Find the action cell (last cell)
                 const cells = row.querySelectorAll('td');
-                if (cells.length === 0) return;
+                if (cells.length === 0) {
+                    row.setAttribute('data-queue-processed', 'true'); // Mark non-data rows as processed
+                    return;
+                }
                 
                 const actionCell = cells[cells.length - 1];
                 const draftButton = actionCell.querySelector('.draft-button');
                 
                 // Skip if no draft button found
-                if (!draftButton) return;
+                if (!draftButton) {
+                    row.setAttribute('data-queue-processed', 'true'); // Mark unusable rows as processed
+                    return;
+                }
                 
                 // Skip if a queue button already exists
                 if (actionCell.querySelector('.add-to-queue')) {
+                    row.setAttribute('data-queue-processed', 'true'); // Already has a button
                     return;
                 }
                 
@@ -3923,7 +3927,7 @@
                 // Find the player data
                 const playerId = row.getAttribute('data-player-id') || row.getAttribute('data-id');
                 if (!playerId) {
-                    console.log("No player ID found for row:", row);
+                    row.setAttribute('data-queue-processed', 'true'); // No player ID, mark as processed
                     return;
                 }
                 
@@ -3968,8 +3972,6 @@
                     // Add player to queue
                     if (player && player.id) {
                         addToQueue(player);
-                    } else {
-                        console.error("Could not get player data for queue", playerId);
                     }
                     
                     return false;
@@ -3980,6 +3982,7 @@
                 
                 // Mark row as processed
                 row.setAttribute('data-queue-processed', 'true');
+                processedCount++;
             });
         }
         
@@ -4271,13 +4274,36 @@
         // Add observers to add queue buttons when the player table is updated
         // This ensures our queue buttons are added regardless of how the player table is rendered
         function setupQueueButtonObservers() {
+            // Flag to prevent multiple simultaneous calls
+            let isProcessing = false;
+            
+            // Set up a debounced version of addQueueButtonsToPlayerRows
+            const debouncedAddButtons = function() {
+                if (isProcessing) return;
+                isProcessing = true;
+                
+                // Use setTimeout to ensure this runs after current stack is clear
+                setTimeout(() => {
+                    addQueueButtonsToPlayerRows();
+                    isProcessing = false;
+                }, 300);
+            };
+            
             // Function to be called when player table body changes
             const mutationCallback = function(mutationsList, observer) {
+                // Only process if we have meaningful changes
+                let shouldProcess = false;
+                
                 for (const mutation of mutationsList) {
-                    if (mutation.type === 'childList') {
-                        // Table content has changed, add queue buttons
-                        setTimeout(addQueueButtonsToPlayerRows, 100); // Small delay to ensure table is fully rendered
+                    if (mutation.type === 'childList' && 
+                        (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0)) {
+                        shouldProcess = true;
+                        break;
                     }
+                }
+                
+                if (shouldProcess) {
+                    debouncedAddButtons();
                 }
             };
             
@@ -4287,12 +4313,24 @@
             // Start observing the player table body for DOM changes
             const playerTableBody = document.getElementById('playerTableBody');
             if (playerTableBody) {
-                tableObserver.observe(playerTableBody, { childList: true, subtree: true });
-                console.log("Player table observer set up for queue buttons");
+                tableObserver.observe(playerTableBody, { childList: true, subtree: false });
             }
             
             // Also call it immediately in case table is already populated
-            setTimeout(addQueueButtonsToPlayerRows, 100);
+            debouncedAddButtons();
+            
+            // Periodically check once every few seconds just in case
+            const intervalCheck = setInterval(() => {
+                const rows = document.querySelectorAll('#playerTableBody tr:not([data-queue-processed])');
+                if (rows.length > 0) {
+                    debouncedAddButtons();
+                }
+            }, 5000);
+            
+            // Clean up interval when page unloads
+            window.addEventListener('beforeunload', () => {
+                clearInterval(intervalCheck);
+            });
         }
         
         // Call the setup function when the document is ready
@@ -4432,36 +4470,8 @@
         `;
         document.head.appendChild(queueStyles);
         
-        // Modify createPlayerRow to add the "Add to Queue" button
-        if (typeof originalCreatePlayerRow === 'undefined') {
-            const originalCreatePlayerRow = createPlayerRow;
-            createPlayerRow = function(player, isFullDetails = false) {
-                const row = originalCreatePlayerRow(player, isFullDetails);
-                
-                // Find the action cell (the last cell)
-                const actionCell = row.querySelector('td:last-child');
-                if (actionCell) {
-                    // Check if draft button exists
-                    const draftButton = actionCell.querySelector('.draft-button');
-                    if (draftButton) {
-                        // Create Add to Queue button
-                        const queueButton = document.createElement('button');
-                        queueButton.className = 'add-to-queue';
-                        queueButton.textContent = 'Add to Queue';
-                        
-                        // Insert it before the draft button
-                        actionCell.insertBefore(queueButton, draftButton);
-                        
-                        // Add event listener
-                        queueButton.addEventListener('click', function() {
-                            addToQueue(player);
-                        });
-                    }
-                }
-                
-                return row;
-            };
-        }
+        // We don't need to modify createPlayerRow as it doesn't exist
+        // We'll use the addQueueButtonsToPlayerRows function instead
         
         // Modify handleConcludeRound to clear draft queues
         if (typeof originalHandleConcludeRound === 'undefined') {
