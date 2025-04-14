@@ -896,6 +896,103 @@
             animation: fadeInOut 5s forwards;
             font-size: 0.9rem;
         }
+        
+        /* Draft Queue Styles */
+        .my-draft-queue-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .queue-instructions {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .queue-container {
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            background-color: #fff;
+            padding: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .draft-queue-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .queue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 0.25rem;
+            cursor: grab;
+        }
+        
+        .queue-item:hover {
+            background-color: #e9ecef;
+        }
+        
+        .queue-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        
+        .queue-item-info {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+        
+        .queue-item-name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        
+        .queue-item-details {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .queue-item-rank {
+            background-color: var(--primary-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+        
+        .remove-from-queue {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        .remove-from-queue:hover {
+            background-color: #c82333;
+        }
+        
+        .add-to-queue {
+            background-color: #6c757d;
+            margin-right: 0.5rem;
+        }
 
         @keyframes fadeInOut {
 
@@ -1298,6 +1395,20 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- My Draft Queue Section -->
+                <div class="my-draft-queue-section">
+                    <div class="card">
+                        <h2>My Draft Queue</h2>
+                        <p class="queue-instructions">Add players to your draft queue to keep track of who you want to draft. Drag players to reorder them. This list is private and only visible to you.</p>
+                        <div id="queue-container" class="queue-container">
+                            <div id="empty-queue-message" class="empty-message">Your draft queue is empty. Add players from the Available Players list.</div>
+                            <ul id="draft-queue-list" class="draft-queue-list">
+                                <!-- Draft queue items will be added here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Drafted Players Section -->
                 <div class="drafted-players-section">
@@ -1400,6 +1511,10 @@
         let draftStatusListener = null; // Ref to the draft status listener
         let eliminatedPlayersListener = null; // Ref to the eliminated players listener
         let eliminatedTeamsListener = null; // Ref to the eliminated NHL teams listener
+        
+        // Draft Queue Variables
+        let myDraftQueue = []; // Array of player objects in the queue
+        let draftQueueListener = null; // Ref to the draft queue listener
 
         // Playoff round draft state
         let currentRound = 1; // Current playoff round
@@ -1432,6 +1547,10 @@
         const backToLeagueLink = document.getElementById('back-to-league-link');
         const commissionerControls = document.getElementById('commissioner-controls');
         const commissionerModeToggle = document.getElementById('commissioner-mode-toggle');
+        
+        // Draft Queue DOM Elements
+        const draftQueueList = document.getElementById('draft-queue-list');
+        const emptyQueueMessage = document.getElementById('empty-queue-message');
 
         // New playoff round draft elements
         const roundDisplay = document.getElementById('round-display');
@@ -1530,9 +1649,15 @@
             if (currentDrafterName) currentDrafterName.textContent = 'Draft not started';
             if (currentDrafterContainer) currentDrafterContainer.classList.add('hidden');
             if (startDraftBtn) startDraftBtn.classList.add('hidden');
+            
+            // Clear draft queue
+            if (draftQueueList) draftQueueList.innerHTML = '';
+            if (emptyQueueMessage) emptyQueueMessage.classList.remove('hidden');
+            
             // Reset global vars
             allPlayers = [];
             draftedPlayers = [];
+            myDraftQueue = [];
             leagueData = null;
             leagueId = null; // Reset leagueId as well
             currentTeams = {};
@@ -3759,6 +3884,465 @@
             // Load player data
             loadPlayerData();
         });
+        // --- Draft Queue Functions ---
+        
+        // Initialize Draft Queue DOM Elements
+        const draftQueueList = document.getElementById('draft-queue-list');
+        const emptyQueueMessage = document.getElementById('empty-queue-message');
+        
+        // Draft Queue Variables
+        let myDraftQueue = []; // Array of player objects in the queue
+        let draftQueueListener = null; // Ref to the draft queue listener
+        
+        // Load the user's draft queue from Firebase
+        function loadDraftQueue() {
+            if (!currentUser || !leagueId) return;
+            
+            // Clean up any existing listener
+            if (draftQueueListener) {
+                try {
+                    const oldQueueRef = ref(database, `leagues/${leagueId}/draftQueues/${currentUser.uid}`);
+                    off(oldQueueRef, 'value', draftQueueListener);
+                } catch (e) {
+                    console.error("Error removing old queue listener:", e);
+                }
+                draftQueueListener = null;
+            }
+            
+            const queueRef = ref(database, `leagues/${leagueId}/draftQueues/${currentUser.uid}`);
+            draftQueueListener = onValue(queueRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const queueData = snapshot.val();
+                    myDraftQueue = Array.isArray(queueData) ? queueData : [];
+                } else {
+                    myDraftQueue = [];
+                }
+                
+                renderDraftQueue();
+            }, (error) => {
+                console.error("Error loading draft queue:", error);
+            });
+            
+            console.log("Draft queue listener added");
+        }
+        
+        // Save the draft queue to Firebase
+        function saveDraftQueue() {
+            if (!currentUser || !leagueId) return;
+            
+            const queueRef = ref(database, `leagues/${leagueId}/draftQueues/${currentUser.uid}`);
+            set(queueRef, myDraftQueue)
+                .then(() => {
+                    console.log("Draft queue saved successfully");
+                })
+                .catch((error) => {
+                    console.error("Error saving draft queue:", error);
+                    showNotification("Error saving your draft queue", 5000);
+                });
+        }
+        
+        // Add a player to the draft queue
+        function addToQueue(player) {
+            // Check if player is already in queue
+            const existingIndex = myDraftQueue.findIndex(p => p.id === player.id);
+            if (existingIndex >= 0) {
+                showNotification("Player is already in your draft queue", 3000);
+                return;
+            }
+            
+            // Create a simplified player object for the queue
+            const queuePlayer = {
+                id: player.id,
+                fullName: player.fullName,
+                position: player.position,
+                teamAbbreviation: player.teamAbbreviation || player.teamId,
+                goals: player.goals || 0,
+                assists: player.assists || 0,
+                points: player.points || 0,
+                wins: player.wins || 0,
+                shutouts: player.shutouts || 0
+            };
+            
+            // Add player to queue
+            myDraftQueue.push(queuePlayer);
+            
+            // Save to Firebase
+            saveDraftQueue();
+            
+            showNotification(`${player.fullName} added to your draft queue`, 2000);
+        }
+        
+        // Remove a player from the draft queue
+        function removeFromQueue(playerId) {
+            const initialLength = myDraftQueue.length;
+            myDraftQueue = myDraftQueue.filter(player => player.id !== playerId);
+            
+            if (myDraftQueue.length < initialLength) {
+                // Save to Firebase
+                saveDraftQueue();
+                
+                showNotification("Player removed from your draft queue", 2000);
+            }
+        }
+        
+        // Render the draft queue in the UI
+        function renderDraftQueue() {
+            if (!draftQueueList) return;
+            
+            // Clear existing items
+            draftQueueList.innerHTML = '';
+            
+            if (myDraftQueue.length === 0) {
+                // Show empty message
+                if (emptyQueueMessage) emptyQueueMessage.classList.remove('hidden');
+                return;
+            }
+            
+            // Hide empty message
+            if (emptyQueueMessage) emptyQueueMessage.classList.add('hidden');
+            
+            // Add each player to the list
+            myDraftQueue.forEach((player, index) => {
+                const queueItem = document.createElement('li');
+                queueItem.className = 'queue-item';
+                queueItem.setAttribute('data-player-id', player.id);
+                queueItem.draggable = true;
+                
+                // Position-specific stats
+                let statsHtml = '';
+                if (player.position === 'G') {
+                    statsHtml = `W: ${player.wins || 0}, SO: ${player.shutouts || 0}`;
+                } else {
+                    statsHtml = `G: ${player.goals || 0}, A: ${player.assists || 0}, PTS: ${player.points || 0}`;
+                }
+                
+                queueItem.innerHTML = `
+                    <div class="queue-item-info">
+                        <span class="queue-item-rank">${index + 1}</span>
+                        <div>
+                            <div class="queue-item-name">${player.fullName}</div>
+                            <div class="queue-item-details">
+                                ${player.position} | ${player.teamAbbreviation} | ${statsHtml}
+                            </div>
+                        </div>
+                    </div>
+                    <button class="remove-from-queue" data-player-id="${player.id}">Remove</button>
+                `;
+                
+                // Add drag event listeners
+                queueItem.addEventListener('dragstart', handleQueueDragStart);
+                queueItem.addEventListener('dragend', handleQueueDragEnd);
+                queueItem.addEventListener('dragover', handleQueueDragOver);
+                queueItem.addEventListener('drop', handleQueueDrop);
+                queueItem.addEventListener('dragenter', handleQueueDragEnter);
+                queueItem.addEventListener('dragleave', handleQueueDragLeave);
+                
+                // Add click event to select player in main list
+                queueItem.addEventListener('click', function(event) {
+                    // Only process if not clicking the remove button
+                    if (!event.target.classList.contains('remove-from-queue')) {
+                        selectPlayerFromQueue(player.id);
+                    }
+                });
+                
+                // Add click event for remove button
+                const removeBtn = queueItem.querySelector('.remove-from-queue');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', function() {
+                        removeFromQueue(player.id);
+                    });
+                }
+                
+                draftQueueList.appendChild(queueItem);
+            });
+        }
+        
+        // Queue drag-and-drop functions
+        function handleQueueDragStart(e) {
+            this.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', this.getAttribute('data-player-id'));
+        }
+        
+        function handleQueueDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.queue-item').forEach(item => {
+                item.classList.remove('over');
+            });
+        }
+        
+        function handleQueueDragOver(e) {
+            e.preventDefault();
+            return false;
+        }
+        
+        function handleQueueDragEnter(e) {
+            this.classList.add('over');
+        }
+        
+        function handleQueueDragLeave(e) {
+            this.classList.remove('over');
+        }
+        
+        function handleQueueDrop(e) {
+            e.preventDefault();
+            this.classList.remove('over');
+            
+            const draggedPlayerId = e.dataTransfer.getData('text/plain');
+            const dropTarget = this;
+            
+            // Don't do anything if dropping on the same item
+            if (draggedPlayerId === dropTarget.getAttribute('data-player-id')) {
+                return false;
+            }
+            
+            // Find the indices of the dragged and target items
+            const draggedIndex = myDraftQueue.findIndex(p => p.id === draggedPlayerId);
+            const targetIndex = myDraftQueue.findIndex(p => p.id === dropTarget.getAttribute('data-player-id'));
+            
+            if (draggedIndex !== -1 && targetIndex !== -1) {
+                // Reorder the array
+                const [removedItem] = myDraftQueue.splice(draggedIndex, 1);
+                myDraftQueue.splice(targetIndex, 0, removedItem);
+                
+                // Save to Firebase
+                saveDraftQueue();
+                
+                // Render the updated queue
+                renderDraftQueue();
+            }
+            
+            return false;
+        }
+        
+        // Find and select a player in the main table based on their ID
+        function selectPlayerFromQueue(playerId) {
+            const playerRows = document.querySelectorAll('#playerTableBody tr');
+            let playerFound = false;
+            
+            playerRows.forEach(row => {
+                const id = row.getAttribute('data-player-id');
+                if (id === playerId) {
+                    // Highlight the row
+                    playerRows.forEach(r => r.classList.remove('selected-player'));
+                    row.classList.add('selected-player');
+                    
+                    // Scroll to the player
+                    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    playerFound = true;
+                }
+            });
+            
+            if (!playerFound) {
+                showNotification("Player not found in available players list", 3000);
+            }
+        }
+        
+        // Clear the draft queue when round is concluded
+        function clearDraftQueue() {
+            if (!currentUser || !leagueId) return;
+            
+            myDraftQueue = [];
+            saveDraftQueue();
+            renderDraftQueue();
+        }
+        
+        // Update cleanupListeners to include draft queue listener
+        const originalCleanupListeners = cleanupListeners;
+        cleanupListeners = function() {
+            originalCleanupListeners();
+            
+            // Clean up draft queue listener
+            if (draftQueueListener && leagueId && currentUser) {
+                try {
+                    const queueRef = ref(database, `leagues/${leagueId}/draftQueues/${currentUser.uid}`);
+                    off(queueRef, 'value', draftQueueListener);
+                    console.log(" - Unsubscribed from draft queue listener.");
+                } catch (e) { 
+                    console.error("Error unsubscribing draft queue listener:", e); 
+                }
+                draftQueueListener = null;
+            }
+        };
+        
+        // Add to setupLeagueListeners to load draft queue
+        const originalSetupLeagueListeners = setupLeagueListeners;
+        setupLeagueListeners = function() {
+            originalSetupLeagueListeners();
+            
+            // Load draft queue
+            loadDraftQueue();
+        };
+        
+        // Add CSS for the draft queue
+        const queueStyles = document.createElement('style');
+        queueStyles.textContent = `
+            .my-draft-queue-section {
+                margin-bottom: 1.5rem;
+            }
+            
+            .queue-instructions {
+                font-size: 0.9rem;
+                color: #666;
+                margin-bottom: 1rem;
+            }
+            
+            .queue-container {
+                border: 1px solid var(--border-color);
+                border-radius: 0.25rem;
+                background-color: #fff;
+                padding: 0.5rem;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            
+            .draft-queue-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .queue-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+                background-color: #f8f9fa;
+                border: 1px solid #e9ecef;
+                border-radius: 0.25rem;
+                cursor: grab;
+            }
+            
+            .queue-item:hover {
+                background-color: #e9ecef;
+            }
+            
+            .queue-item.dragging {
+                opacity: 0.5;
+                cursor: grabbing;
+            }
+            
+            .queue-item.over {
+                border: 1px dashed var(--primary-color);
+            }
+            
+            .queue-item-info {
+                flex-grow: 1;
+                display: flex;
+                align-items: center;
+            }
+            
+            .queue-item-name {
+                font-weight: bold;
+                margin-bottom: 0.25rem;
+            }
+            
+            .queue-item-details {
+                font-size: 0.85rem;
+                color: #6c757d;
+            }
+            
+            .queue-item-rank {
+                background-color: var(--primary-color);
+                color: white;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                font-size: 0.8rem;
+                font-weight: bold;
+                margin-right: 0.75rem;
+                flex-shrink: 0;
+            }
+            
+            .remove-from-queue {
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                border-radius: 0.25rem;
+                padding: 0.25rem 0.5rem;
+                font-size: 0.8rem;
+                cursor: pointer;
+            }
+            
+            .remove-from-queue:hover {
+                background-color: #c82333;
+            }
+            
+            .add-to-queue {
+                background-color: #6c757d;
+                margin-right: 0.5rem;
+            }
+            
+            .selected-player {
+                background-color: #e8f4ff !important;
+                border-left: 3px solid var(--primary-color) !important;
+            }
+        `;
+        document.head.appendChild(queueStyles);
+        
+        // Modify createPlayerRow to add the "Add to Queue" button
+        const originalCreatePlayerRow = createPlayerRow;
+        createPlayerRow = function(player, isFullDetails = false) {
+            const row = originalCreatePlayerRow(player, isFullDetails);
+            
+            // Find the action cell (the last cell)
+            const actionCell = row.querySelector('td:last-child');
+            if (actionCell) {
+                // Check if draft button exists
+                const draftButton = actionCell.querySelector('.draft-button');
+                if (draftButton) {
+                    // Create Add to Queue button
+                    const queueButton = document.createElement('button');
+                    queueButton.className = 'add-to-queue';
+                    queueButton.textContent = 'Add to Queue';
+                    
+                    // Insert it before the draft button
+                    actionCell.insertBefore(queueButton, draftButton);
+                    
+                    // Add event listener
+                    queueButton.addEventListener('click', function() {
+                        addToQueue(player);
+                    });
+                }
+            }
+            
+            return row;
+        };
+        
+        // Modify handleConcludeRound to clear draft queues
+        const originalHandleConcludeRound = handleConcludeRound;
+        handleConcludeRound = function() {
+            const result = originalHandleConcludeRound.apply(this, arguments);
+            
+            // Clear draft queue when round is concluded
+            clearDraftQueue();
+            
+            return result;
+        };
+        
+        // Modify handleSaveDraftOrder to clear all draft queues for all users
+        const originalHandleSaveDraftOrder = handleSaveDraftOrder || function() {};
+        handleSaveDraftOrder = function() {
+            const result = originalHandleSaveDraftOrder.apply(this, arguments);
+            
+            // Clear all draft queues for all users when moving to next round
+            if (leagueId) {
+                const queuesRef = ref(database, `leagues/${leagueId}/draftQueues`);
+                set(queuesRef, null)
+                    .then(() => {
+                        console.log("All draft queues cleared for next round");
+                    })
+                    .catch((error) => {
+                        console.error("Error clearing draft queues:", error);
+                    });
+            }
+            
+            return result;
+        };
     </script>
 </body>
 
