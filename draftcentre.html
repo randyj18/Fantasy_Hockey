@@ -3886,6 +3886,103 @@
         });
         // --- Draft Queue Functions ---
         
+        // Function to add "Add to Queue" buttons to player rows
+        function addQueueButtonsToPlayerRows() {
+            console.log("Adding queue buttons to player rows");
+            
+            // Find all table rows in the player table body
+            const playerRows = document.querySelectorAll('#playerTableBody tr');
+            console.log(`Found ${playerRows.length} player rows`);
+            
+            playerRows.forEach(row => {
+                // Skip if row is already processed or is a header/footer
+                if (row.hasAttribute('data-queue-processed')) {
+                    return;
+                }
+                
+                // Find the action cell (last cell)
+                const cells = row.querySelectorAll('td');
+                if (cells.length === 0) return;
+                
+                const actionCell = cells[cells.length - 1];
+                const draftButton = actionCell.querySelector('.draft-button');
+                
+                // Skip if no draft button found
+                if (!draftButton) return;
+                
+                // Skip if a queue button already exists
+                if (actionCell.querySelector('.add-to-queue')) {
+                    return;
+                }
+                
+                // Create Add to Queue button
+                const queueButton = document.createElement('button');
+                queueButton.className = 'add-to-queue';
+                queueButton.textContent = 'Add to Queue';
+                
+                // Find the player data
+                const playerId = row.getAttribute('data-player-id') || row.getAttribute('data-id');
+                if (!playerId) {
+                    console.log("No player ID found for row:", row);
+                    return;
+                }
+                
+                // Add click event listener
+                queueButton.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    // Find the player data
+                    let player = null;
+                    
+                    // Try to find player by ID
+                    if (allPlayers) {
+                        player = allPlayers.find(p => p.id === playerId || p.id.toString() === playerId);
+                    }
+                    
+                    // If no player found, create a basic player object from the row data
+                    if (!player) {
+                        const nameCell = cells[0];
+                        const posCell = cells[1];
+                        const teamCell = cells[2];
+                        
+                        player = {
+                            id: playerId,
+                            fullName: nameCell.textContent.trim(),
+                            position: posCell ? posCell.textContent.trim() : '',
+                            teamAbbreviation: teamCell ? teamCell.textContent.trim() : ''
+                        };
+                        
+                        // Try to get stats if available
+                        if (cells.length > 4) {
+                            player.goals = parseInt(cells[4].textContent) || 0;
+                            player.assists = parseInt(cells[5].textContent) || 0;
+                            player.points = parseInt(cells[6].textContent) || 0;
+                        }
+                        if (cells.length > 7) {
+                            player.wins = parseInt(cells[7].textContent) || 0;
+                            player.shutouts = parseInt(cells[8].textContent) || 0;
+                        }
+                    }
+                    
+                    // Add player to queue
+                    if (player && player.id) {
+                        addToQueue(player);
+                    } else {
+                        console.error("Could not get player data for queue", playerId);
+                    }
+                    
+                    return false;
+                });
+                
+                // Insert the queue button before the draft button
+                actionCell.insertBefore(queueButton, draftButton);
+                
+                // Mark row as processed
+                row.setAttribute('data-queue-processed', 'true');
+            });
+        }
+        
         // Load the user's draft queue from Firebase
         function loadDraftQueue() {
             if (!currentUser || !leagueId) return;
@@ -4171,6 +4268,50 @@
             };
         }
         
+        // Add observers to add queue buttons when the player table is updated
+        // This ensures our queue buttons are added regardless of how the player table is rendered
+        function setupQueueButtonObservers() {
+            // Function to be called when player table body changes
+            const mutationCallback = function(mutationsList, observer) {
+                for (const mutation of mutationsList) {
+                    if (mutation.type === 'childList') {
+                        // Table content has changed, add queue buttons
+                        setTimeout(addQueueButtonsToPlayerRows, 100); // Small delay to ensure table is fully rendered
+                    }
+                }
+            };
+            
+            // Create observer for the player table body
+            const tableObserver = new MutationObserver(mutationCallback);
+            
+            // Start observing the player table body for DOM changes
+            const playerTableBody = document.getElementById('playerTableBody');
+            if (playerTableBody) {
+                tableObserver.observe(playerTableBody, { childList: true, subtree: true });
+                console.log("Player table observer set up for queue buttons");
+            }
+            
+            // Also call it immediately in case table is already populated
+            setTimeout(addQueueButtonsToPlayerRows, 100);
+        }
+        
+        // Call the setup function when the document is ready
+        document.addEventListener('DOMContentLoaded', setupQueueButtonObservers);
+        
+        // Also call it after authentication in case DOMContentLoaded already fired
+        if (typeof originalSetupLeagueListeners === 'undefined') {
+            const oldSetupLeagueListeners = setupLeagueListeners;
+            setupLeagueListeners = function() {
+                oldSetupLeagueListeners();
+                
+                // Load draft queue
+                loadDraftQueue();
+                
+                // Set up observers for queue buttons
+                setTimeout(setupQueueButtonObservers, 500);
+            };
+        }
+        
         // Add CSS for the draft queue
         const queueStyles = document.createElement('style');
         queueStyles.textContent = `
@@ -4271,7 +4412,17 @@
             
             .add-to-queue {
                 background-color: #6c757d;
+                color: white;
+                border: none;
+                border-radius: 0.25rem;
+                padding: 0.25rem 0.5rem;
+                font-size: 0.8rem;
                 margin-right: 0.5rem;
+                cursor: pointer;
+            }
+            
+            .add-to-queue:hover {
+                background-color: #5a6268;
             }
             
             .selected-player {
