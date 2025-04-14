@@ -1140,6 +1140,7 @@
                                 </li>
                                 <li><strong>Chat:</strong> Discuss picks with league members in the chat window.</li>
                             </ol>
+                            <p><strong>Snake Draft Format:</strong> This draft uses a snake format - the order reverses each round. For example, if you draft 1st in Round 1, you'll draft last in Round 2, first in Round 3, and so on.</p>
                             <p><em>Note: The commissioner can start the draft and enable Commissioner Mode to manage
                                     picks.</em></p>
                         </details>
@@ -2955,6 +2956,7 @@
                 round: 1,
                 pickNumber: 1, // Overall pick number
                 randomizationTime: Date.now(), // Add this for audit/debug
+                snakeDraft: true // Enable snake draft style
             };
 
             // Also set playoff round data to ensure round is set to 1
@@ -3007,23 +3009,38 @@
                 return;
             }
 
-            // Calculate next index, round, and pick number (Linear Draft)
-            let nextIndex = currentIndex + 1;
+            // Calculate next index, round, and pick number (Snake Draft)
+            let nextIndex;
             let nextRound = round;
             let nextPickNumber = (pickNumber || 0) + 1; // Increment overall pick
-
-            if (nextIndex >= numTeams) {
-                nextIndex = 0; // Wrap around
-                nextRound++;
-                console.log(`Wrapping draft order, starting round ${nextRound}`);
+            
+            // Determine if we're going forward or backward in this round (Snake Draft)
+            const isEvenRound = round % 2 === 0;
+            
+            if (isEvenRound) {
+                // Even rounds go in reverse order (right to left)
+                nextIndex = currentIndex - 1;
+                
+                if (nextIndex < 0) {
+                    // Reached the beginning of an even round, go to first position of the next round
+                    nextIndex = 0;
+                    nextRound++;
+                    console.log(`Reached beginning of round ${round}, starting round ${nextRound} at first position`);
+                }
+            } else {
+                // Odd rounds go in normal order (left to right)
+                nextIndex = currentIndex + 1;
+                
+                if (nextIndex >= numTeams) {
+                    // Reached the end of an odd round, go to last position of the next round
+                    nextIndex = numTeams - 1;
+                    nextRound++;
+                    console.log(`Reached end of round ${round}, starting round ${nextRound} at last position`);
+                }
             }
 
-            // --- Snake Draft Logic Placeholder (Keep commented) ---
-            // if (leagueData.draftSettings?.snakeDraft) { ... update nextIndex based on round ... }
-            // ---
-
             const nextDrafterUid = draftOrder[nextIndex];
-            console.log(`Next pick: ${nextDrafterUid}, Round: ${nextRound}, Pick#: ${nextPickNumber}`);
+            console.log(`Next pick: ${nextDrafterUid}, Round: ${nextRound}, Pick#: ${nextPickNumber}, Direction: ${isEvenRound ? 'Reverse' : 'Forward'}`);
 
             // Update Firebase
             const draftStatusRef = ref(database, `leagues/${leagueId}/draftStatus`);
@@ -3315,10 +3332,24 @@
             }
             
             const draftOrder = leagueData.draftStatus.draftOrder || [];
+            const currentRound = leagueData.draftStatus.round || 1;
             const currentPickIndex = (leagueData.draftStatus.pickNumber || 1) - 1;
             const currentDrafterUid = leagueData.draftStatus.currentDrafter;
+            const isEvenRound = currentRound % 2 === 0;
+            
+            // Create a label to show the snake draft direction
+            const directionLabel = document.createElement('div');
+            directionLabel.className = 'draft-direction-label';
+            directionLabel.innerHTML = `Round ${currentRound}: ${isEvenRound ? '← Reverse Order' : '→ Normal Order'}`;
+            draftOrderDisplay.appendChild(directionLabel);
+            
+            // Create container for the draft order items
+            const orderContainer = document.createElement('div');
+            orderContainer.className = 'draft-order-items';
+            draftOrderDisplay.appendChild(orderContainer);
             
             // Create a team item for each team in the draft order
+            // Display teams based on their original order, but highlight the actual next drafter
             draftOrder.forEach((teamUid, index) => {
                 const team = currentTeams[teamUid];
                 if (!team) return; // Skip if team not found
@@ -3327,7 +3358,8 @@
                 orderItem.className = 'draft-order-item';
                 
                 // Mark current team's turn
-                if (index === currentPickIndex) {
+                const currentIndex = draftOrder.indexOf(currentDrafterUid);
+                if (index === currentIndex) {
                     orderItem.classList.add('current');
                 }
                 
@@ -3343,18 +3375,90 @@
                     ? `<span class="banked-pick-indicator">${teamBankedPicks} Banked</span>` 
                     : '';
                 
+                // Add snake draft position indicators for each round
+                let roundPositions = '';
+                for (let r = 1; r <= 4; r++) {
+                    // Calculate position in each round
+                    let positionInRound = r % 2 === 0 
+                        ? draftOrder.length - index  // Even rounds: reverse order
+                        : index + 1;                 // Odd rounds: normal order
+                    
+                    roundPositions += `<span class="round-position ${r === currentRound ? 'current-round' : ''}">R${r}: #${positionInRound}</span>`;
+                }
+                
                 orderItem.innerHTML = `
                     <span class="draft-order-number">${index + 1}</span>
-                    <span class="draft-order-name">${team.name}</span>
+                    <div class="draft-order-details">
+                        <span class="draft-order-name">${team.name}</span>
+                        <div class="draft-order-positions">${roundPositions}</div>
+                    </div>
                     ${bankedPicksIndicator}
                 `;
                 
-                draftOrderDisplay.appendChild(orderItem);
+                orderContainer.appendChild(orderItem);
             });
             
             if (draftOrder.length === 0) {
-                draftOrderDisplay.innerHTML = '<div class="empty-message">Draft order not set yet</div>';
+                orderContainer.innerHTML = '<div class="empty-message">Draft order not set yet</div>';
             }
+            
+            // Add CSS for the new elements
+            const style = document.createElement('style');
+            style.textContent = `
+                .draft-direction-label {
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    color: var(--primary-color);
+                    background-color: #f0f4f8;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    text-align: center;
+                }
+                .draft-order-items {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                    align-items: stretch;
+                }
+                .draft-order-item {
+                    flex: 1 0 200px;
+                    display: flex;
+                    align-items: center;
+                    padding: 10px;
+                }
+                .draft-order-details {
+                    flex: 1;
+                    margin-left: 10px;
+                }
+                .draft-order-positions {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 5px;
+                    margin-top: 5px;
+                    font-size: 0.75rem;
+                }
+                .round-position {
+                    background-color: #f0f0f0;
+                    padding: 2px 5px;
+                    border-radius: 3px;
+                    color: #666;
+                }
+                .round-position.current-round {
+                    background-color: var(--primary-color);
+                    color: white;
+                    font-weight: bold;
+                }
+                @media (max-width: 768px) {
+                    .draft-order-items {
+                        flex-direction: column;
+                    }
+                    .draft-order-item {
+                        width: 100%;
+                        flex-basis: auto;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
         }
 
         function cleanupListeners() {
