@@ -3886,10 +3886,6 @@
         });
         // --- Draft Queue Functions ---
         
-        // Draft Queue Variables
-        let myDraftQueue = []; // Array of player objects in the queue
-        let draftQueueListener = null; // Ref to the draft queue listener
-        
         // Load the user's draft queue from Firebase
         function loadDraftQueue() {
             if (!currentUser || !leagueId) return;
@@ -4143,32 +4139,37 @@
             renderDraftQueue();
         }
         
-        // Update cleanupListeners to include draft queue listener
-        const originalCleanupListeners = cleanupListeners;
-        cleanupListeners = function() {
-            originalCleanupListeners();
-            
-            // Clean up draft queue listener
-            if (draftQueueListener && leagueId && currentUser) {
-                try {
-                    const queueRef = ref(database, `leagues/${leagueId}/draftQueues/${currentUser.uid}`);
-                    off(queueRef, 'value', draftQueueListener);
-                    console.log(" - Unsubscribed from draft queue listener.");
-                } catch (e) { 
-                    console.error("Error unsubscribing draft queue listener:", e); 
+        // We need to make sure these functions are only modified once
+        if (typeof originalCleanupListeners === 'undefined') {
+            // Update cleanupListeners to include draft queue listener
+            const originalCleanupListeners = cleanupListeners;
+            cleanupListeners = function() {
+                originalCleanupListeners();
+                
+                // Clean up draft queue listener
+                if (draftQueueListener && leagueId && currentUser) {
+                    try {
+                        const queueRef = ref(database, `leagues/${leagueId}/draftQueues/${currentUser.uid}`);
+                        off(queueRef, 'value', draftQueueListener);
+                        console.log(" - Unsubscribed from draft queue listener.");
+                    } catch (e) { 
+                        console.error("Error unsubscribing draft queue listener:", e); 
+                    }
+                    draftQueueListener = null;
                 }
-                draftQueueListener = null;
-            }
-        };
+            };
+        }
         
-        // Add to setupLeagueListeners to load draft queue
-        const originalSetupLeagueListeners = setupLeagueListeners;
-        setupLeagueListeners = function() {
-            originalSetupLeagueListeners();
-            
-            // Load draft queue
-            loadDraftQueue();
-        };
+        if (typeof originalSetupLeagueListeners === 'undefined') {
+            // Add to setupLeagueListeners to load draft queue
+            const originalSetupLeagueListeners = setupLeagueListeners;
+            setupLeagueListeners = function() {
+                originalSetupLeagueListeners();
+                
+                // Load draft queue
+                loadDraftQueue();
+            };
+        }
         
         // Add CSS for the draft queue
         const queueStyles = document.createElement('style');
@@ -4281,64 +4282,70 @@
         document.head.appendChild(queueStyles);
         
         // Modify createPlayerRow to add the "Add to Queue" button
-        const originalCreatePlayerRow = createPlayerRow;
-        createPlayerRow = function(player, isFullDetails = false) {
-            const row = originalCreatePlayerRow(player, isFullDetails);
-            
-            // Find the action cell (the last cell)
-            const actionCell = row.querySelector('td:last-child');
-            if (actionCell) {
-                // Check if draft button exists
-                const draftButton = actionCell.querySelector('.draft-button');
-                if (draftButton) {
-                    // Create Add to Queue button
-                    const queueButton = document.createElement('button');
-                    queueButton.className = 'add-to-queue';
-                    queueButton.textContent = 'Add to Queue';
-                    
-                    // Insert it before the draft button
-                    actionCell.insertBefore(queueButton, draftButton);
-                    
-                    // Add event listener
-                    queueButton.addEventListener('click', function() {
-                        addToQueue(player);
-                    });
+        if (typeof originalCreatePlayerRow === 'undefined') {
+            const originalCreatePlayerRow = createPlayerRow;
+            createPlayerRow = function(player, isFullDetails = false) {
+                const row = originalCreatePlayerRow(player, isFullDetails);
+                
+                // Find the action cell (the last cell)
+                const actionCell = row.querySelector('td:last-child');
+                if (actionCell) {
+                    // Check if draft button exists
+                    const draftButton = actionCell.querySelector('.draft-button');
+                    if (draftButton) {
+                        // Create Add to Queue button
+                        const queueButton = document.createElement('button');
+                        queueButton.className = 'add-to-queue';
+                        queueButton.textContent = 'Add to Queue';
+                        
+                        // Insert it before the draft button
+                        actionCell.insertBefore(queueButton, draftButton);
+                        
+                        // Add event listener
+                        queueButton.addEventListener('click', function() {
+                            addToQueue(player);
+                        });
+                    }
                 }
-            }
-            
-            return row;
-        };
+                
+                return row;
+            };
+        }
         
         // Modify handleConcludeRound to clear draft queues
-        const originalHandleConcludeRound = handleConcludeRound;
-        handleConcludeRound = function() {
-            const result = originalHandleConcludeRound.apply(this, arguments);
-            
-            // Clear draft queue when round is concluded
-            clearDraftQueue();
-            
-            return result;
-        };
+        if (typeof originalHandleConcludeRound === 'undefined') {
+            const originalHandleConcludeRound = handleConcludeRound;
+            handleConcludeRound = function() {
+                const result = originalHandleConcludeRound.apply(this, arguments);
+                
+                // Clear draft queue when round is concluded
+                clearDraftQueue();
+                
+                return result;
+            };
+        }
         
         // Modify handleSaveDraftOrder to clear all draft queues for all users
-        const originalHandleSaveDraftOrder = handleSaveDraftOrder || function() {};
-        handleSaveDraftOrder = function() {
-            const result = originalHandleSaveDraftOrder.apply(this, arguments);
-            
-            // Clear all draft queues for all users when moving to next round
-            if (leagueId) {
-                const queuesRef = ref(database, `leagues/${leagueId}/draftQueues`);
-                set(queuesRef, null)
-                    .then(() => {
-                        console.log("All draft queues cleared for next round");
-                    })
-                    .catch((error) => {
-                        console.error("Error clearing draft queues:", error);
-                    });
-            }
-            
-            return result;
-        };
+        if (typeof originalHandleSaveDraftOrder === 'undefined') {
+            const originalHandleSaveDraftOrder = handleSaveDraftOrder || function() {};
+            handleSaveDraftOrder = function() {
+                const result = originalHandleSaveDraftOrder.apply(this, arguments);
+                
+                // Clear all draft queues for all users when moving to next round
+                if (leagueId) {
+                    const queuesRef = ref(database, `leagues/${leagueId}/draftQueues`);
+                    set(queuesRef, null)
+                        .then(() => {
+                            console.log("All draft queues cleared for next round");
+                        })
+                        .catch((error) => {
+                            console.error("Error clearing draft queues:", error);
+                        });
+                }
+                
+                return result;
+            };
+        }
     </script>
 </body>
 
