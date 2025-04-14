@@ -1164,6 +1164,74 @@
                         <button id="bank-pick-btn" class="btn secondary hidden">Bank This Pick</button>
                     </div>
                 </div>
+                
+                <!-- Draft Order Display Section -->
+                <div class="draft-order-display card full-width-section">
+                    <h3 style="margin-top: 0.5rem; margin-bottom: 0.75rem;">Draft Order</h3>
+                    <div id="draft-order-display" class="draft-order-list">
+                        <!-- Draft order will be displayed here -->
+                        <div class="loader"></div>
+                    </div>
+                </div>
+                
+                <style>
+                    .draft-order-display {
+                        margin-bottom: 1.5rem;
+                    }
+                    .draft-order-list {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 10px;
+                        align-items: center;
+                    }
+                    .draft-order-item {
+                        background-color: #fff;
+                        border: 1px solid var(--border-color);
+                        border-radius: 0.25rem;
+                        padding: 0.6rem 1rem;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    }
+                    .draft-order-item.current {
+                        background-color: var(--success-bg);
+                        border-color: var(--success-border);
+                        font-weight: bold;
+                    }
+                    .draft-order-number {
+                        background-color: var(--primary-color);
+                        color: white;
+                        width: 24px;
+                        height: 24px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-radius: 50%;
+                        font-size: 0.8rem;
+                        font-weight: bold;
+                    }
+                    .draft-order-item.current .draft-order-number {
+                        background-color: #28a745;
+                    }
+                    .banked-pick-indicator {
+                        background-color: #795548;
+                        color: white;
+                        font-size: 0.7rem;
+                        padding: 2px 6px;
+                        border-radius: 10px;
+                        margin-left: 5px;
+                    }
+                    
+                    @media (max-width: 768px) {
+                        .draft-order-list {
+                            flex-direction: column;
+                            align-items: stretch;
+                        }
+                        .draft-order-item {
+                            width: 100%;
+                        }
+                    }
+                </style>
 
                 <!-- Control Section: Search, Filters, Options -->
                 <div class="controls-section card full-width-section">
@@ -1613,6 +1681,7 @@
 
                 updateDraftStatusUI(draftStatus); // Update UI based on new status
                 filterPlayers(); // Re-filter players to update button states
+                updateDraftOrderDisplay(); // Update the draft order display
 
             }, (error) => {
                 console.error("Error reading draft status:", error);
@@ -2214,6 +2283,9 @@
                 // Re-filter players to show eliminated status
                 filterPlayers();
                 filterDraftedPlayers();
+                
+                // Update the draft order display
+                updateDraftOrderDisplay();
             }, (error) => {
                 console.error("Error reading eliminated players:", error);
                 showNotification("Error loading eliminated players list.", 7000);
@@ -2296,6 +2368,9 @@
             console.log("Added presence listener.");
 
             // Listener 7: Draft Status (already set up in showDraftInterface, managed by draftStatusListener)
+            
+            // Initial update of draft order display
+            updateDraftOrderDisplay();
         }
 
         function detectJoinLeave(previousTeams, newTeams) {
@@ -3223,6 +3298,62 @@
                 // Not the user's turn
                 bankedPicksInfo.classList.add('hidden');
                 bankPickBtn.classList.add('hidden');
+            }
+        }
+        
+        // Display the current draft order
+        function updateDraftOrderDisplay() {
+            const draftOrderDisplay = document.getElementById('draft-order-display');
+            if (!draftOrderDisplay) return;
+            
+            // Clear existing content
+            draftOrderDisplay.innerHTML = '';
+            
+            if (!leagueData || !leagueData.draftStatus || !leagueData.draftStatus.draftOrder) {
+                draftOrderDisplay.innerHTML = '<div class="empty-message">Draft order not set yet</div>';
+                return;
+            }
+            
+            const draftOrder = leagueData.draftStatus.draftOrder || [];
+            const currentPickIndex = (leagueData.draftStatus.pickNumber || 1) - 1;
+            const currentDrafterUid = leagueData.draftStatus.currentDrafter;
+            
+            // Create a team item for each team in the draft order
+            draftOrder.forEach((teamUid, index) => {
+                const team = currentTeams[teamUid];
+                if (!team) return; // Skip if team not found
+                
+                const orderItem = document.createElement('div');
+                orderItem.className = 'draft-order-item';
+                
+                // Mark current team's turn
+                if (index === currentPickIndex) {
+                    orderItem.classList.add('current');
+                }
+                
+                // Mark your team
+                if (teamUid === currentUser?.uid) {
+                    orderItem.style.borderColor = '#4caf50';
+                    orderItem.style.borderWidth = '2px';
+                }
+                
+                // Add banked pick indicator if applicable
+                const teamBankedPicks = bankedPicks[teamUid] || 0;
+                const bankedPicksIndicator = teamBankedPicks > 0 
+                    ? `<span class="banked-pick-indicator">${teamBankedPicks} Banked</span>` 
+                    : '';
+                
+                orderItem.innerHTML = `
+                    <span class="draft-order-number">${index + 1}</span>
+                    <span class="draft-order-name">${team.name}</span>
+                    ${bankedPicksIndicator}
+                `;
+                
+                draftOrderDisplay.appendChild(orderItem);
+            });
+            
+            if (draftOrder.length === 0) {
+                draftOrderDisplay.innerHTML = '<div class="empty-message">Draft order not set yet</div>';
             }
         }
 
