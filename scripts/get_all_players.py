@@ -1,6 +1,7 @@
 import requests
 import json
 import time
+import os
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -92,11 +93,26 @@ def fetch_player_stats(player_id, position_code, retries=3, backoff_factor=0.3):
         else:
             return {'gamesPlayed': 0, 'goals': 0, 'assists': 0, 'points': 0}
 
+def load_manual_players(file_path):
+    """Load manually added players from a JSON file"""
+    try:
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as file:
+                return json.load(file)
+        else:
+            print(f"Manual player file {file_path} not found. Continuing without manual additions.")
+            return []
+    except json.JSONDecodeError as e:
+        print(f"Error decoding manual player file: {e}")
+        return []
+    except Exception as e:
+        print(f"Error loading manual player file: {e}")
+        return []
+
 def main():
     """Generate database of all NHL players"""
     
     # Define the list of team abbreviations
-    
     team_abbreviations = ['NJD', 'MTL', 'OTT', 'TOR', 
                          'CAR', 'FLA', 'TBL', 'WSH', 'STL', 'COL', 
                          'EDM', 'DAL', 'LAK', 'MIN', 'WPG', 
@@ -155,6 +171,28 @@ def main():
             
         except requests.exceptions.RequestException as e:
             print(f"Failed to fetch data for team {team}. Error: {e}")
+    
+    # Load and add manual players
+    manual_players_file = 'data/manual-playerlist.json'
+    manual_players = load_manual_players(manual_players_file)
+    
+    if manual_players:
+        # Check for duplicate players - we'll use player ID as the unique identifier
+        existing_ids = {player['id'] for player in all_players}
+        
+        for manual_player in manual_players:
+            player_id = manual_player.get('id')
+            
+            # Skip duplicates
+            if player_id in existing_ids:
+                print(f"Skipping duplicate player: {manual_player.get('fullName')} (ID: {player_id})")
+                continue
+            
+            # Add to our list and update tracking set
+            all_players.append(manual_player)
+            existing_ids.add(player_id)
+            
+            print(f"Added manual player: {manual_player.get('fullName')} (ID: {player_id})")
     
     # Save all players to JSON file
     with open('data/nhl_players.json', 'w') as json_file:
