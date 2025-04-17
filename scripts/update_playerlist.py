@@ -105,7 +105,10 @@ def process_drafted_players():
             output_data[player_id] = player_data
             
             # Only process players drafted in playoff rounds where preAcqRound needs updating
-            if playoff_round_drafted > 0 and pre_acq_round < playoff_round_drafted:
+            # We look at playoffRoundDrafted to determine which players need processing
+            # - Round 1: Initial multi-round draft (no pre-acquisition processing needed)
+            # - Rounds 2-4: Playoff rounds where pre-acquisition stats need to be captured
+            if playoff_round_drafted > 1 and pre_acq_round < playoff_round_drafted:
                 logger.info(f"Processing player {player_id}: drafted in round {playoff_round_drafted}, preAcqRound {pre_acq_round}")
                 
                 # Fetch points from NHL API

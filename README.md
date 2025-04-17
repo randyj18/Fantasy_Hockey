@@ -60,15 +60,20 @@ Click the "Fork" button in the top-right corner of this repository to create you
 
 ### Playoff Draft System
 
-1. Teams complete an initial draft at the start of the playoffs
+1. Teams complete an initial draft (playoff round 1) at the start of the playoffs
+   - This is a multi-round draft (typically 7 rounds)
+   - Each round in this draft has `playoffRoundDrafted = 1`
 2. As NHL teams are eliminated, players become unavailable for future drafts
 3. When a playoff round concludes, commissioners can:
    - Mark the round as complete
    - Set custom draft order for the next round
    - Incorporate banked picks into the draft order
 4. Teams can choose to bank picks for future rounds
-5. Players drafted in subsequent playoff rounds are tracked with `playoffRoundDrafted` (2-4)
-6. Pre-acquisition points are automatically calculated for playoff-drafted players
+5. The system supports separate concepts:
+   - **Playoff Round**: Tracked in `playoffRound/currentRound` (1-4)
+   - **Draft Round**: Each playoff round has its own single-round draft, tracked in `draftStatus/round`
+6. Players drafted in subsequent playoff rounds are tracked with `playoffRoundDrafted` (2-4)
+7. Pre-acquisition points are automatically calculated for playoff-drafted players
 
 ### Scoring System
 

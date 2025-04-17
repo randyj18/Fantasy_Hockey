@@ -2174,7 +2174,7 @@
 
             // Update draft status for the new round
             updates[`leagues/${leagueId}/draftStatus/active`] = true;
-            updates[`leagues/${leagueId}/draftStatus/round`] = currentRound + 1;
+            updates[`leagues/${leagueId}/draftStatus/round`] = 1; // Always start at round 1 for each playoff round
             updates[`leagues/${leagueId}/draftStatus/pickNumber`] = 1;
             updates[`leagues/${leagueId}/draftStatus/draftOrder`] = fullDraftOrder;
             updates[`leagues/${leagueId}/draftStatus/currentDrafter`] = fullDraftOrder[0];
@@ -2865,10 +2865,10 @@
                 draftedByUid: currentUser.uid, // UID of user clicking button
                 draftedByName: drafterDisplayName, // Name of user clicking button
                 draftedAt: serverTimestamp(), // Use server time for consistency
-                round: currentRound,
+                round: leagueData?.draftStatus?.round || 1, // Draft round within the current playoff round
                 pickNumber: currentPickNumber, // Store overall pick number
-                // Track playoff round drafted (only set for players drafted in playoff rounds 2-4)
-                playoffRoundDrafted: currentRound > 1 ? currentRound : 0
+                // Track playoff round drafted (always equal to currentRound from playoffRound)
+                playoffRoundDrafted: currentRound // Playoff round (1-4)
             };
             console.log("Drafted player record:", draftedPlayerRecord);
 
