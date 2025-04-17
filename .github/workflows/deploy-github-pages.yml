@@ -16,60 +16,89 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Create Firebase Config
         env:
-          FIREBASE_API_KEY: ${{ secrets.GH_PAGES_FIREBASE_API_KEY }}
+          FIREBASE_API_KEY:     ${{ secrets.GH_PAGES_FIREBASE_API_KEY }}
           FIREBASE_AUTH_DOMAIN: ${{ secrets.GH_PAGES_FIREBASE_AUTH_DOMAIN }}
-          FIREBASE_DATABASE_URL: ${{ secrets.GH_PAGES_FIREBASE_DATABASE_URL }}
-          FIREBASE_PROJECT_ID: ${{ secrets.GH_PAGES_FIREBASE_PROJECT_ID }}
-          FIREBASE_STORAGE_BUCKET: ${{ secrets.GH_PAGES_FIREBASE_STORAGE_BUCKET }}
-          FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.GH_PAGES_FIREBASE_MESSAGING_SENDER_ID }}
-          FIREBASE_APP_ID: ${{ secrets.GH_PAGES_FIREBASE_APP_ID }}
+          FIREBASE_DATABASE_URL:${{ secrets.GH_PAGES_FIREBASE_DATABASE_URL }}
+          FIREBASE_PROJECT_ID:  ${{ secrets.GH_PAGES_FIREBASE_PROJECT_ID }}
+          FIREBASE_STORAGE_BUCKET:     ${{ secrets.GH_PAGES_FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_MESSAGING_SENDER_ID:${{ secrets.GH_PAGES_FIREBASE_MESSAGING_SENDER_ID }}
+          FIREBASE_APP_ID:      ${{ secrets.GH_PAGES_FIREBASE_APP_ID }}
         run: |
-          cat > firebaseConfig.js << EOL
+          cat > firebaseConfig.js <<EOL
           // Firebase configuration
           const firebaseConfig = {
-              apiKey: "$FIREBASE_API_KEY",
-              authDomain: "$FIREBASE_AUTH_DOMAIN",
-              databaseURL: "$FIREBASE_DATABASE_URL",
-              projectId: "$FIREBASE_PROJECT_ID",
-              storageBucket: "$FIREBASE_STORAGE_BUCKET",
-              messagingSenderId: "$FIREBASE_MESSAGING_SENDER_ID",
-              appId: "$FIREBASE_APP_ID"
+            apiKey:      "$FIREBASE_API_KEY",
+            authDomain:  "$FIREBASE_AUTH_DOMAIN",
+            databaseURL: "$FIREBASE_DATABASE_URL",
+            projectId:   "$FIREBASE_PROJECT_ID",
+            storageBucket: "$FIREBASE_STORAGE_BUCKET",
+            messagingSenderId: "$FIREBASE_MESSAGING_SENDER_ID",
+            appId:       "$FIREBASE_APP_ID"
           };
-
-          // Make config available globally
           window.firebaseConfig = firebaseConfig;
           EOL
-      
+
       - name: Create Gmail Config
         env:
-          GMAIL_API_KEY: ${{ secrets.GMAIL_API_KEY }}
+          GMAIL_API_KEY:   ${{ secrets.GMAIL_API_KEY }}
           GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
         run: |
-          cat > gmailConfig.js << EOL
+          cat > gmailConfig.js <<EOL
           // Gmail API configuration
           const gmailConfig = {
-              apiKey: "$GMAIL_API_KEY",
-              clientId: "$GMAIL_CLIENT_ID"
+            apiKey: "$GMAIL_API_KEY",
+            clientId: "$GMAIL_CLIENT_ID"
           };
-
-          // Make config available globally
           window.gmailConfig = gmailConfig;
           EOL
-      
+
+      # ─── New steps to configure & deploy our trigger function ───
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@latest
+
+      - name: Authenticate to Firebase
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
+        run: |
+          firebase login:ci --token "$FIREBASE_TOKEN"
+
+      - name: Set dispatch token in Functions config
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
+          WORKFLOW_DISPATCH_TOKEN: ${{ secrets.WORKFLOW_DISPATCH_TOKEN }}
+          FIREBASE_PROJECT_ID: ${{ secrets.GH_PAGES_FIREBASE_PROJECT_ID }}
+        run: |
+          firebase functions:config:set \
+            github.token="$WORKFLOW_DISPATCH_TOKEN" \
+            --project="$FIREBASE_PROJECT_ID"
+
+      - name: Deploy triggerGameDayUpdate Function
+        env:
+          FIREBASE_TOKEN:    ${{ secrets.FIREBASE_CI_TOKEN }}
+          FIREBASE_PROJECT_ID: ${{ secrets.GH_PAGES_FIREBASE_PROJECT_ID }}
+        run: |
+          firebase deploy \
+            --only functions:triggerGameDayUpdate \
+            --project="$FIREBASE_PROJECT_ID"
+
+      # ────────────────────────────────────────────────────────────
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
-      
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
