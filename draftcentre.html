@@ -2855,6 +2855,7 @@
             const currentPickNumber = leagueData.draftStatus.pickNumber ?? 1; // Overall pick number
 
             // Create player record
+            // NOTE: currentRound comes from leagues/${leagueId}/playoffRound/currentRound in the onValue listener
             const draftedPlayerRecord = {
                 playerId: playerId,
                 Player: playerName,
@@ -2867,8 +2868,8 @@
                 draftedAt: serverTimestamp(), // Use server time for consistency
                 round: leagueData?.draftStatus?.round || 1, // Draft round within the current playoff round
                 pickNumber: currentPickNumber, // Store overall pick number
-                // Track playoff round drafted (always equal to currentRound from playoffRound)
-                playoffRoundDrafted: currentRound // Playoff round (1-4)
+                // playoffRoundDrafted is always set to the value of leagues/${leagueId}/playoffRound/currentRound
+                playoffRoundDrafted: currentRound // currentRound is the playoffRound (1-4)
             };
             console.log("Drafted player record:", draftedPlayerRecord);
 
