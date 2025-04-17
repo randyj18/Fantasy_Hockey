@@ -64,17 +64,11 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools@latest
 
-      - name: Authenticate to Firebase
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
-        run: |
-          firebase login:ci --token "$FIREBASE_TOKEN"
-
       - name: Set dispatch token in Functions config
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
+          FIREBASE_TOKEN:          ${{ secrets.FIREBASE_CI_TOKEN }}
           WORKFLOW_DISPATCH_TOKEN: ${{ secrets.WORKFLOW_DISPATCH_TOKEN }}
-          FIREBASE_PROJECT_ID: ${{ secrets.GH_PAGES_FIREBASE_PROJECT_ID }}
+          FIREBASE_PROJECT_ID:     ${{ secrets.GH_PAGES_FIREBASE_PROJECT_ID }}
         run: |
           firebase functions:config:set \
             github.token="$WORKFLOW_DISPATCH_TOKEN" \
@@ -82,7 +76,7 @@ jobs:
 
       - name: Deploy triggerGameDayUpdate Function
         env:
-          FIREBASE_TOKEN:    ${{ secrets.FIREBASE_CI_TOKEN }}
+          FIREBASE_TOKEN:      ${{ secrets.FIREBASE_CI_TOKEN }}
           FIREBASE_PROJECT_ID: ${{ secrets.GH_PAGES_FIREBASE_PROJECT_ID }}
         run: |
           firebase deploy \
