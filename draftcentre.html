@@ -2866,7 +2866,9 @@
                 draftedByName: drafterDisplayName, // Name of user clicking button
                 draftedAt: serverTimestamp(), // Use server time for consistency
                 round: currentRound,
-                pickNumber: currentPickNumber // Store overall pick number
+                pickNumber: currentPickNumber, // Store overall pick number
+                // Track playoff round drafted (only set for players drafted in playoff rounds 2-4)
+                playoffRoundDrafted: currentRound > 1 ? currentRound : 0
             };
             console.log("Drafted player record:", draftedPlayerRecord);
 

@@ -1,93 +1,148 @@
 #!/usr/bin/env python3
-import os, json, requests, firebase_admin
-from firebase_admin import credentials, db
+import os
+import json
+import requests
+import firebase_admin
+from firebase_admin import credentials, firestore
+import logging
+from datetime import datetime
 
-# ——— CONFIG ———
-SERVICE_ACCOUNT = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON_PATH", "sa.json")
-DATABASE_URL    = "https://your-db.firebaseio.com"  # ← your RTDB URL
-LEAGUE_ID       = "YOUR_LEAGUE_ID"
-OUTPUT_PATH     = "data/playerlist.json"
+# Setup logging
+logging.basicConfig(level=logging.INFO, 
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-# ——— FIREBASE INIT ———
-cred = credentials.Certificate(SERVICE_ACCOUNT)
-firebase_admin.initialize_app(cred, { "databaseURL": DATABASE_URL })
+# Initialize Firebase
+cred_path = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON_PATH')
+if not cred_path:
+    logger.error("Firebase credentials not found. Set FIREBASE_SERVICE_ACCOUNT_JSON_PATH environment variable.")
+    exit(1)
 
-# ——— FETCHER ———
-def fetch_playoff_stats(pid, pos):
-    """Get ONLY the playoffs subSeason stats snapshot."""
-    url = f"https://api-web.nhle.com/v1/player/{pid}/landing"
-    r = requests.get(url); r.raise_for_status()
-    po = (r.json().get("featuredStats", {})
-           .get("playoffs", {})
-           .get("subSeason", {}) or {})
+try:
+    cred = credentials.Certificate(cred_path)
+    firebase_admin.initialize_app(cred)
+    db = firestore.client()
+    logger.info("Firebase initialized successfully")
+except Exception as e:
+    logger.error(f"Error initializing Firebase: {e}")
+    exit(1)
 
-    if pos == "G":
-        return {
-            "Points Before Acquiring": 0,
-            "PreAcq Wins":    po.get("wins", 0),
-            "PreAcq Shutouts":po.get("shutouts", 0)
-        }
-    else:
-        return {
-            "Points Before Acquiring": po.get("points", 0),
-            "PreAcq Wins":    0,
-            "PreAcq Shutouts":0
-        }
+def fetch_nhl_player_stats(player_id):
+    """Fetch player stats from NHL API"""
+    try:
+        # Base URL for NHL API
+        base_url = "https://statsapi.web.nhl.com/api/v1"
+        
+        # First get player details to determine if they're a skater or goalie
+        response = requests.get(f"{base_url}/people/{player_id}")
+        response.raise_for_status()
+        player_data = response.json()
+        
+        if not player_data.get('people'):
+            logger.warning(f"No data found for player ID {player_id}")
+            return None
+        
+        player_info = player_data['people'][0]
+        position = player_info.get('primaryPosition', {}).get('code')
+        
+        # Get playoff stats for the player
+        response = requests.get(f"{base_url}/people/{player_id}/stats?stats=statsSinglePostseason")
+        response.raise_for_status()
+        stats_data = response.json()
+        
+        if not stats_data.get('stats'):
+            logger.warning(f"No stats found for player ID {player_id}")
+            return None
+        
+        stats = stats_data['stats'][0].get('splits', [])
+        if not stats:
+            logger.warning(f"No playoff stats found for player ID {player_id}")
+            return None
+        
+        current_playoffs = stats[0]
+        
+        # Calculate points based on position
+        if position == 'G':  # Goalie
+            wins = current_playoffs.get('stat', {}).get('wins', 0)
+            shutouts = current_playoffs.get('stat', {}).get('shutouts', 0)
+            points = (wins * 2) + shutouts
+        else:  # Skater
+            goals = current_playoffs.get('stat', {}).get('goals', 0)
+            assists = current_playoffs.get('stat', {}).get('assists', 0)
+            points = goals + assists
+        
+        logger.info(f"Fetched playoff stats for player {player_id}: {points} points")
+        return points
+    
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error fetching NHL API data for player {player_id}: {e}")
+        return None
+    except Exception as e:
+        logger.error(f"Unexpected error processing player {player_id}: {e}")
+        return None
 
-# ——— MAIN ———
-def main():
-    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-
-    dp_ref = db.reference(f"leagues/{LEAGUE_ID}/draftedPlayers")
-    drafted = dp_ref.get() or {}
-
-    output = []
-
-    for key, rec in drafted.items():
-        pid        = rec.get("playerId")
-        pos        = rec.get("Position")
-        pr_drafted = rec.get("playoffRoundDrafted") or 0
-        pre_round  = rec.get("preAcqRound", 0)
-
-        # Base entry shape
-        entry = {
-            "Player": rec.get("Player"),
-            "Player ID": pid,
-            "NHL Team": rec.get("NHL Team"),
-            "Team": rec.get("Team"),
-            "playoffRoundDrafted": pr_drafted,
-            "Points for Gordie Howe Hattricks": rec.get("Points for Gordie Howe Hattricks", 0),
-            "Points for Conn Smythe":           rec.get("Points for Conn Smythe", 0),
-        }
-
-        # Only fetch once, the first time we see pr_drafted > pre_round
-        if pr_drafted > 0 and pre_round < pr_drafted:
-            stats = fetch_playoff_stats(pid, pos)
-            entry.update(stats)
-
-            # Persist back so we never fetch again for this player in this round
-            dp_ref.child(key).update({
-                "Points Before Acquiring": stats["Points Before Acquiring"],
-                "PreAcq Wins":    stats["PreAcq Wins"],
-                "PreAcq Shutouts":stats["PreAcq Shutouts"],
-                "preAcqRound":    pr_drafted
-            })
-            print(f"Fetched pre‑acq for {entry['Player']} (round {pr_drafted})")
-
-        else:
-            # Carry forward whatever’s already stored
-            entry["Points Before Acquiring"] = rec.get("Points Before Acquiring", 0)
-            entry["PreAcq Wins"]             = rec.get("PreAcq Wins", 0)
-            entry["PreAcq Shutouts"]         = rec.get("PreAcq Shutouts", 0)
-            entry["preAcqRound"]             = pre_round
-
-        output.append(entry)
-
-    # Write out the JSON for your other scripts
-    with open(OUTPUT_PATH, "w") as f:
-        json.dump(output, f, indent=2)
-
-    print(f"Wrote {len(output)} entries to {OUTPUT_PATH}")
+def process_drafted_players():
+    """Process all drafted players and update points before acquiring"""
+    try:
+        # Get all drafted players
+        drafted_players_ref = db.collection('draftedPlayers')
+        drafted_players = drafted_players_ref.stream()
+        
+        # Prepare output data
+        output_data = {}
+        updated_count = 0
+        skipped_count = 0
+        
+        for player_doc in drafted_players:
+            player_id = player_doc.id
+            player_data = player_doc.to_dict()
+            
+            # Get playoff round drafted (default to 0 if not set)
+            playoff_round_drafted = player_data.get('playoffRoundDrafted', 0)
+            pre_acq_round = player_data.get('preAcqRound', 0)
+            
+            # Include player in output regardless of updates
+            output_data[player_id] = player_data
+            
+            # Only process players drafted in playoff rounds where preAcqRound needs updating
+            if playoff_round_drafted > 0 and pre_acq_round < playoff_round_drafted:
+                logger.info(f"Processing player {player_id}: drafted in round {playoff_round_drafted}, preAcqRound {pre_acq_round}")
+                
+                # Fetch points from NHL API
+                points_before_acquiring = fetch_nhl_player_stats(player_id)
+                
+                if points_before_acquiring is not None:
+                    # Update player data in Firestore
+                    player_ref = drafted_players_ref.document(player_id)
+                    player_ref.update({
+                        'pointsBeforeAcquiring': points_before_acquiring,
+                        'preAcqRound': playoff_round_drafted
+                    })
+                    
+                    # Update output data
+                    output_data[player_id]['pointsBeforeAcquiring'] = points_before_acquiring
+                    output_data[player_id]['preAcqRound'] = playoff_round_drafted
+                    
+                    updated_count += 1
+                    logger.info(f"Updated player {player_id} with {points_before_acquiring} points before acquiring")
+            else:
+                logger.info(f"Skipping player {player_id}: playoffRoundDrafted={playoff_round_drafted}, preAcqRound={pre_acq_round}")
+                skipped_count += 1
+        
+        # Write output to playerlist.json
+        with open('data/playerlist.json', 'w') as f:
+            json.dump(output_data, f, indent=2)
+        
+        logger.info(f"Process complete: Updated {updated_count} players, skipped {skipped_count} players")
+        logger.info(f"Saved player data to playerlist.json")
+        
+        return updated_count, skipped_count
+    
+    except Exception as e:
+        logger.error(f"Error processing drafted players: {e}")
+        return 0, 0
 
 if __name__ == "__main__":
-    main()
+    logger.info("Starting update_playerlist.py script")
+    updated, skipped = process_drafted_players()
+    logger.info(f"Script completed: {updated} players updated, {skipped} players skipped")

@@ -55,7 +55,8 @@ Click the "Fork" button in the top-right corner of this repository to create you
 
 1. `fetch_stats.py` retrieves player statistics from the NHL API
 2. `calculate_standings.py` processes the data and calculates fantasy points
-3. Results are stored as JSON files in the `data/` directory
+3. `update_playerlist.py` tracks player acquisition timing to calculate pre-acquisition stats
+4. Results are stored as JSON files in the `data/` directory
 
 ### Playoff Draft System
 
@@ -66,6 +67,8 @@ Click the "Fork" button in the top-right corner of this repository to create you
    - Set custom draft order for the next round
    - Incorporate banked picks into the draft order
 4. Teams can choose to bank picks for future rounds
+5. Players drafted in subsequent playoff rounds are tracked with `playoffRoundDrafted` (2-4)
+6. Pre-acquisition points are automatically calculated for playoff-drafted players
 
 ### Scoring System
 
@@ -93,14 +96,19 @@ You can customize the app by:
 │   ├── game-day-update.yml  (fixed version)
 │   └── player-database-update.yml
 ├── data/
-│   └── README.md (placeholder to ensure directory exists)
+│   ├── current-standings.json
+│   ├── nhl_players.json
+│   └── playerlist.json
 ├── scripts/
-│   ├── check_active_games.py  (new script)
+│   ├── check_active_games.py
 │   ├── fetch_stats.py
 │   ├── calculate_standings.py
-│   └── get_all_players.py
+│   ├── get_all_players.py
+│   └── update_playerlist.py (new script)
 ├── index.html
-├── player-selection.html
+├── league.html
+├── draftcentre.html
+├── manage-leagues.html
 └── README.md
 ```
 
