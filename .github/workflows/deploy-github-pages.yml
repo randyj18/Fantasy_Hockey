@@ -1,50 +1,98 @@
-name: Game Day Updates
+name: Deploy to GitHub Pages
 
 on:
-  workflow_dispatch:  # Manual trigger
-  schedule:
-    - cron: '0 0,3,6,9,12,15,18,21 * * *'  # Check every 3 hours
+  push:
+    branches: [master]
+  workflow_dispatch:  # Allow manual triggering
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  check-and-update:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests firebase-admin
-
-      - name: Generate playerlist.json
+      - name: Create Firebase Config
         env:
-          FIREBASE_SERVICE_ACCOUNT_JSON_PATH: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON_PATH }}
-        run: python scripts/update_playerlist.py
-
-      - name: Check for active games
-        id: check_games
-        run: python scripts/check_active_games.py
-
-      - name: Run fetch stats script (if games active)
-        if: ${{ steps.check_games.outputs.games_active == 'true' }}
-        run: python scripts/fetch_stats.py
-
-      - name: Run calculate standings script (if games active)
-        if: ${{ steps.check_games.outputs.games_active == 'true' }}
-        run: python scripts/calculate_standings.py
-
-      - name: Commit and push changes
-        if: ${{ steps.check_games.outputs.games_active == 'true' }}
+          FIREBASE_API_KEY: ${{ secrets.GH_PAGES_FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ secrets.GH_PAGES_FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_DATABASE_URL: ${{ secrets.GH_PAGES_FIREBASE_DATABASE_URL }}
+          FIREBASE_PROJECT_ID: ${{ secrets.GH_PAGES_FIREBASE_PROJECT_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.GH_PAGES_FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.GH_PAGES_FIREBASE_MESSAGING_SENDER_ID }}
+          FIREBASE_APP_ID: ${{ secrets.GH_PAGES_FIREBASE_APP_ID }}
         run: |
-          git config --global user.name 'GitHub Actions Bot'
-          git config --global user.email 'actions@github.com'
-          git add data/
-          git commit -m "Game day update for $(date +'%b%d %H:%M UTC')" || echo "No changes to commit"
-          git push
+          cat > firebaseConfig.js <<EOL
+          // Firebase configuration
+          const firebaseConfig = {
+            apiKey:      "$FIREBASE_API_KEY",
+            authDomain:  "$FIREBASE_AUTH_DOMAIN",
+            databaseURL: "$FIREBASE_DATABASE_URL",
+            projectId:   "$FIREBASE_PROJECT_ID",
+            storageBucket: "$FIREBASE_STORAGE_BUCKET",
+            messagingSenderId: "$FIREBASE_MESSAGING_SENDER_ID",
+            appId:       "$FIREBASE_APP_ID"
+          };
+          window.firebaseConfig = firebaseConfig;
+          EOL
+
+      - name: Create Gmail Config
+        env:
+          GMAIL_API_KEY:   ${{ secrets.GMAIL_API_KEY }}
+          GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+        run: |
+          cat > gmailConfig.js <<EOL
+          // Gmail API configuration
+          const gmailConfig = {
+            apiKey: "$GMAIL_API_KEY",
+            clientId: "$GMAIL_CLIENT_ID"
+          };
+          window.gmailConfig = gmailConfig;
+          EOL
+
+      # ─── New steps to configure & deploy our trigger function ───
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@latest
+
+      - name: Set dispatch token in Functions config
+        env:
+          FIREBASE_TOKEN:          ${{ secrets.FIREBASE_CI_TOKEN }}
+          WORKFLOW_DISPATCH_TOKEN: ${{ secrets.WORKFLOW_DISPATCH_TOKEN }}
+          FIREBASE_PROJECT_ID:     ${{ secrets.GH_PAGES_FIREBASE_PROJECT_ID }}
+        run: |
+          firebase functions:config:set \
+            github.token="$WORKFLOW_DISPATCH_TOKEN" \
+            --project="$FIREBASE_PROJECT_ID"
+
+      - name: Deploy triggerGameDayUpdate Function
+        env:
+          FIREBASE_TOKEN:      ${{ secrets.FIREBASE_CI_TOKEN }}
+          FIREBASE_PROJECT_ID: ${{ secrets.GH_PAGES_FIREBASE_PROJECT_ID }}
+        run: |
+          firebase deploy \
+            --only functions:triggerGameDayUpdate \
+            --project="$FIREBASE_PROJECT_ID"
+
+      # ────────────────────────────────────────────────────────────
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
