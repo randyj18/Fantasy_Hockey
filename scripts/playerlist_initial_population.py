@@ -2,7 +2,7 @@
 import os
 import json
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, db
 import logging
 
 # Setup logging
@@ -26,39 +26,39 @@ def initialize_firebase():
         # Parse the JSON string
         service_account_info = json.loads(firebase_json)
         
-        # Initialize with the parsed JSON
+        # Initialize with the parsed JSON and RTDB URL
         cred = credentials.Certificate(service_account_info)
-        firebase_admin.initialize_app(cred)
-        db = firestore.client()
-        logger.info("Firebase initialized successfully")
-        return db
+        firebase_admin.initialize_app(cred, {
+            'databaseURL': 'https://playofffantasyhockey-default-rtdb.firebaseio.com'
+        })
+        logger.info("Firebase Realtime Database initialized successfully")
+        return True
     except Exception as e:
         logger.error(f"Error initializing Firebase: {e}")
         exit(1)
 
-def get_drafted_players(db):
+def get_drafted_players():
     """Get all drafted players for the specified league"""
     try:
         # Get all drafted players for the league
-        players_ref = db.collection('draftedPlayers')
+        drafted_players_ref = db.reference(f'draftedPlayers')
+        drafted_players = drafted_players_ref.get()
         
-        # Query players for the specific league
-        query = players_ref.where('leagueId', '==', LEAGUE_ID)
-        players = query.stream()
+        if drafted_players is None:
+            logger.error("No drafted players found")
+            return 0
         
-        # Prepare output data
-        output_data = {}
+        # Filter players by league ID
+        # Note: RTDB doesn't have built-in filtering, so we filter manually
+        filtered_players = {}
         player_count = 0
         
-        for player_doc in players:
-            player_id = player_doc.id
-            player_data = player_doc.to_dict()
-            
-            # Include in output
-            output_data[player_id] = player_data
-            player_count += 1
-            
-            logger.info(f"Added player {player_id}: {player_data.get('playerName', 'Unknown Player')}")
+        for player_id, player_data in drafted_players.items():
+            # Check if player belongs to our league
+            if player_data.get('leagueId') == LEAGUE_ID:
+                filtered_players[player_id] = player_data
+                player_count += 1
+                logger.info(f"Added player {player_id}: {player_data.get('playerName', 'Unknown Player')}")
         
         logger.info(f"Found {player_count} drafted players for league {LEAGUE_ID}")
         
@@ -67,7 +67,7 @@ def get_drafted_players(db):
         
         # Write output to playerlist.json
         with open('data/playerlist.json', 'w') as f:
-            json.dump(output_data, f, indent=2)
+            json.dump(filtered_players, f, indent=2)
         
         logger.info(f"Process complete: Saved {player_count} players to playerlist.json")
         
@@ -78,12 +78,12 @@ def get_drafted_players(db):
         return 0
 
 if __name__ == "__main__":
-    logger.info("Starting simple playerlist generation script")
+    logger.info("Starting playerlist generation script for Realtime Database")
     
     # Initialize Firebase
-    db = initialize_firebase()
+    initialize_firebase()
     
     # Get and save players
-    player_count = get_drafted_players(db)
+    player_count = get_drafted_players()
     
     logger.info(f"Script completed: {player_count} players added to playerlist.json")
