@@ -779,6 +779,7 @@
         let leagueData = null;
         let draftedPlayers = [];
         let playerStats = {};
+        let playerStatsByID = {};
         let teamRosters = {};
         let teamStats = {};
         let isLiveGame = false;
@@ -919,30 +920,120 @@
                 // Update league info
                 updateLeagueInfo();
                 
-                // Load drafted players data
-                loadDraftedPlayers();
-                
-                // Show league container
-                loadingMessage.classList.add('hidden');
-                leagueContainer.classList.remove('hidden');
-                
-                // Set up live game checker
-                checkLiveGames();
-                setInterval(checkLiveGames, 60000); // Check every minute
-                
-                // Set up refresh timer for stats
-                setInterval(loadDraftedPlayers, 300000); // Refresh every 5 minutes
-                
-                // Show commissioner controls if applicable
-                if (isCommissioner) {
-                    commissionerControlsEl.classList.remove('hidden');
-                    populateNHLTeamsSelector();
-                    setupCommissionerControls();
-                }
+                // Load player stats first
+                loadPlayerStats().then(() => {
+                    // Load drafted players data
+                    loadDraftedPlayers();
+                    
+                    // Show league container
+                    loadingMessage.classList.add('hidden');
+                    leagueContainer.classList.remove('hidden');
+                    
+                    // Set up live game checker
+                    checkLiveGames();
+                    setInterval(checkLiveGames, 60000); // Check every minute
+                    
+                    // Set up refresh timer for stats
+                    setInterval(loadDraftedPlayers, 300000); // Refresh every 5 minutes
+                    
+                    // Show commissioner controls if applicable
+                    if (isCommissioner) {
+                        commissionerControlsEl.classList.remove('hidden');
+                        populateNHLTeamsSelector();
+                        setupCommissionerControls();
+                    }
+                }).catch(error => {
+                    console.error("Error loading player stats:", error);
+                    showNotification(`Error loading player stats: ${error.message}`);
+                });
             }).catch(error => {
                 console.error("Error loading league:", error);
                 loadingMessage.textContent = `Error: ${error.message}`;
             });
+        }
+        
+        // Load player stats from updatedstats JSON file
+        async function loadPlayerStats() {
+            try {
+                // Try to load the most recent stats file first
+                const now = new Date();
+                const currentDate = now.toLocaleString('en-us', { month: 'short', day: '2-digit' });
+                const latestStatsFile = `data/updatedstats-${currentDate}.json`;
+                
+                let response = await fetch(latestStatsFile);
+                
+                // If file doesn't exist, try loading playerlist.json instead
+                if (!response.ok) {
+                    console.warn(`Latest stats file not found, falling back to playerlist.json`);
+                    response = await fetch('data/playerlist.json');
+                    
+                    if (!response.ok) {
+                        throw new Error("Could not load player stats");
+                    }
+                }
+                
+                const data = await response.json();
+                
+                // Process player stats
+                playerStats = {};
+                playerStatsByID = {};
+                
+                // If data is an object with keys (playerlist.json format)
+                if (!Array.isArray(data) && typeof data === 'object') {
+                    // Transform object into array for consistent processing
+                    const playersArray = Object.entries(data).map(([id, player]) => ({
+                        ...player,
+                        playerId: id
+                    }));
+                    
+                    // Process each player
+                    playersArray.forEach(player => {
+                        const id = player.playerId;
+                        
+                        // Extract stats from player data
+                        playerStats[id] = {
+                            goals: player.goals || 0,
+                            assists: player.assists || 0,
+                            wins: player.wins || 0,
+                            shutouts: player.shutouts || 0,
+                            pointsBeforeAcquiring: player.pointsBeforeAcquiring || 0
+                        };
+                        
+                        // Also index by ID for faster lookup
+                        playerStatsByID[id] = playerStats[id];
+                    });
+                } else {
+                    // Process array format (updatedstats-*.json)
+                    data.forEach(player => {
+                        const id = player["Player ID"] || player.playerId;
+                        
+                        if (!id) {
+                            console.warn("Player without ID:", player);
+                            return;
+                        }
+                        
+                        // Extract stats from player data
+                        playerStats[id] = {
+                            goals: player.Goals || 0,
+                            assists: player.Assists || 0,
+                            wins: player.Wins || 0,
+                            shutouts: player.Shutouts || 0,
+                            pointsBeforeAcquiring: player["Points Before Acquiring"] || 0
+                        };
+                        
+                        // Also index by ID for faster lookup
+                        playerStatsByID[id] = playerStats[id];
+                    });
+                }
+                
+                console.log(`Loaded stats for ${Object.keys(playerStats).length} players`);
+                return playerStats;
+                
+            } catch (error) {
+                console.error("Error loading player stats:", error);
+                // Return empty object so the app can continue with default values
+                return {};
+            }
         }
         
         // Update league info
@@ -980,14 +1071,14 @@
             // Get both drafted players and eliminated players data
             Promise.all([
                 get(draftedPlayersRef),
-                get(eliminatedPlayersRef),
-                fetchPlayerStats()
-            ]).then(([draftedSnapshot, eliminatedSnapshot, stats]) => {
+                get(eliminatedPlayersRef)
+            ]).then(([draftedSnapshot, eliminatedSnapshot]) => {
                 // Process drafted players
                 if (draftedSnapshot.exists()) {
                     draftedPlayers = Object.entries(draftedSnapshot.val()).map(([key, player]) => ({
                         ...player,
-                        key: key // Store the Firebase key for reference
+                        key: key, // Store the Firebase key for reference
+                        playerId: player.playerId || key // Use explicit playerId if available, otherwise use the key
                     }));
                 } else {
                     draftedPlayers = [];
@@ -1003,9 +1094,6 @@
                         }
                     });
                 }
-                
-                // Store player stats
-                playerStats = stats;
                 
                 // Process team rosters
                 processTeamRosters();
@@ -1026,13 +1114,6 @@
                 console.error("Error loading drafted players:", error);
                 showNotification(`Error: ${error.message}`);
             });
-        }
-        
-        // Fetch player stats from API or mock data
-        function fetchPlayerStats() {
-            // In a real application, you would fetch this from a server or NHL API
-            // For now, we'll return a mock object with player IDs as keys
-            return Promise.resolve({});
         }
         
         // Process team rosters from drafted players
@@ -1127,28 +1208,47 @@
             });
         }
         
-        // Calculate player points from stats or use mock data
+        // Calculate player points from stats
         function calculatePlayerPoints(player) {
-            // Get player stats from our stats object or calculate based on player data
+            // Get player ID
             const playerId = player.playerId;
             const position = player.Position;
             let points = 0;
             
-            // In a real app, you'd use real data from NHL API or your database
-            // For now, we'll use a simple simulation
-            if (position === 'G') {
-                // For goalies: wins = 2pts, shutouts = 2pts
-                points = (Math.floor(Math.random() * 5) * 2) + (Math.floor(Math.random() * 2) * 2);
-            } else {
-                // For skaters: goals = 1pt, assists = 1pt
-                const goals = Math.floor(Math.random() * 5);
-                const assists = Math.floor(Math.random() * 7);
-                points = goals + assists;
-            }
+            // Get player stats from our stats object
+            const playerStat = playerStatsByID[playerId];
             
-            // Account for points before acquiring (for players added after initial draft)
-            if (player.pointsBeforeAcquiring) {
-                points += player.pointsBeforeAcquiring;
+            if (playerStat) {
+                if (position === 'G') {
+                    // For goalies: wins = 2pts, shutouts = 2pts
+                    points = (playerStat.wins * 2) + (playerStat.shutouts * 2);
+                } else {
+                    // For skaters: goals = 1pt, assists = 1pt
+                    points = playerStat.goals + playerStat.assists;
+                }
+                
+                // Account for points before acquiring (for players added after initial draft)
+                if (playerStat.pointsBeforeAcquiring) {
+                    points += playerStat.pointsBeforeAcquiring;
+                }
+            } else {
+                // Fall back to any stats in the player object itself
+                if (position === 'G') {
+                    const wins = player.wins || 0;
+                    const shutouts = player.shutouts || 0;
+                    points = (wins * 2) + (shutouts * 2);
+                } else {
+                    const goals = player.goals || 0;
+                    const assists = player.assists || 0;
+                    points = goals + assists;
+                }
+                
+                // Account for points before acquiring
+                if (player.pointsBeforeAcquiring) {
+                    points += player.pointsBeforeAcquiring;
+                }
+                
+                console.warn(`No stats found for player ${player.Player} (ID: ${playerId}), using default values`);
             }
             
             return points;
@@ -1199,7 +1299,6 @@
                 breakdownSelect.value = userTeamOption.id;
             }
         }
-        
         // Update the standings table
         function updateStandingsTable() {
             const tableBody = document.getElementById('standingsTableBody');
@@ -1301,12 +1400,15 @@
                 const isEliminated = eliminatedPlayers.has(player.playerId);
                 const teamName = leagueData.teams[player.teamUid]?.name || 'Unknown Team';
                 
-                // Filter values based on position
+                // Get player stats
+                const playerStat = playerStatsByID[player.playerId] || {};
                 const isGoalie = player.Position === 'G';
-                const goals = isGoalie ? '-' : Math.floor(Math.random() * 5); // Mock data
-                const assists = isGoalie ? '-' : Math.floor(Math.random() * 7); // Mock data
-                const wins = isGoalie ? Math.floor(Math.random() * 5) : '-'; // Mock data
-                const shutouts = isGoalie ? Math.floor(Math.random() * 2) : '-'; // Mock data
+                
+                // Get actual stats from playerStat or default to 0
+                const goals = isGoalie ? '-' : (playerStat.goals || 0);
+                const assists = isGoalie ? '-' : (playerStat.assists || 0);
+                const wins = isGoalie ? (playerStat.wins || 0) : '-';
+                const shutouts = isGoalie ? (playerStat.shutouts || 0) : '-';
                 
                 const row = document.createElement('tr');
                 row.classList.toggle('eliminated-player', isEliminated);
@@ -1376,6 +1478,21 @@
                     playerCard.classList.add('eliminated-player');
                 }
                 
+                // Get player stats for display
+                const playerStat = playerStatsByID[player.playerId] || {};
+                const isGoalie = player.Position === 'G';
+                let statsDisplay = '';
+                
+                if (isGoalie) {
+                    const wins = playerStat.wins || 0;
+                    const shutouts = playerStat.shutouts || 0;
+                    statsDisplay = `W: ${wins}, SO: ${shutouts}`;
+                } else {
+                    const goals = playerStat.goals || 0;
+                    const assists = playerStat.assists || 0;
+                    statsDisplay = `G: ${goals}, A: ${assists}`;
+                }
+                
                 // Determine if commissioner controls should be shown
                 const showControls = isCommissioner;
                 let controlButton = '';
@@ -1392,6 +1509,7 @@
                     <div class="player-info">
                         <div class="player-name">${player.Player}</div>
                         <div class="player-team">${player['NHL Team']} - ${player.Position}</div>
+                        <div class="player-team">${statsDisplay}</div>
                     </div>
                     <div class="player-stats">
                         <div class="player-points">${player.points} pts</div>
@@ -1519,7 +1637,6 @@
                 }
             });
         }
-        
         // Update position breakdown chart
         function updatePositionBreakdownChart(stats) {
             const ctx = document.getElementById('positionBreakdownChart').getContext('2d');
@@ -1611,21 +1728,38 @@
         // Check if any games are currently live
         function checkLiveGames() {
             try {
-                // This would be a call to NHL API to check schedule
-                // For demo purposes, we'll just set it randomly
-                isLiveGame = Math.random() > 0.7; // 30% chance of having live games
-                
-                // Show/hide live indicator
-                const liveIndicator = document.getElementById('liveIndicator');
-                liveIndicator.style.display = isLiveGame ? 'inline-block' : 'none';
-                
-                // If games are live, refresh data more frequently
-                if (isLiveGame) {
-                    loadDraftedPlayers();
-                }
-                
+                // Check NHL API for active games
+                fetch('https://api-web.nhle.com/v1/schedule/now')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Check if there are any active games
+                        isLiveGame = data.gameWeek && 
+                                     data.gameWeek.some(day => 
+                                         day.games && day.games.some(game => 
+                                             game.gameState === 'LIVE' || game.gameState === 'PREVIEW'
+                                         )
+                                     );
+                        
+                        // Show/hide live indicator
+                        const liveIndicator = document.getElementById('liveIndicator');
+                        liveIndicator.style.display = isLiveGame ? 'inline-block' : 'none';
+                        
+                        // If games are live, refresh data more frequently
+                        if (isLiveGame) {
+                            loadPlayerStats().then(() => {
+                                loadDraftedPlayers();
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking live games:', error);
+                        isLiveGame = false;
+                        document.getElementById('liveIndicator').style.display = 'none';
+                    });
             } catch (error) {
                 console.error('Error checking live games:', error);
+                isLiveGame = false;
+                document.getElementById('liveIndicator').style.display = 'none';
             }
         }
         
@@ -1840,6 +1974,8 @@
         // Expose functions to window for inline handlers
         window.loadTeamRoster = loadTeamRoster;
         window.loadTeamBreakdown = loadTeamBreakdown;
+        window.eliminatePlayer = eliminatePlayer;
+        window.restorePlayer = restorePlayer;
     </script>
     
     <footer>
