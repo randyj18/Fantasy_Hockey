@@ -40,34 +40,44 @@ def initialize_firebase():
 def get_drafted_players():
     """Get all drafted players for the specified league"""
     try:
-        # Get all drafted players for the league
-        drafted_players_ref = db.reference(f'draftedPlayers')
+        # Get the drafted players for the specific league
+        # The path to drafted players is leagues/{leagueId}/draftedPlayers
+        drafted_players_ref = db.reference(f'leagues/{LEAGUE_ID}/draftedPlayers')
         drafted_players = drafted_players_ref.get()
         
         if drafted_players is None:
-            logger.error("No drafted players found")
+            logger.error("No drafted players found in league")
             return 0
         
-        # Filter players by league ID
-        # Note: RTDB doesn't have built-in filtering, so we filter manually
-        filtered_players = {}
+        logger.info(f"Found {len(drafted_players)} drafted players in league {LEAGUE_ID}")
+        
+        # Process each player
+        output_data = {}
         player_count = 0
         
         for player_id, player_data in drafted_players.items():
-            # Check if player belongs to our league
-            if player_data.get('leagueId') == LEAGUE_ID:
-                filtered_players[player_id] = player_data
-                player_count += 1
-                logger.info(f"Added player {player_id}: {player_data.get('playerName', 'Unknown Player')}")
-        
-        logger.info(f"Found {player_count} drafted players for league {LEAGUE_ID}")
+            # Add the playerId to the data if not present
+            if 'playerId' not in player_data:
+                player_data['playerId'] = player_data.get('Player ID', '')
+            
+            # Include in output data
+            output_data[player_data.get('playerId', player_id)] = player_data
+            player_count += 1
+            
+            # Log the player info
+            team = player_data.get('Team', 'Unknown Team')
+            player_name = player_data.get('Player', 'Unknown Player')
+            position = player_data.get('Position', 'Unknown Position')
+            nhl_team = player_data.get('NHL Team', '')
+            
+            logger.info(f"Added player: {player_name} ({position}, {nhl_team}) - Team: {team}")
         
         # Ensure data directory exists
         os.makedirs('data', exist_ok=True)
         
         # Write output to playerlist.json
         with open('data/playerlist.json', 'w') as f:
-            json.dump(filtered_players, f, indent=2)
+            json.dump(output_data, f, indent=2)
         
         logger.info(f"Process complete: Saved {player_count} players to playerlist.json")
         
@@ -75,6 +85,8 @@ def get_drafted_players():
     
     except Exception as e:
         logger.error(f"Error getting drafted players: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         return 0
 
 if __name__ == "__main__":
