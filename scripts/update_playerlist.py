@@ -6,6 +6,9 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import logging
 from datetime import datetime
+import base64
+import io
+import tempfile
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, 
@@ -13,19 +16,42 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 # Initialize Firebase
-cred_path = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON_PATH')
-if not cred_path:
-    logger.error("Firebase credentials not found. Set FIREBASE_SERVICE_ACCOUNT_JSON_PATH environment variable.")
-    exit(1)
-
-try:
-    cred = credentials.Certificate(cred_path)
-    firebase_admin.initialize_app(cred)
-    db = firestore.client()
-    logger.info("Firebase initialized successfully")
-except Exception as e:
-    logger.error(f"Error initializing Firebase: {e}")
-    exit(1)
+def initialize_firebase():
+    """Initialize Firebase using service account credentials from environment variables"""
+    # First check if the JSON content is directly provided
+    firebase_json = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON')
+    
+    if firebase_json:
+        try:
+            # Parse the JSON string
+            service_account_info = json.loads(firebase_json)
+            
+            # Initialize with the parsed JSON
+            cred = credentials.Certificate(service_account_info)
+            firebase_admin.initialize_app(cred)
+            db = firestore.client()
+            logger.info("Firebase initialized successfully from JSON environment variable")
+            return db
+        except json.JSONDecodeError:
+            logger.warning("Failed to parse FIREBASE_SERVICE_ACCOUNT_JSON, trying as a file path...")
+        except Exception as e:
+            logger.error(f"Error initializing Firebase from JSON content: {e}")
+    
+    # Fall back to file path method
+    cred_path = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON_PATH')
+    if not cred_path:
+        logger.error("Firebase credentials not found. Set either FIREBASE_SERVICE_ACCOUNT_JSON (content) or FIREBASE_SERVICE_ACCOUNT_JSON_PATH (file path) environment variable.")
+        exit(1)
+    
+    try:
+        cred = credentials.Certificate(cred_path)
+        firebase_admin.initialize_app(cred)
+        db = firestore.client()
+        logger.info("Firebase initialized successfully from file path")
+        return db
+    except Exception as e:
+        logger.error(f"Error initializing Firebase from file path: {e}")
+        exit(1)
 
 def fetch_nhl_player_stats(player_id):
     """Fetch player stats from NHL API"""
@@ -81,7 +107,7 @@ def fetch_nhl_player_stats(player_id):
         logger.error(f"Unexpected error processing player {player_id}: {e}")
         return None
 
-def process_drafted_players():
+def process_drafted_players(db):
     """Process all drafted players and update points before acquiring"""
     try:
         # Get all drafted players
@@ -105,9 +131,6 @@ def process_drafted_players():
             output_data[player_id] = player_data
             
             # Only process players drafted in playoff rounds where preAcqRound needs updating
-            # We look at playoffRoundDrafted to determine which players need processing
-            # - Round 1: Initial multi-round draft (no pre-acquisition processing needed)
-            # - Rounds 2-4: Playoff rounds where pre-acquisition stats need to be captured
             if playoff_round_drafted > 1 and pre_acq_round < playoff_round_drafted:
                 logger.info(f"Processing player {player_id}: drafted in round {playoff_round_drafted}, preAcqRound {pre_acq_round}")
                 
@@ -132,6 +155,9 @@ def process_drafted_players():
                 logger.info(f"Skipping player {player_id}: playoffRoundDrafted={playoff_round_drafted}, preAcqRound={pre_acq_round}")
                 skipped_count += 1
         
+        # Ensure data directory exists
+        os.makedirs('data', exist_ok=True)
+        
         # Write output to playerlist.json
         with open('data/playerlist.json', 'w') as f:
             json.dump(output_data, f, indent=2)
@@ -147,5 +173,11 @@ def process_drafted_players():
 
 if __name__ == "__main__":
     logger.info("Starting update_playerlist.py script")
-    updated, skipped = process_drafted_players()
+    
+    # Initialize Firebase
+    db = initialize_firebase()
+    
+    # Process players
+    updated, skipped = process_drafted_players(db)
+    
     logger.info(f"Script completed: {updated} players updated, {skipped} players skipped")

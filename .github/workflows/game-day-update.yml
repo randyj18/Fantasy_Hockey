@@ -1,45 +1,35 @@
 name: Game Day Updates
-
 on:
   workflow_dispatch:  # Manual trigger
   schedule:
     - cron: '0 0,3,6,9,12,15,18,21 * * *'  # Check every 3 hours
-
 jobs:
   check-and-update:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests firebase-admin
-
       - name: Generate playerlist.json
         env:
-          FIREBASE_SERVICE_ACCOUNT_JSON_PATH: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON_PATH }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
         run: python scripts/update_playerlist.py
-
       - name: Check for active games
         id: check_games
         run: python scripts/check_active_games.py
-
       - name: Run fetch stats script (if games active)
         if: ${{ steps.check_games.outputs.games_active == 'true' }}
         run: python scripts/fetch_stats.py
-
       - name: Run calculate standings script (if games active)
         if: ${{ steps.check_games.outputs.games_active == 'true' }}
         run: python scripts/calculate_standings.py
-
       - name: Commit and push changes
         if: ${{ steps.check_games.outputs.games_active == 'true' }}
         run: |
