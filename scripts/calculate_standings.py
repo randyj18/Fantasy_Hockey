@@ -1,87 +1,124 @@
-import json
 import os
-from collections import defaultdict
+import json
+import glob
 from datetime import datetime
 
-def calculate_standings(stats_file):
-    """Calculate standings from player statistics"""
+def calculate_standings(stats_file_path):
+    """Calculate standings based on player stats"""
+    with open(stats_file_path, 'r') as file:
+        players = json.load(file)
     
-    # Read the JSON file with updated stats
-    with open(stats_file, 'r') as file:
-        data = json.load(file)
+    # Initialize standings dictionary
+    standings = {}
     
-    # Calculate points for each player and sum them up for each team
-    team_points = defaultdict(int)
-    player_points = defaultdict(dict)
-    
-    for player in data:
-        team = player["Team"]
-        # Calculate points based on the formula
-        points = (
-            player["Goals"] +
-            player["Assists"] +
-            player["Wins"] * 2 +
-            player["Shutouts"] +
-            player["Points for Gordie Howe Hattricks"] +
-            player["Points for Conn Smythe"] -
-            player["Points Before Acquiring"]  # Subtracting points before acquiring
+    # Process each player
+    for player in players:
+        # Skip if missing critical data
+        if not player.get("Player ID") or not player.get("Team"):
+            continue
+        
+        # Get team name
+        team = player.get("Team")
+        
+        # Initialize team in standings if not already present
+        if team not in standings:
+            standings[team] = {
+                "Total Points": 0,
+                "Players": 0,
+                "Goals": 0,
+                "Assists": 0,
+                "Wins": 0,
+                "Shutouts": 0
+            }
+        
+        # Calculate player points based on stats
+        # Use 0 as default value for any missing fields
+        player_points = (
+            # Points from goals and assists for skaters
+            player.get("Goals", 0) + 
+            player.get("Assists", 0) + 
+            # Points from wins and shutouts for goalies (2 points each)
+            (player.get("Wins", 0) * 2) + 
+            (player.get("Shutouts", 0) * 2) +
+            # Special bonuses (if present)
+            player.get("Points for Gordie Howe Hattricks", 0) + 
+            player.get("Points for Conn Smythe", 0) +
+            # Points before acquiring (for mid-season additions)
+            player.get("Points Before Acquiring", 0)
         )
-        team_points[team] += points
-        player_points[player["Player"]] = {
-            "Total Points": points,
-            "Goals": player["Goals"],
-            "Assists": player["Assists"],
-            "Wins": player["Wins"],
-            "Shutouts": player["Shutouts"],
-            "Points for Gordie Howe Hattricks": player["Points for Gordie Howe Hattricks"],
-            "Points for Conn Smythe": player["Points for Conn Smythe"],
-            "Points Before Acquiring": player["Points Before Acquiring"]
-        }
+        
+        # Update team stats
+        standings[team]["Total Points"] += player_points
+        standings[team]["Players"] += 1
+        standings[team]["Goals"] += player.get("Goals", 0)
+        standings[team]["Assists"] += player.get("Assists", 0)
+        standings[team]["Wins"] += player.get("Wins", 0)
+        standings[team]["Shutouts"] += player.get("Shutouts", 0)
     
-    # Generate the standings JSON
-    standings = defaultdict(dict)
+    # Sort teams by total points (descending)
+    sorted_standings = sorted(
+        standings.items(),
+        key=lambda x: x[1]["Total Points"],
+        reverse=True
+    )
     
-    for team, points in team_points.items():
-        standings[team]["Total Points"] = points
-        standings[team]["Players"] = {}
-        for player in data:
-            if player["Team"] == team:
-                player_name = player["Player"]
-                standings[team]["Players"][player_name] = player_points[player_name]
-    
-    return standings
+    return sorted_standings
 
 def main():
     # Create data directory if it doesn't exist
     os.makedirs('data', exist_ok=True)
     
-    # Get the current date to generate the filename
-    current_date = datetime.now().strftime("%b%d")
-    stats_file_path = f'data/updatedstats-{current_date}.json'
-    
-    # Check if stats file exists
-    if not os.path.exists(stats_file_path):
-        print(f"Error: Stats file not found at {stats_file_path}")
+    # Find the most recent stats file
+    try:
+        # First try to find updatedstats-*.json files
+        stats_files = glob.glob('data/updatedstats-*.json')
+        
+        if stats_files:
+            # Sort by modification time (most recent first)
+            stats_file_path = max(stats_files, key=os.path.getmtime)
+            print(f"Using most recent stats file: {stats_file_path}")
+        else:
+            # Fall back to playerlist.json if no updatedstats files found
+            stats_file_path = 'data/playerlist.json'
+            print(f"No updatedstats files found, using: {stats_file_path}")
+    except Exception as e:
+        print(f"Error finding stats file: {e}")
         exit(1)
     
     # Calculate standings
     standings = calculate_standings(stats_file_path)
     
-    # Output the standings JSON
-    output_file_path = f'data/Standings-{current_date}.json'
-    with open(output_file_path, 'w') as outfile:
-        json.dump(standings, outfile, indent=4)
+    # Generate the standings file with current date
+    current_date = datetime.now().strftime("%b%d")
+    standings_file = f"data/standings-{current_date}.json"
     
-    print(f"Standings saved to {output_file_path}")
+    # Format standings for output
+    formatted_standings = []
+    for rank, (team_name, stats) in enumerate(standings, 1):
+        formatted_standings.append({
+            "Rank": rank,
+            "Team": team_name,
+            "Total Points": stats["Total Points"],
+            "Players": stats["Players"],
+            "Goals": stats["Goals"],
+            "Assists": stats["Assists"],
+            "Wins": stats["Wins"],
+            "Shutouts": stats["Shutouts"]
+        })
     
-    # Also save a copy as current-standings.json for easy reference
-    current_standings_path = 'data/current-standings.json'
-    with open(current_standings_path, 'w') as outfile:
-        json.dump(standings, outfile, indent=4)
+    # Save standings to JSON file
+    with open(standings_file, 'w') as file:
+        json.dump(formatted_standings, file, indent=4)
     
-    print(f"Current standings saved to {current_standings_path}")
+    print(f"Standings calculated and saved to {standings_file}")
     
-    return output_file_path
+    # Also save a copy as latest-standings.json for easy reference
+    with open('data/latest-standings.json', 'w') as file:
+        json.dump(formatted_standings, file, indent=4)
+    
+    print("Standings also saved to latest-standings.json")
+    
+    return standings_file
 
 if __name__ == "__main__":
     main()
