@@ -50,7 +50,7 @@ def main():
     # Load player list from JSON file
     try:
         with open("data/playerlist.json", "r") as file:
-            player_list = json.load(file)
+            player_list_data = json.load(file)
     except FileNotFoundError:
         print("Error: playerlist.json file not found.")
         exit(1)
@@ -58,31 +58,82 @@ def main():
     # Lists to collect player data by category
     players_data = []
     
-    # Loop through each player and fetch player data
-    for player_info in player_list:
-        player_id = player_info.get('Player ID')
+    # Handle different formats of playerlist.json
+    # If it's an object with keys (not an array), convert to array format for processing
+    if isinstance(player_list_data, dict):
+        print("Processing playerlist.json in object format")
+        player_entries = []
         
+        # Convert object to array of player objects with ID included
+        for player_id, player_info in player_list_data.items():
+            player_entry = player_info.copy()  # Create a copy to avoid modifying the original
+            
+            # Ensure player_id is included (could be in playerId field or we use the key)
+            if 'playerId' not in player_entry:
+                player_entry['playerId'] = player_id
+                
+            player_entries.append(player_entry)
+            
+        player_list = player_entries
+    else:
+        print("Processing playerlist.json in array format")
+        player_list = player_list_data
+    
+    # Loop through each player and fetch player data
+    for player_entry in player_list:
+        # Try different field names for player ID since formats may vary
+        player_id = (
+            player_entry.get('playerId') or 
+            player_entry.get('Player ID') or
+            player_entry.get('player_id')
+        )
+        
+        # If no player ID found, skip this player
         if not player_id:
-            print(f"Skipping player {player_info.get('Player', 'Unknown')} due to missing player ID.")
+            player_name = (
+                player_entry.get('Player') or 
+                player_entry.get('playerName') or
+                player_entry.get('name') or
+                'Unknown'
+            )
+            print(f"Skipping player {player_name} due to missing player ID.")
             continue
         
+        # Get player name
+        player_name = (
+            player_entry.get('Player') or 
+            player_entry.get('playerName') or 
+            player_entry.get('name') or
+            f"Player {player_id}"
+        )
+        
+        # Get team name
+        team_name = (
+            player_entry.get('Team') or
+            player_entry.get('teamName') or
+            player_entry.get('NHL Team') or
+            'Unknown Team'
+        )
+        
+        print(f"Fetching stats for {player_name} (ID: {player_id})")
         stats = fetch_player_stats(player_id)
         
-        # Convert points-related fields to integers, handling None values
-        points_fields = ['Points for Gordie Howe Hattricks', 'Points for Conn Smythe', 'Points Before Acquiring']
-        for field in points_fields:
-            player_info[field] = int(player_info.get(field, 0) or 0)
+        # Points before acquiring (if available)
+        points_before_acquiring = 0
+        if 'pointsBeforeAcquiring' in player_entry:
+            points_before_acquiring = player_entry['pointsBeforeAcquiring']
         
+        # Create player data record
         player_data = {
-            "Player": player_info.get('Player'),
+            "Player": player_name,
             "Player ID": player_id,
-            "Team": player_info.get('Team'),
-            **stats,
-            **{field: player_info.get(field, 0) for field in points_fields}
+            "Team": team_name,
+            "Points Before Acquiring": points_before_acquiring,
+            **stats
         }
         
         players_data.append(player_data)
-        print(f"Processed player: {player_info.get('Player')}")
+        print(f"Processed player: {player_name}")
     
     # Generate the filename with the current date
     current_date = datetime.now().strftime("%b%d")
