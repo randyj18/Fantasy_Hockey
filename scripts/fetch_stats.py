@@ -136,7 +136,7 @@ def main():
     
     # Generate the filename with the current date
     current_date = datetime.now().strftime("%b%d")
-    filename = f"playoffstats-{current_date}.json"
+    filename = f"updatedstats-{current_date}.json"
     
     # Path to save the file
     save_path = "data"
