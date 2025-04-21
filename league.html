@@ -965,11 +965,11 @@
                 // If file doesn't exist, try loading playerlist.json instead
                 if (!response.ok) {
                     console.warn(`Latest stats file not found, falling back to playerlist.json`);
-                    response = await fetch('data/playerlist.json');
-                    
-                    if (!response.ok) {
-                        throw new Error("Could not load player stats");
-                    }
+                    // Instead of falling back to playerlist.json, we'll create empty stats
+                    // This ensures we never use regular season stats
+                    playerStats = {};
+                    playerStatsByID = {};
+                    return {};
                 }
                 
                 const data = await response.json();
@@ -978,53 +978,27 @@
                 playerStats = {};
                 playerStatsByID = {};
                 
-                // If data is an object with keys (playerlist.json format)
-                if (!Array.isArray(data) && typeof data === 'object') {
-                    // Transform object into array for consistent processing
-                    const playersArray = Object.entries(data).map(([id, player]) => ({
-                        ...player,
-                        playerId: id
-                    }));
+                // Process array format (updatedstats-*.json)
+                data.forEach(player => {
+                    const id = player["Player ID"] || player.playerId;
                     
-                    // Process each player
-                    playersArray.forEach(player => {
-                        const id = player.playerId;
-                        
-                        // Extract stats from player data
-                        playerStats[id] = {
-                            goals: player.goals || 0,
-                            assists: player.assists || 0,
-                            wins: player.wins || 0,
-                            shutouts: player.shutouts || 0,
-                            pointsBeforeAcquiring: player.pointsBeforeAcquiring || 0
-                        };
-                        
-                        // Also index by ID for faster lookup
-                        playerStatsByID[id] = playerStats[id];
-                    });
-                } else {
-                    // Process array format (updatedstats-*.json)
-                    data.forEach(player => {
-                        const id = player["Player ID"] || player.playerId;
-                        
-                        if (!id) {
-                            console.warn("Player without ID:", player);
-                            return;
-                        }
-                        
-                        // Extract stats from player data
-                        playerStats[id] = {
-                            goals: player.Goals || 0,
-                            assists: player.Assists || 0,
-                            wins: player.Wins || 0,
-                            shutouts: player.Shutouts || 0,
-                            pointsBeforeAcquiring: player["Points Before Acquiring"] || 0
-                        };
-                        
-                        // Also index by ID for faster lookup
-                        playerStatsByID[id] = playerStats[id];
-                    });
-                }
+                    if (!id) {
+                        console.warn("Player without ID:", player);
+                        return;
+                    }
+                    
+                    // Extract stats from player data - use playoff stats only
+                    playerStats[id] = {
+                        goals: player.Goals || 0,
+                        assists: player.Assists || 0,
+                        wins: player.Wins || 0,
+                        shutouts: player.Shutouts || 0,
+                        pointsBeforeAcquiring: player["Points Before Acquiring"] || 0
+                    };
+                    
+                    // Also index by ID for faster lookup
+                    playerStatsByID[id] = playerStats[id];
+                });
                 
                 console.log(`Loaded stats for ${Object.keys(playerStats).length} players`);
                 return playerStats;
@@ -1219,6 +1193,7 @@
             const playerStat = playerStatsByID[playerId];
             
             if (playerStat) {
+                // Use playoff stats from the stats file
                 if (position === 'G') {
                     // For goalies: wins = 2pts, shutouts = 2pts
                     points = (playerStat.wins * 2) + (playerStat.shutouts * 2);
@@ -1232,23 +1207,9 @@
                     points += playerStat.pointsBeforeAcquiring;
                 }
             } else {
-                // Fall back to any stats in the player object itself
-                if (position === 'G') {
-                    const wins = player.wins || 0;
-                    const shutouts = player.shutouts || 0;
-                    points = (wins * 2) + (shutouts * 2);
-                } else {
-                    const goals = player.goals || 0;
-                    const assists = player.assists || 0;
-                    points = goals + assists;
-                }
-                
-                // Account for points before acquiring
-                if (player.pointsBeforeAcquiring) {
-                    points += player.pointsBeforeAcquiring;
-                }
-                
-                console.warn(`No stats found for player ${player.Player} (ID: ${playerId}), using default values`);
+                // If no stats found, default to zero instead of using regular season stats
+                // This ensures we only show playoff stats
+                console.warn(`No playoff stats found for player ${player.Player} (ID: ${playerId}), using zeros`);
             }
             
             return points;
