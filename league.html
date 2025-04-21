@@ -957,7 +957,7 @@
             try {
                 // Try to load the most recent stats file first
                 const now = new Date();
-                const currentDate = now.toLocaleString('en-us', { month: 'short', day: '2-digit' });
+                const currentDate = now.toLocaleString('en-us', { month: 'short', day: '2-digit' }).replace(' ', '');
                 const latestStatsFile = `data/updatedstats-${currentDate}.json`;
                 
                 let response = await fetch(latestStatsFile);

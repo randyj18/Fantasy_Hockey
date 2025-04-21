@@ -4,16 +4,16 @@ import json
 from datetime import datetime
 
 def fetch_player_stats(player_id):
-    """Fetch player stats from NHL API"""
+    """Fetch player playoff stats from NHL API"""
     stats_url = f"https://api-web.nhle.com/v1/player/{player_id}/landing"
     response = requests.get(stats_url)
     if response.status_code == 200:
         data = response.json()
         
-        # Try to get playoff stats first, fall back to regular season
+        # Only get playoff stats, don't fall back to regular season
         featured_stats = data.get('featuredStats', {})
         
-        # Check for playoffs first
+        # Check for playoffs
         playoff_stats = featured_stats.get('playoffs', {}).get('subSeason', {})
         if playoff_stats and playoff_stats.get('gamesPlayed', 0) > 0:
             return {
@@ -24,14 +24,13 @@ def fetch_player_stats(player_id):
                 "Shutouts": playoff_stats.get('shutouts', 0)
             }
         
-        # Fall back to regular season
-        regular_stats = featured_stats.get('regularSeason', {}).get('subSeason', {})
+        # If no playoff stats, return all zeros
         return {
-            "Games Played": regular_stats.get('gamesPlayed', 0),
-            "Goals": regular_stats.get('goals', 0),
-            "Assists": regular_stats.get('assists', 0),
-            "Wins": regular_stats.get('wins', 0),
-            "Shutouts": regular_stats.get('shutouts', 0)
+            "Games Played": 0,
+            "Goals": 0,
+            "Assists": 0,
+            "Wins": 0,
+            "Shutouts": 0
         }
     else:
         print(f"Failed to fetch stats for player {player_id}. Status code: {response.status_code}")
@@ -115,7 +114,7 @@ def main():
             'Unknown Team'
         )
         
-        print(f"Fetching stats for {player_name} (ID: {player_id})")
+        print(f"Fetching playoff stats for {player_name} (ID: {player_id})")
         stats = fetch_player_stats(player_id)
         
         # Points before acquiring (if available)
@@ -137,7 +136,7 @@ def main():
     
     # Generate the filename with the current date
     current_date = datetime.now().strftime("%b%d")
-    filename = f"updatedstats-{current_date}.json"
+    filename = f"playoffstats-{current_date}.json"
     
     # Path to save the file
     save_path = "data"
@@ -146,7 +145,7 @@ def main():
     with open(os.path.join(save_path, filename), "w") as json_file:
         json.dump(players_data, json_file, indent=4)
     
-    print(f"Successfully saved stats for {len(players_data)} players to {filename}")
+    print(f"Successfully saved playoff stats for {len(players_data)} players to {filename}")
     
     return filename
 
