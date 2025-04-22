@@ -955,16 +955,14 @@
         // Load player stats from updatedstats JSON file
         async function loadPlayerStats() {
             try {
-                // Try to load the most recent stats file first
-                const now = new Date();
-                const currentDate = now.toLocaleString('en-us', { month: 'short', day: '2-digit' }).replace(' ', '');
-                const latestStatsFile = `data/updatedstats-${currentDate}.json`;
+                // Use the raw GitHub URL instead of the relative path
+                const rawGitHubUrl = 'https://raw.githubusercontent.com/randyj18/Fantasy_Hockey/master/data/updatedstats-Apr22.json';
                 
-                let response = await fetch(latestStatsFile);
+                let response = await fetch(rawGitHubUrl);
                 
                 // If file doesn't exist, try loading playerlist.json instead
                 if (!response.ok) {
-                    console.warn(`Latest stats file not found, falling back to playerlist.json`);
+                    console.warn(`Latest stats file not found, falling back to empty stats`);
                     // Instead of falling back to playerlist.json, we'll create empty stats
                     // This ensures we never use regular season stats
                     playerStats = {};
