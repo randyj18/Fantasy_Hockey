@@ -2,7 +2,7 @@ name: Game Day Updates
 on:
   workflow_dispatch:  # Manual trigger
   schedule:
-    - cron: '0 0,3,6,9,12,15,18,21 * * *'  # Check every 3 hours
+    - cron: '0 23-23,0-6 * * *'  # Run at 11PM UTC and 12AM-6AM UTC (6PM-1AM EST)
 jobs:
   check-and-update:
     runs-on: ubuntu-latest
