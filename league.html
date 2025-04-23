@@ -955,19 +955,36 @@
         // Load player stats from updatedstats JSON file
         async function loadPlayerStats() {
             try {
-                // Use the raw GitHub URL instead of the relative path
-                const rawGitHubUrl = 'https://raw.githubusercontent.com/randyj18/Fantasy_Hockey/master/data/updatedstats-Apr22.json';
+                // Try to load the most recent stats file first
+                const now = new Date();
+                const currentDate = now.toLocaleString('en-us', { month: 'short', day: '2-digit' }).replace(' ', '');
                 
-                let response = await fetch(rawGitHubUrl);
+                // Use raw GitHub URL instead of relative path, but keep the dynamic date
+                const rawGitHubBaseUrl = 'https://raw.githubusercontent.com/randyj18/Fantasy_Hockey/master/data/';
+                const latestStatsFile = `${rawGitHubBaseUrl}updatedstats-${currentDate}.json`;
                 
-                // If file doesn't exist, try loading playerlist.json instead
+                let response = await fetch(latestStatsFile);
+                
+                // If today's file doesn't exist, try yesterday's file
                 if (!response.ok) {
-                    console.warn(`Latest stats file not found, falling back to empty stats`);
-                    // Instead of falling back to playerlist.json, we'll create empty stats
-                    // This ensures we never use regular season stats
-                    playerStats = {};
-                    playerStatsByID = {};
-                    return {};
+                    console.warn(`Stats file for today not found, trying yesterday's file`);
+                    
+                    // Calculate yesterday's date
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const yesterdayDate = yesterday.toLocaleString('en-us', { month: 'short', day: '2-digit' }).replace(' ', '');
+                    
+                    // Try yesterday's file
+                    const yesterdayStatsFile = `${rawGitHubBaseUrl}updatedstats-${yesterdayDate}.json`;
+                    response = await fetch(yesterdayStatsFile);
+                    
+                    // If yesterday's file also doesn't exist, use empty stats
+                    if (!response.ok) {
+                        console.warn(`No recent stats files found, using empty stats`);
+                        playerStats = {};
+                        playerStatsByID = {};
+                        return {};
+                    }
                 }
                 
                 const data = await response.json();
