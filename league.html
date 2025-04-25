@@ -1211,7 +1211,7 @@
                 // Use playoff stats from the stats file
                 if (position === 'G') {
                     // For goalies: wins = 2pts, shutouts = 2pts
-                    points = (playerStat.wins * 2) + (playerStat.shutouts * 2);
+                    points = (playerStat.wins * 2) + (playerStat.shutouts);
                 } else {
                     // For skaters: goals = 1pt, assists = 1pt
                     points = playerStat.goals + playerStat.assists;
