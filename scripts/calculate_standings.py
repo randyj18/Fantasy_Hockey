@@ -39,7 +39,7 @@ def calculate_standings(stats_file_path):
             player.get("Assists", 0) + 
             # Points from wins and shutouts for goalies (2 points each)
             (player.get("Wins", 0) * 2) + 
-            (player.get("Shutouts", 0) * 2) +
+            (player.get("Shutouts", 0)) +
             # Special bonuses (if present)
             player.get("Points for Gordie Howe Hattricks", 0) + 
             player.get("Points for Conn Smythe", 0) +
