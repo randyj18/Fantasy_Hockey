@@ -120,41 +120,65 @@ def process_drafted_players(database):
             logger.warning("No data found in database")
             return 0, 0
         
+        # Log the structure
+        logger.info(f"Root keys found: {list(leagues_snapshot.keys() if isinstance(leagues_snapshot, dict) else [])}")
+        
         # Prepare output data
         output_data = {}
         updated_count = 0
         skipped_count = 0
         
+        league_count = 0
+        player_entries_count = 0
+        player_with_id_count = 0
+        
         # Find and process all drafted players across all leagues
         for league_key, league_data in leagues_snapshot.items():
             # Only process items that start with "leagues-"
-            if not league_key.startswith("leagues-"):
+            if not isinstance(league_key, str) or not league_key.startswith("leagues-"):
                 continue
                 
-            logger.info(f"Processing league: {league_key}")
+            league_count += 1
+            logger.info(f"Found league: {league_key}")
+            
+            # Check if league_data is a dict
+            if not isinstance(league_data, dict):
+                logger.info(f"League data for {league_key} is not a dictionary: {type(league_data)}")
+                continue
+                
+            # Log first few keys in this league
+            league_keys = list(league_data.keys())
+            logger.info(f"Keys in {league_key} (showing first 5): {league_keys[:5]}")
             
             # Find all draftedPlayers entries in this league
             for key, value in league_data.items():
-                if not key.startswith("draftedPlayers-"):
+                if not isinstance(key, str) or not key.startswith("draftedPlayers-"):
                     continue
                 
+                player_entries_count += 1
+                
                 if not isinstance(value, dict):
+                    logger.info(f"Player data for {key} is not a dictionary: {type(value)}")
                     continue
                 
                 player_id = value.get("playerId")
                 if not player_id:
+                    logger.info(f"No playerId found in {key}")
                     continue
                     
+                player_with_id_count += 1
+                
                 # Get playoff round drafted (default to 0 if not set)
                 playoff_round_drafted = value.get('playoffRoundDrafted', 0)
-                pre_acq_round = value.get('preAcqRound', 0)  # Missing preAcqRound defaults to 0
+                pre_acq_round = value.get('preAcqRound', 0)
+                
+                logger.info(f"Found player {player_id}: Round drafted: {playoff_round_drafted}, PreAcqRound: {pre_acq_round}")
                 
                 # Store in output data using NHL player ID as key
                 if player_id not in output_data:
                     output_data[player_id] = value
                 
                 # Only process players drafted in playoff rounds where preAcqRound needs updating
-                # Now missing preAcqRound (defaulted to 0) will be less than playoffRoundDrafted if > 0
                 if playoff_round_drafted > 1 and pre_acq_round < playoff_round_drafted:
                     logger.info(f"Processing player {player_id}: drafted in round {playoff_round_drafted}, preAcqRound {pre_acq_round}")
                     
@@ -183,6 +207,8 @@ def process_drafted_players(database):
                     logger.info(f"Skipping player {player_id}: playoffRoundDrafted={playoff_round_drafted}, preAcqRound={pre_acq_round}")
                     skipped_count += 1
         
+        logger.info(f"Found {league_count} leagues, {player_entries_count} player entries, {player_with_id_count} players with IDs")
+        
         # Ensure data directory exists
         os.makedirs('data', exist_ok=True)
         
@@ -197,8 +223,10 @@ def process_drafted_players(database):
     
     except Exception as e:
         logger.error(f"Error processing drafted players: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         return 0, 0
-
+    
 if __name__ == "__main__":
     logger.info("Starting update_playerlist.py script")
     
