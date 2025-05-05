@@ -60,56 +60,43 @@ def initialize_firebase():
 def fetch_nhl_player_stats(player_id):
     """Fetch player stats from NHL API"""
     try:
-        # Base URL for NHL API
-        base_url = "https://statsapi.web.nhl.com/api/v1"
+        # Updated NHL API URL
+        stats_url = f"https://api-web.nhle.com/v1/player/{player_id}/landing"
         
-        # First get player details to determine if they're a skater or goalie
-        response = requests.get(f"{base_url}/people/{player_id}")
+        response = requests.get(stats_url)
         response.raise_for_status()
-        player_data = response.json()
+        data = response.json()
         
-        if not player_data.get('people'):
-            logger.warning(f"No data found for player ID {player_id}")
-            return None
+        # Only get playoff stats
+        featured_stats = data.get('featuredStats', {})
         
-        player_info = player_data['people'][0]
-        position = player_info.get('primaryPosition', {}).get('code')
-        
-        # Get playoff stats for the player
-        response = requests.get(f"{base_url}/people/{player_id}/stats?stats=statsSinglePostseason")
-        response.raise_for_status()
-        stats_data = response.json()
-        
-        if not stats_data.get('stats'):
-            logger.warning(f"No stats found for player ID {player_id}")
-            return None
-        
-        stats = stats_data['stats'][0].get('splits', [])
-        if not stats:
+        # Check for playoffs
+        playoff_stats = featured_stats.get('playoffs', {}).get('subSeason', {})
+        if playoff_stats and playoff_stats.get('gamesPlayed', 0) > 0:
+            # Calculate points based on player type
+            position_code = data.get('position', {}).get('code', '')
+            
+            if position_code == 'G':  # Goalie
+                wins = playoff_stats.get('wins', 0)
+                shutouts = playoff_stats.get('shutouts', 0)
+                points = (wins * 2) + shutouts
+            else:  # Skater
+                goals = playoff_stats.get('goals', 0)
+                assists = playoff_stats.get('assists', 0)
+                points = goals + assists
+            
+            logger.info(f"Fetched playoff stats for player {player_id}: {points} points")
+            return points
+        else:
             logger.warning(f"No playoff stats found for player ID {player_id}")
-            return None
-        
-        current_playoffs = stats[0]
-        
-        # Calculate points based on position
-        if position == 'G':  # Goalie
-            wins = current_playoffs.get('stat', {}).get('wins', 0)
-            shutouts = current_playoffs.get('stat', {}).get('shutouts', 0)
-            points = (wins * 2) + shutouts
-        else:  # Skater
-            goals = current_playoffs.get('stat', {}).get('goals', 0)
-            assists = current_playoffs.get('stat', {}).get('assists', 0)
-            points = goals + assists
-        
-        logger.info(f"Fetched playoff stats for player {player_id}: {points} points")
-        return points
+            return 0
     
     except requests.exceptions.RequestException as e:
         logger.error(f"Error fetching NHL API data for player {player_id}: {e}")
-        return None
+        return 0  # Return 0 as default when API is unreachable
     except Exception as e:
         logger.error(f"Unexpected error processing player {player_id}: {e}")
-        return None
+        return 0  # Return 0 as default
 
 def process_drafted_players(database):
     """Process all drafted players and update points before acquiring"""
