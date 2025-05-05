@@ -31,9 +31,9 @@ def initialize_firebase():
             firebase_admin.initialize_app(cred, {
                 'databaseURL': 'https://playofffantasyhockey-default-rtdb.firebaseio.com'
             })
-            database = db.reference()
+            database = db.reference()  # Changed from db = firestore.client()
             logger.info("Firebase initialized successfully from JSON environment variable")
-            return db
+            return database
         except json.JSONDecodeError:
             logger.warning("Failed to parse FIREBASE_SERVICE_ACCOUNT_JSON, trying as a file path...")
         except Exception as e:
@@ -47,10 +47,12 @@ def initialize_firebase():
     
     try:
         cred = credentials.Certificate(cred_path)
-        firebase_admin.initialize_app(cred)
-        db = firestore.client()
+        firebase_admin.initialize_app(cred, {
+            'databaseURL': 'https://playofffantasyhockey-default-rtdb.firebaseio.com'
+        })
+        database = db.reference()  # Changed from db = firestore.client()
         logger.info("Firebase initialized successfully from file path")
-        return db
+        return database
     except Exception as e:
         logger.error(f"Error initializing Firebase from file path: {e}")
         exit(1)
