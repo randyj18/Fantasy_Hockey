@@ -4,6 +4,36 @@ import time
 import os
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+
+def initialize_firebase():
+    """Initialize Firebase connection"""
+    try:
+        # Check if already initialized
+        if not firebase_admin._apps:
+            # Replace with your Firebase credentials file path
+            cred = credentials.Certificate("path/to/firebase/credentials.json")
+            firebase_admin.initialize_app(cred, {
+                'databaseURL': 'https://playofffantasyhockey-default-rtdb.firebaseio.com'
+            })
+        return True
+    except Exception as e:
+        print(f"Failed to initialize Firebase: {e}")
+        return False
+
+def check_playoff_round(league_id):
+    """Check if playoffs have started and what round we're in"""
+    try:
+        # Get the current playoff round for the specific league
+        playoff_data = db.reference(f"leagues-{league_id}/playoffRound").get()
+        if playoff_data and 'currentRound' in playoff_data:
+            return playoff_data['currentRound']
+        return 0  # Default to 0 if not found
+    except Exception as e:
+        print(f"Failed to fetch playoff data: {e}")
+        return 0
 
 def get_full_name(player):
     first_name = player.get('firstName', '')
@@ -37,7 +67,8 @@ def get_position_code(player):
     
     return 'N/A'  # Default if no position found
 
-def fetch_player_stats(player_id, position_code, retries=3, backoff_factor=0.3):
+def fetch_player_stats(player_id, position_code, stats_type="regularSeason", retries=3, backoff_factor=0.3):
+    """Fetch player statistics - either regular season or playoffs"""
     stats_url = f"https://api-web.nhle.com/v1/player/{player_id}/landing"
     
     session = requests.Session()
@@ -55,7 +86,12 @@ def fetch_player_stats(player_id, position_code, retries=3, backoff_factor=0.3):
         response = session.get(stats_url, timeout=10)
         response.raise_for_status()
         data = response.json()
-        featured_stats = data.get('featuredStats', {}).get('regularSeason', {}).get('subSeason', {})
+        
+        # Get either regular season or playoff stats based on stats_type
+        if stats_type == "playoffs":
+            featured_stats = data.get('featuredStats', {}).get('playoffs', {}).get('subSeason', {})
+        else:  # Default to regular season
+            featured_stats = data.get('featuredStats', {}).get('regularSeason', {}).get('subSeason', {})
         
         # Base stats for all players
         player_stats = {
@@ -109,8 +145,23 @@ def load_manual_players(file_path):
         print(f"Error loading manual player file: {e}")
         return []
 
-def main():
-    """Generate database of all NHL players"""
+def get_all_players(league_id="ONaEwjf0r2hguG0LaAuc"):
+    """Generate database of all NHL players - regular season or playoff stats based on current round"""
+    
+    # Initialize Firebase
+    firebase_initialized = initialize_firebase()
+    
+    # Check playoff round if Firebase is initialized
+    playoff_round = 0
+    if firebase_initialized:
+        playoff_round = check_playoff_round(league_id)
+        print(f"Current playoff round: {playoff_round}")
+    
+    # Determine whether to fetch regular season or playoff stats
+    stats_type = "playoffs" if playoff_round > 1 else "regularSeason"
+    output_file = "data/nhl_playoff_players.json" if stats_type == "playoffs" else "data/nhl_players.json"
+    
+    print(f"Fetching {stats_type} statistics...")
     
     # Define the list of team abbreviations
     team_abbreviations = ['NJD', 'MTL', 'OTT', 'TOR', 
@@ -160,7 +211,7 @@ def main():
                         }
                         
                         # Add player stats (with a small delay to avoid rate limiting)
-                        stats = fetch_player_stats(player['id'], position_code)
+                        stats = fetch_player_stats(player['id'], position_code, stats_type)
                         player_data.update(stats)
                         
                         all_players.append(player_data)
@@ -195,13 +246,24 @@ def main():
             print(f"Added manual player: {manual_player.get('fullName')} (ID: {player_id})")
     
     # Save all players to JSON file
-    with open('data/nhl_players.json', 'w') as json_file:
+    with open(output_file, 'w') as json_file:
         json.dump(all_players, json_file, indent=2)
     
-    print(f"Successfully saved {len(all_players)} players to nhl_players.json")
+    print(f"Successfully saved {len(all_players)} players to {output_file}")
+
+def main():
+    # Ensure data directory exists
+    os.makedirs('data', exist_ok=True)
+    
+    # Default league ID, can be overridden by command line argument
+    league_id = "ONaEwjf0r2hguG0LaAuc"
+    
+    # Check if a league ID was provided as a command line argument
+    import sys
+    if len(sys.argv) > 1:
+        league_id = sys.argv[1]
+    
+    get_all_players(league_id)
 
 if __name__ == "__main__":
-    # Ensure data directory exists
-    import os
-    os.makedirs('data', exist_ok=True)
     main()
