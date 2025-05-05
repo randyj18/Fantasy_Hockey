@@ -2803,7 +2803,10 @@
 
         // --- Drafting Logic ---
         function draftPlayer(playerId, playerName, position, nhlTeam) {
-            console.log("DRAFT DEBUG - Current playoff round:", currentRound);
+            // Ensure currentRound is properly initialized from leagueData if available
+            const playoffRound = leagueData?.playoffRound?.currentRound || 1;
+            
+            console.log("DRAFT DEBUG - Current playoff round:", playoffRound);
             console.log("DRAFT DEBUG - Firebase playoff round:", leagueData?.playoffRound?.currentRound);
             console.log("DRAFT DEBUG - Draft round:", leagueData?.draftStatus?.round);
             console.log(`Attempting draft for ${playerName}`);
@@ -2864,15 +2867,15 @@
                 Player: playerName,
                 Position: position,
                 "NHL Team": nhlTeam,
-                Team: teamNameToAssign, // Fantasy Team Name
-                teamUid: teamUidToAssign, // UID of team getting the player
-                draftedByUid: currentUser.uid, // UID of user clicking button
-                draftedByName: drafterDisplayName, // Name of user clicking button
-                draftedAt: serverTimestamp(), // Use server time for consistency
-                round: leagueData?.draftStatus?.round || 1, // Draft round within the current playoff round
-                pickNumber: currentPickNumber, // Store overall pick number
-                // playoffRoundDrafted is always set to the value of leagues/${leagueId}/playoffRound/currentRound
-                playoffRoundDrafted: currentRound // currentRound is the playoffRound (1-4)
+                Team: teamNameToAssign, 
+                teamUid: teamUidToAssign, 
+                draftedByUid: currentUser.uid, 
+                draftedByName: drafterDisplayName, 
+                draftedAt: serverTimestamp(),
+                round: leagueData?.draftStatus?.round || 1,
+                pickNumber: currentPickNumber,
+                // Use playoffRound variable here instead of directly using currentRound
+                playoffRoundDrafted: playoffRound
             };
             console.log("Drafted player record:", draftedPlayerRecord);
 
