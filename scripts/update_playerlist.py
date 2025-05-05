@@ -115,13 +115,12 @@ def process_drafted_players(database):
     """Process all drafted players and update points before acquiring"""
     try:
         # Get all leagues
-        leagues_snapshot = database.get()
+        leagues_snapshot = database.child('leagues').get()  # Changed from database.get()
         if not leagues_snapshot:
-            logger.warning("No data found in database")
+            logger.warning("No leagues found in database")
             return 0, 0
         
-        # Log the structure
-        logger.info(f"Root keys found: {list(leagues_snapshot.keys() if isinstance(leagues_snapshot, dict) else [])}")
+        logger.info(f"Found leagues: {list(leagues_snapshot.keys() if isinstance(leagues_snapshot, dict) else [])[:5]}")
         
         # Prepare output data
         output_data = {}
@@ -133,61 +132,60 @@ def process_drafted_players(database):
         player_with_id_count = 0
         
         # Find and process all drafted players across all leagues
-        for league_key, league_data in leagues_snapshot.items():
-            # Only process items that start with "leagues-"
-            if not isinstance(league_key, str) or not league_key.startswith("leagues-"):
-                continue
-                
+        for league_id, league_data in leagues_snapshot.items():
             league_count += 1
-            logger.info(f"Found league: {league_key}")
+            logger.info(f"Processing league: {league_id}")
             
             # Check if league_data is a dict
             if not isinstance(league_data, dict):
-                logger.info(f"League data for {league_key} is not a dictionary: {type(league_data)}")
+                logger.info(f"League data for {league_id} is not a dictionary: {type(league_data)}")
+                continue
+            
+            # Check if draftedPlayers exists in this league
+            if 'draftedPlayers' not in league_data:
+                logger.info(f"No draftedPlayers found in league {league_id}")
                 continue
                 
-            # Log first few keys in this league
-            league_keys = list(league_data.keys())
-            logger.info(f"Keys in {league_key} (showing first 5): {league_keys[:5]}")
+            drafted_players = league_data['draftedPlayers']
+            if not isinstance(drafted_players, dict):
+                logger.info(f"draftedPlayers in league {league_id} is not a dictionary: {type(drafted_players)}")
+                continue
             
-            # Find all draftedPlayers entries in this league
-            for key, value in league_data.items():
-                if not isinstance(key, str) or not key.startswith("draftedPlayers-"):
-                    continue
-                
+            # Process all players in this league
+            for player_id, player_data in drafted_players.items():
                 player_entries_count += 1
                 
-                if not isinstance(value, dict):
-                    logger.info(f"Player data for {key} is not a dictionary: {type(value)}")
+                if not isinstance(player_data, dict):
+                    logger.info(f"Player data for {player_id} is not a dictionary: {type(player_data)}")
                     continue
                 
-                player_id = value.get("playerId")
-                if not player_id:
-                    logger.info(f"No playerId found in {key}")
+                nhl_player_id = player_data.get("playerId")
+                if not nhl_player_id:
+                    logger.info(f"No playerId found in player {player_id}")
                     continue
                     
                 player_with_id_count += 1
                 
                 # Get playoff round drafted (default to 0 if not set)
-                playoff_round_drafted = value.get('playoffRoundDrafted', 0)
-                pre_acq_round = value.get('preAcqRound', 0)
+                playoff_round_drafted = player_data.get('playoffRoundDrafted', 0)
+                pre_acq_round = player_data.get('preAcqRound', 0)
                 
-                logger.info(f"Found player {player_id}: Round drafted: {playoff_round_drafted}, PreAcqRound: {pre_acq_round}")
+                logger.info(f"Found player {nhl_player_id}: Round drafted: {playoff_round_drafted}, PreAcqRound: {pre_acq_round}")
                 
                 # Store in output data using NHL player ID as key
-                if player_id not in output_data:
-                    output_data[player_id] = value
+                if nhl_player_id not in output_data:
+                    output_data[nhl_player_id] = player_data
                 
                 # Only process players drafted in playoff rounds where preAcqRound needs updating
                 if playoff_round_drafted > 1 and pre_acq_round < playoff_round_drafted:
-                    logger.info(f"Processing player {player_id}: drafted in round {playoff_round_drafted}, preAcqRound {pre_acq_round}")
+                    logger.info(f"Processing player {nhl_player_id}: drafted in round {playoff_round_drafted}, preAcqRound {pre_acq_round}")
                     
                     # Fetch points from NHL API
-                    points_before_acquiring = fetch_nhl_player_stats(player_id)
+                    points_before_acquiring = fetch_nhl_player_stats(nhl_player_id)
                     
                     if points_before_acquiring is not None:
                         # Update player data in Realtime Database
-                        player_ref = database.child(f"{league_key}/{key}")
+                        player_ref = database.child(f"leagues/{league_id}/draftedPlayers/{player_id}")
                         
                         update_data = {
                             'pointsBeforeAcquiring': points_before_acquiring,
@@ -195,16 +193,16 @@ def process_drafted_players(database):
                         }
                         
                         player_ref.update(update_data)
-                        logger.info(f"Updated database at {league_key}/{key} with {update_data}")
+                        logger.info(f"Updated database at leagues/{league_id}/draftedPlayers/{player_id} with {update_data}")
                         
                         # Update output data
-                        output_data[player_id]['pointsBeforeAcquiring'] = points_before_acquiring
-                        output_data[player_id]['preAcqRound'] = playoff_round_drafted
+                        output_data[nhl_player_id]['pointsBeforeAcquiring'] = points_before_acquiring
+                        output_data[nhl_player_id]['preAcqRound'] = playoff_round_drafted
                         
                         updated_count += 1
-                        logger.info(f"Updated player {player_id} with {points_before_acquiring} points before acquiring")
+                        logger.info(f"Updated player {nhl_player_id} with {points_before_acquiring} points before acquiring")
                 else:
-                    logger.info(f"Skipping player {player_id}: playoffRoundDrafted={playoff_round_drafted}, preAcqRound={pre_acq_round}")
+                    logger.info(f"Skipping player {nhl_player_id}: playoffRoundDrafted={playoff_round_drafted}, preAcqRound={pre_acq_round}")
                     skipped_count += 1
         
         logger.info(f"Found {league_count} leagues, {player_entries_count} player entries, {player_with_id_count} players with IDs")
