@@ -114,12 +114,10 @@ def fetch_nhl_player_stats(player_id):
 def process_drafted_players(database):
     """Process all drafted players and update points before acquiring"""
     try:
-        # Get all drafted players
-        drafted_players_ref = database  # This is already a reference
-        drafted_players_snapshot = drafted_players_ref.child('draftedPlayers').get()
-        
-        if not drafted_players_snapshot:
-            logger.warning("No drafted players found in database")
+        # Get all leagues
+        leagues_snapshot = database.get()
+        if not leagues_snapshot:
+            logger.warning("No data found in database")
             return 0, 0
         
         # Prepare output data
@@ -127,38 +125,55 @@ def process_drafted_players(database):
         updated_count = 0
         skipped_count = 0
         
-        for player_id, player_data in drafted_players_snapshot.items():
-            # Get playoff round drafted (default to 0 if not set)
-            playoff_round_drafted = player_data.get('playoffRoundDrafted', 0)
-            pre_acq_round = player_data.get('preAcqRound', 0)
-            
-            # Include player in output regardless of updates
-            output_data[player_id] = player_data
-            
-            # Only process players drafted in playoff rounds where preAcqRound needs updating
-            if playoff_round_drafted > 1 and pre_acq_round < playoff_round_drafted:
-                logger.info(f"Processing player {player_id}: drafted in round {playoff_round_drafted}, preAcqRound {pre_acq_round}")
+        # Find and process all drafted players across all leagues
+        for league_key, league_data in leagues_snapshot.items():
+            # Only process items that start with "leagues-"
+            if not league_key.startswith("leagues-"):
+                continue
                 
-                # Fetch points from NHL API
-                points_before_acquiring = fetch_nhl_player_stats(player_id)
+            logger.info(f"Processing league: {league_key}")
+            
+            # Find all draftedPlayers entries in this league
+            for key, value in league_data.items():
+                if not key.startswith("draftedPlayers-"):
+                    continue
                 
-                if points_before_acquiring is not None:
-                    # Update player data in Realtime Database
-                    player_ref = drafted_players_ref.child(f'draftedPlayers/{player_id}')
-                    player_ref.update({
-                        'pointsBeforeAcquiring': points_before_acquiring,
-                        'preAcqRound': playoff_round_drafted
-                    })
+                player_id = value.get("playerId")
+                if not player_id:
+                    continue
                     
-                    # Update output data
-                    output_data[player_id]['pointsBeforeAcquiring'] = points_before_acquiring
-                    output_data[player_id]['preAcqRound'] = playoff_round_drafted
+                # Get playoff round drafted (default to 0 if not set)
+                playoff_round_drafted = value.get('playoffRoundDrafted', 0)
+                pre_acq_round = value.get('preAcqRound', 0)
+                
+                # Store in output data using NHL player ID as key
+                if player_id not in output_data:
+                    output_data[player_id] = value
+                
+                # Only process players drafted in playoff rounds where preAcqRound needs updating
+                if playoff_round_drafted > 1 and pre_acq_round < playoff_round_drafted:
+                    logger.info(f"Processing player {player_id}: drafted in round {playoff_round_drafted}, preAcqRound {pre_acq_round}")
                     
-                    updated_count += 1
-                    logger.info(f"Updated player {player_id} with {points_before_acquiring} points before acquiring")
-            else:
-                logger.info(f"Skipping player {player_id}: playoffRoundDrafted={playoff_round_drafted}, preAcqRound={pre_acq_round}")
-                skipped_count += 1
+                    # Fetch points from NHL API
+                    points_before_acquiring = fetch_nhl_player_stats(player_id)
+                    
+                    if points_before_acquiring is not None:
+                        # Update player data in Realtime Database
+                        player_ref = database.child(f"{league_key}/{key}")
+                        player_ref.update({
+                            'pointsBeforeAcquiring': points_before_acquiring,
+                            'preAcqRound': playoff_round_drafted
+                        })
+                        
+                        # Update output data
+                        output_data[player_id]['pointsBeforeAcquiring'] = points_before_acquiring
+                        output_data[player_id]['preAcqRound'] = playoff_round_drafted
+                        
+                        updated_count += 1
+                        logger.info(f"Updated player {player_id} with {points_before_acquiring} points before acquiring")
+                else:
+                    logger.info(f"Skipping player {player_id}: playoffRoundDrafted={playoff_round_drafted}, preAcqRound={pre_acq_round}")
+                    skipped_count += 1
         
         # Ensure data directory exists
         os.makedirs('data', exist_ok=True)
