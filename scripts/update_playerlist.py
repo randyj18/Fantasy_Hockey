@@ -138,19 +138,23 @@ def process_drafted_players(database):
                 if not key.startswith("draftedPlayers-"):
                     continue
                 
+                if not isinstance(value, dict):
+                    continue
+                
                 player_id = value.get("playerId")
                 if not player_id:
                     continue
                     
                 # Get playoff round drafted (default to 0 if not set)
                 playoff_round_drafted = value.get('playoffRoundDrafted', 0)
-                pre_acq_round = value.get('preAcqRound', 0)
+                pre_acq_round = value.get('preAcqRound', 0)  # Missing preAcqRound defaults to 0
                 
                 # Store in output data using NHL player ID as key
                 if player_id not in output_data:
                     output_data[player_id] = value
                 
                 # Only process players drafted in playoff rounds where preAcqRound needs updating
+                # Now missing preAcqRound (defaulted to 0) will be less than playoffRoundDrafted if > 0
                 if playoff_round_drafted > 1 and pre_acq_round < playoff_round_drafted:
                     logger.info(f"Processing player {player_id}: drafted in round {playoff_round_drafted}, preAcqRound {pre_acq_round}")
                     
@@ -160,10 +164,14 @@ def process_drafted_players(database):
                     if points_before_acquiring is not None:
                         # Update player data in Realtime Database
                         player_ref = database.child(f"{league_key}/{key}")
-                        player_ref.update({
+                        
+                        update_data = {
                             'pointsBeforeAcquiring': points_before_acquiring,
                             'preAcqRound': playoff_round_drafted
-                        })
+                        }
+                        
+                        player_ref.update(update_data)
+                        logger.info(f"Updated database at {league_key}/{key} with {update_data}")
                         
                         # Update output data
                         output_data[player_id]['pointsBeforeAcquiring'] = points_before_acquiring
