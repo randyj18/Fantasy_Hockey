@@ -115,8 +115,8 @@ def process_drafted_players(database):
     """Process all drafted players and update points before acquiring"""
     try:
         # Get all drafted players
-        drafted_players_ref = database.reference('draftedPlayers')
-        drafted_players_snapshot = drafted_players_ref.get()
+        drafted_players_ref = database  # This is already a reference
+        drafted_players_snapshot = drafted_players_ref.child('draftedPlayers').get()
         
         if not drafted_players_snapshot:
             logger.warning("No drafted players found in database")
@@ -144,7 +144,7 @@ def process_drafted_players(database):
                 
                 if points_before_acquiring is not None:
                     # Update player data in Realtime Database
-                    player_ref = drafted_players_ref.child(player_id)
+                    player_ref = drafted_players_ref.child(f'draftedPlayers/{player_id}')
                     player_ref.update({
                         'pointsBeforeAcquiring': points_before_acquiring,
                         'preAcqRound': playoff_round_drafted
