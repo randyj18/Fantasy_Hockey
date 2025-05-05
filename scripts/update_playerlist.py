@@ -3,7 +3,7 @@ import os
 import json
 import requests
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, db
 import logging
 from datetime import datetime
 import base64
@@ -28,8 +28,10 @@ def initialize_firebase():
             
             # Initialize with the parsed JSON
             cred = credentials.Certificate(service_account_info)
-            firebase_admin.initialize_app(cred)
-            db = firestore.client()
+            firebase_admin.initialize_app(cred, {
+                'databaseURL': 'https://playofffantasyhockey-default-rtdb.firebaseio.com'
+            })
+            database = db.reference()
             logger.info("Firebase initialized successfully from JSON environment variable")
             return db
         except json.JSONDecodeError:
@@ -107,22 +109,23 @@ def fetch_nhl_player_stats(player_id):
         logger.error(f"Unexpected error processing player {player_id}: {e}")
         return None
 
-def process_drafted_players(db):
+def process_drafted_players(database):
     """Process all drafted players and update points before acquiring"""
     try:
         # Get all drafted players
-        drafted_players_ref = db.collection('draftedPlayers')
-        drafted_players = drafted_players_ref.stream()
+        drafted_players_ref = database.reference('draftedPlayers')
+        drafted_players_snapshot = drafted_players_ref.get()
+        
+        if not drafted_players_snapshot:
+            logger.warning("No drafted players found in database")
+            return 0, 0
         
         # Prepare output data
         output_data = {}
         updated_count = 0
         skipped_count = 0
         
-        for player_doc in drafted_players:
-            player_id = player_doc.id
-            player_data = player_doc.to_dict()
-            
+        for player_id, player_data in drafted_players_snapshot.items():
             # Get playoff round drafted (default to 0 if not set)
             playoff_round_drafted = player_data.get('playoffRoundDrafted', 0)
             pre_acq_round = player_data.get('preAcqRound', 0)
@@ -138,8 +141,8 @@ def process_drafted_players(db):
                 points_before_acquiring = fetch_nhl_player_stats(player_id)
                 
                 if points_before_acquiring is not None:
-                    # Update player data in Firestore
-                    player_ref = drafted_players_ref.document(player_id)
+                    # Update player data in Realtime Database
+                    player_ref = drafted_players_ref.child(player_id)
                     player_ref.update({
                         'pointsBeforeAcquiring': points_before_acquiring,
                         'preAcqRound': playoff_round_drafted
