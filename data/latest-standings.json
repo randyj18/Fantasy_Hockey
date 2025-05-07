@@ -1,36 +1,6 @@
 [
     {
         "Rank": 1,
-        "Team": "Ryan Jones",
-        "Total Points": 53,
-        "Players": 8,
-        "Goals": 18,
-        "Assists": 22,
-        "Wins": 4,
-        "Shutouts": 0
-    },
-    {
-        "Rank": 2,
-        "Team": "Mark Weston",
-        "Total Points": 50,
-        "Players": 8,
-        "Goals": 16,
-        "Assists": 16,
-        "Wins": 5,
-        "Shutouts": 0
-    },
-    {
-        "Rank": 3,
-        "Team": "Andrew Porteous",
-        "Total Points": 50,
-        "Players": 8,
-        "Goals": 12,
-        "Assists": 26,
-        "Wins": 4,
-        "Shutouts": 0
-    },
-    {
-        "Rank": 4,
         "Team": "Sunny Sahai",
         "Total Points": 48,
         "Players": 7,
@@ -40,9 +10,39 @@
         "Shutouts": 0
     },
     {
+        "Rank": 2,
+        "Team": "Ryan Jones",
+        "Total Points": 43,
+        "Players": 8,
+        "Goals": 18,
+        "Assists": 22,
+        "Wins": 4,
+        "Shutouts": 0
+    },
+    {
+        "Rank": 3,
+        "Team": "Andrew Porteous",
+        "Total Points": 42,
+        "Players": 8,
+        "Goals": 12,
+        "Assists": 26,
+        "Wins": 4,
+        "Shutouts": 0
+    },
+    {
+        "Rank": 4,
+        "Team": "Randy Jones",
+        "Total Points": 42,
+        "Players": 7,
+        "Goals": 12,
+        "Assists": 22,
+        "Wins": 4,
+        "Shutouts": 0
+    },
+    {
         "Rank": 5,
         "Team": "Kris Anderson",
-        "Total Points": 48,
+        "Total Points": 38,
         "Players": 8,
         "Goals": 11,
         "Assists": 25,
@@ -51,18 +51,8 @@
     },
     {
         "Rank": 6,
-        "Team": "Paul Weston",
-        "Total Points": 47,
-        "Players": 8,
-        "Goals": 10,
-        "Assists": 30,
-        "Wins": 0,
-        "Shutouts": 0
-    },
-    {
-        "Rank": 7,
         "Team": "Daryl Kay",
-        "Total Points": 45,
+        "Total Points": 35,
         "Players": 8,
         "Goals": 13,
         "Assists": 18,
@@ -70,13 +60,23 @@
         "Shutouts": 1
     },
     {
+        "Rank": 7,
+        "Team": "Mark Weston",
+        "Total Points": 34,
+        "Players": 8,
+        "Goals": 16,
+        "Assists": 16,
+        "Wins": 5,
+        "Shutouts": 0
+    },
+    {
         "Rank": 8,
-        "Team": "Randy Jones",
-        "Total Points": 42,
-        "Players": 7,
-        "Goals": 12,
-        "Assists": 22,
-        "Wins": 4,
+        "Team": "Paul Weston",
+        "Total Points": 33,
+        "Players": 8,
+        "Goals": 10,
+        "Assists": 30,
+        "Wins": 0,
         "Shutouts": 0
     }
 ]
