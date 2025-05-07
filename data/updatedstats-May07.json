@@ -614,5 +614,71 @@
         "Assists": 4,
         "Wins": 0,
         "Shutouts": 0
+    },
+    {
+        "Player": "Wyatt Johnston",
+        "Player ID": "8482740",
+        "Team": "Paul Weston",
+        "Points Before Acquiring": 7,
+        "Games Played": 7,
+        "Goals": 3,
+        "Assists": 4,
+        "Wins": 0,
+        "Shutouts": 0
+    },
+    {
+        "Player": "Logan Thompson",
+        "Player ID": "8480313",
+        "Team": "Mark Weston",
+        "Points Before Acquiring": 8,
+        "Games Played": 6,
+        "Goals": 0,
+        "Assists": 0,
+        "Wins": 4,
+        "Shutouts": 0
+    },
+    {
+        "Player": "Cole Perfetti",
+        "Player ID": "8482149",
+        "Team": "Daryl Kay",
+        "Points Before Acquiring": 5,
+        "Games Played": 7,
+        "Goals": 3,
+        "Assists": 2,
+        "Wins": 0,
+        "Shutouts": 0
+    },
+    {
+        "Player": "Zach Hyman",
+        "Player ID": "8475786",
+        "Team": "Kris Anderson",
+        "Points Before Acquiring": 5,
+        "Games Played": 7,
+        "Goals": 3,
+        "Assists": 3,
+        "Wins": 0,
+        "Shutouts": 0
+    },
+    {
+        "Player": "Sam Bennett",
+        "Player ID": "8477935",
+        "Team": "Ryan Jones",
+        "Points Before Acquiring": 5,
+        "Games Played": 6,
+        "Goals": 4,
+        "Assists": 2,
+        "Wins": 0,
+        "Shutouts": 0
+    },
+    {
+        "Player": "Vladislav Namestnikov",
+        "Player ID": "8476480",
+        "Team": "Andrew Porteous",
+        "Points Before Acquiring": 4,
+        "Games Played": 7,
+        "Goals": 2,
+        "Assists": 2,
+        "Wins": 0,
+        "Shutouts": 0
     }
 ]

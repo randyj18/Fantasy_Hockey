@@ -1,6 +1,36 @@
 [
     {
         "Rank": 1,
+        "Team": "Ryan Jones",
+        "Total Points": 53,
+        "Players": 8,
+        "Goals": 18,
+        "Assists": 22,
+        "Wins": 4,
+        "Shutouts": 0
+    },
+    {
+        "Rank": 2,
+        "Team": "Mark Weston",
+        "Total Points": 50,
+        "Players": 8,
+        "Goals": 16,
+        "Assists": 16,
+        "Wins": 5,
+        "Shutouts": 0
+    },
+    {
+        "Rank": 3,
+        "Team": "Andrew Porteous",
+        "Total Points": 50,
+        "Players": 8,
+        "Goals": 12,
+        "Assists": 26,
+        "Wins": 4,
+        "Shutouts": 0
+    },
+    {
+        "Rank": 4,
         "Team": "Sunny Sahai",
         "Total Points": 48,
         "Players": 7,
@@ -10,73 +40,43 @@
         "Shutouts": 0
     },
     {
-        "Rank": 2,
-        "Team": "Ryan Jones",
-        "Total Points": 42,
-        "Players": 7,
-        "Goals": 14,
-        "Assists": 20,
-        "Wins": 4,
-        "Shutouts": 0
+        "Rank": 5,
+        "Team": "Kris Anderson",
+        "Total Points": 48,
+        "Players": 8,
+        "Goals": 11,
+        "Assists": 25,
+        "Wins": 3,
+        "Shutouts": 1
     },
     {
-        "Rank": 3,
-        "Team": "Andrew Porteous",
-        "Total Points": 42,
-        "Players": 7,
+        "Rank": 6,
+        "Team": "Paul Weston",
+        "Total Points": 47,
+        "Players": 8,
         "Goals": 10,
-        "Assists": 24,
-        "Wins": 4,
+        "Assists": 30,
+        "Wins": 0,
         "Shutouts": 0
     },
     {
-        "Rank": 4,
+        "Rank": 7,
+        "Team": "Daryl Kay",
+        "Total Points": 45,
+        "Players": 8,
+        "Goals": 13,
+        "Assists": 18,
+        "Wins": 4,
+        "Shutouts": 1
+    },
+    {
+        "Rank": 8,
         "Team": "Randy Jones",
         "Total Points": 42,
         "Players": 7,
         "Goals": 12,
         "Assists": 22,
         "Wins": 4,
-        "Shutouts": 0
-    },
-    {
-        "Rank": 5,
-        "Team": "Kris Anderson",
-        "Total Points": 37,
-        "Players": 7,
-        "Goals": 8,
-        "Assists": 22,
-        "Wins": 3,
-        "Shutouts": 1
-    },
-    {
-        "Rank": 6,
-        "Team": "Daryl Kay",
-        "Total Points": 35,
-        "Players": 7,
-        "Goals": 10,
-        "Assists": 16,
-        "Wins": 4,
-        "Shutouts": 1
-    },
-    {
-        "Rank": 7,
-        "Team": "Mark Weston",
-        "Total Points": 34,
-        "Players": 7,
-        "Goals": 16,
-        "Assists": 16,
-        "Wins": 1,
-        "Shutouts": 0
-    },
-    {
-        "Rank": 8,
-        "Team": "Paul Weston",
-        "Total Points": 33,
-        "Players": 7,
-        "Goals": 7,
-        "Assists": 26,
-        "Wins": 0,
         "Shutouts": 0
     }
 ]
