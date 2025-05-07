@@ -1219,7 +1219,7 @@
                 
                 // Account for points before acquiring (for players added after initial draft)
                 if (playerStat.pointsBeforeAcquiring) {
-                    points += playerStat.pointsBeforeAcquiring;
+                    points -= playerStat.pointsBeforeAcquiring;
                 }
             } else {
                 // If no stats found, default to zero instead of using regular season stats

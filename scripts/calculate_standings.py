@@ -42,7 +42,7 @@ def calculate_standings(stats_file_path):
             (player.get("Shutouts", 0)) +
             # Special bonuses (if present)
             player.get("Points for Gordie Howe Hattricks", 0) + 
-            player.get("Points for Conn Smythe", 0) +
+            player.get("Points for Conn Smythe", 0) -
             # Points before acquiring (for mid-season additions)
             player.get("Points Before Acquiring", 0)
         )
