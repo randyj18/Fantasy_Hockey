@@ -680,5 +680,115 @@
         "Assists": 3,
         "Wins": 0,
         "Shutouts": 0
+    },
+    {
+        "Player": "Frederik Andersen",
+        "Player ID": "8475883",
+        "Team": "Randy Jones",
+        "Points Before Acquiring": 0,
+        "Games Played": 10,
+        "Goals": 0,
+        "Assists": 0,
+        "Wins": 7,
+        "Shutouts": 1
+    },
+    {
+        "Player": "Roope Hintz",
+        "Player ID": "8478449",
+        "Team": "Sunny Sahai",
+        "Points Before Acquiring": 0,
+        "Games Played": 13,
+        "Goals": 5,
+        "Assists": 5,
+        "Wins": 0,
+        "Shutouts": 0
+    },
+    {
+        "Player": "Eetu Luostarinen",
+        "Player ID": "8480185",
+        "Team": "Kris Anderson",
+        "Points Before Acquiring": 0,
+        "Games Played": 13,
+        "Goals": 4,
+        "Assists": 9,
+        "Wins": 0,
+        "Shutouts": 0
+    },
+    {
+        "Player": "Andrei Svechnikov",
+        "Player ID": "8480830",
+        "Team": "Mark Weston",
+        "Points Before Acquiring": 0,
+        "Games Played": 11,
+        "Goals": 8,
+        "Assists": 2,
+        "Wins": 0,
+        "Shutouts": 0
+    },
+    {
+        "Player": "Logan Stankoven",
+        "Player ID": "8482702",
+        "Team": "Randy Jones",
+        "Points Before Acquiring": 0,
+        "Games Played": 11,
+        "Goals": 3,
+        "Assists": 2,
+        "Wins": 0,
+        "Shutouts": 0
+    },
+    {
+        "Player": "Anton Lundell",
+        "Player ID": "8482113",
+        "Team": "Paul Weston",
+        "Points Before Acquiring": 0,
+        "Games Played": 13,
+        "Goals": 4,
+        "Assists": 6,
+        "Wins": 0,
+        "Shutouts": 0
+    },
+    {
+        "Player": "Carter Verhaeghe",
+        "Player ID": "8477409",
+        "Team": "Ryan Jones",
+        "Points Before Acquiring": 0,
+        "Games Played": 13,
+        "Goals": 5,
+        "Assists": 5,
+        "Wins": 0,
+        "Shutouts": 0
+    },
+    {
+        "Player": "Nate Schmidt",
+        "Player ID": "8477220",
+        "Team": "Daryl Kay",
+        "Points Before Acquiring": 0,
+        "Games Played": 13,
+        "Goals": 3,
+        "Assists": 4,
+        "Wins": 0,
+        "Shutouts": 0
+    },
+    {
+        "Player": "Taylor Hall",
+        "Player ID": "8475791",
+        "Team": "Andrew Porteous",
+        "Points Before Acquiring": 0,
+        "Games Played": 11,
+        "Goals": 2,
+        "Assists": 4,
+        "Wins": 0,
+        "Shutouts": 0
+    },
+    {
+        "Player": "Ryan Nugent-Hopkins",
+        "Player ID": "8476454",
+        "Team": "Sunny Sahai",
+        "Points Before Acquiring": 0,
+        "Games Played": 11,
+        "Goals": 3,
+        "Assists": 6,
+        "Wins": 0,
+        "Shutouts": 0
     }
 ]
