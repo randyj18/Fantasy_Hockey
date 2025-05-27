@@ -7,9 +7,6 @@
     <title>Fantasy Hockey Draftcentre</title>
     <link rel="stylesheet" href="common-styles.css">
     <link rel="stylesheet" href="draftcentre.css">
-    <style>
-        /* CSS content has been moved to draftcentre.css */
-    </style>
 </head>
 
 <body>
@@ -45,15 +42,12 @@
             <div id="draft-container" class="hidden">
                 <div class="full-width-section">
                     <h1>Fantasy Hockey Draftcentre</h1>
-                    <!-- Issue 5: Update disclaimer text -->
-                    <p style="margin-top: -10px; color: #666; font-size: 0.9rem;">Stats shown are from the current
-                        regular season</p>
+                    <p style="margin-top: -10px; color: #666; font-size: 0.9rem;">Stats shown are from the current regular season</p>
                 </div>
 
-                <!-- Commissioner Controls - Placed near the top -->
+                <!-- Commissioner Controls -->
                 <div id="commissioner-controls" class="commissioner-controls card hidden full-width-section">
-                    <div
-                        style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;">
                         <div>
                             <strong>Commissioner Mode:</strong>
                             <div class="commish-toggle-container">
@@ -63,35 +57,28 @@
                                 </label>
                                 <label for="commissioner-mode-toggle">Draft for any team</label>
                             </div>
-                            <span style="font-size: 0.85rem; color: #6c757d;">(Allows drafting when it's not your turn,
-                                assigns pick to the current team)</span>
+                            <span style="font-size: 0.85rem; color: #6c757d;">(Allows drafting when it's not your turn, assigns pick to the current team)</span>
                         </div>
                         <div style="border-left: 1px solid #e0d9b8; padding-left: 15px;">
                             <strong>Playoff Round Management:</strong>
                             <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                                <span id="current-round-display" style="font-size: 0.9rem; color: #856404;">Current
-                                    NHL Playoff Round: <span id="current-nhl-playoff-round-number">1</span></span>
+                                <span id="current-round-display" style="font-size: 0.9rem; color: #856404;">Current Round: <span id="current-round-number">1</span></span>
                                 <button id="conclude-round-btn" class="btn">Conclude Round</button>
                             </div>
                         </div>
                     </div>
-                    <div id="draft-order-manager" class="hidden"
-                        style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0d9b8;">
+                    <div id="draft-order-manager" class="hidden" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0d9b8;">
                         <strong>Next Round Draft Order Management:</strong>
                         <div style="margin-top: 10px; display: flex; gap: 10px; align-items: flex-start;">
                             <div style="flex: 1;">
-                                <label for="draft-order-list" style="display: block; margin-bottom: 5px;">Drag teams to
-                                    set order:</label>
-                                <div id="draft-order-list" class="draft-order-container"
-                                    style="border: 1px solid #ddd; padding: 10px; min-height: 100px; border-radius: 4px; background: #f8f8f8;">
+                                <label for="draft-order-list" style="display: block; margin-bottom: 5px;">Drag teams to set order:</label>
+                                <div id="draft-order-list" class="draft-order-container" style="border: 1px solid #ddd; padding: 10px; min-height: 100px; border-radius: 4px; background: #f8f8f8;">
                                     <!-- Teams will be added here as draggable items -->
                                 </div>
                             </div>
                             <div style="flex: 1;">
-                                <label for="banked-picks-list" style="display: block; margin-bottom: 5px;">Teams with
-                                    banked picks:</label>
-                                <div id="banked-picks-list"
-                                    style="border: 1px solid #ddd; padding: 10px; min-height: 100px; border-radius: 4px; background: #f8f8f8;">
+                                <label for="banked-picks-list" style="display: block; margin-bottom: 5px;">Teams with banked picks:</label>
+                                <div id="banked-picks-list" style="border: 1px solid #ddd; padding: 10px; min-height: 100px; border-radius: 4px; background: #f8f8f8;">
                                     <!-- Teams with banked picks will be shown here -->
                                     <div class="empty-message">No banked picks yet</div>
                                 </div>
@@ -109,18 +96,14 @@
                         <details>
                             <summary><strong>How to use the Draftcentre</strong> (click to expand)</summary>
                             <ol>
-                                <li><strong>Browse & Search:</strong> Use filters and search to find available players.
-                                </li>
+                                <li><strong>Browse & Search:</strong> Use filters and search to find available players.</li>
                                 <li><strong>Sort:</strong> Click column headers to sort players.</li>
-                                <li><strong>Draft:</strong> Click the "Draft" button when it's your turn (or if
-                                    Commissioner Mode is on).</li>
-                                <li><strong>View Picks:</strong> See drafted players in the "Drafted Players" section.
-                                </li>
+                                <li><strong>Draft:</strong> Click the "Draft" button when it's your turn (or if Commissioner Mode is on).</li>
+                                <li><strong>View Picks:</strong> See drafted players in the "Drafted Players" section.</li>
                                 <li><strong>Chat:</strong> Discuss picks with league members in the chat window.</li>
                             </ol>
                             <p><strong>Snake Draft Format:</strong> This draft uses a snake format - the order reverses each round. For example, if you draft 1st in Round 1, you'll draft last in Round 2, first in Round 3, and so on.</p>
-                            <p><em>Note: The commissioner can start the draft and enable Commissioner Mode to manage
-                                    picks.</em></p>
+                            <p><em>Note: The commissioner can start the draft and enable Commissioner Mode to manage picks.</em></p>
                         </details>
                     </div>
                 </div>
@@ -129,12 +112,10 @@
                 <div class="status-section card full-width-section">
                     <div id="current-drafter" class="current-drafter hidden">
                         <p>
-                            <strong>Current Pick:</strong> <span id="current-drafter-name">Waiting to start
-                                draft...</span>
+                            <strong>Current Pick:</strong> <span id="current-drafter-name">Waiting to start draft...</span>
                             <span id="round-display" class="round-indicator">Round 1</span>
                         </p>
-                        <p id="banked-picks-info" class="hidden"
-                            style="margin-top: 5px; font-size: 0.85rem; color: #0055a4;">
+                        <p id="banked-picks-info" class="hidden" style="margin-top: 5px; font-size: 0.85rem; color: #0055a4;">
                             <span id="current-team-banked-picks">0</span> banked picks available
                         </p>
                     </div>
@@ -152,17 +133,13 @@
                         <div class="loader"></div>
                     </div>
                 </div>
-                
-                <!-- Inline style for draft-order-display has been moved to draftcentre.css -->
 
                 <!-- Control Section: Search, Filters, Options -->
                 <div class="controls-section card full-width-section">
                     <div class="controls-grid">
                         <div class="search-container">
                             <label for="searchInput" class="visually-hidden">Search Players</label>
-                            <!-- Hidden label for accessibility -->
-                            <input type="text" id="searchInput" placeholder="Search by player name..."
-                                oninput="filterPlayers()">
+                            <input type="text" id="searchInput" placeholder="Search by player name...">
                         </div>
                         <div class="position-filter-container">
                             <div class="position-filter">
@@ -175,8 +152,8 @@
                             </div>
                         </div>
                         <div class="view-options-container">
-                            <label for="showDrafted"><input type="checkbox" id="showDrafted" onchange="filterPlayers()">
-                                Show Drafted Players</label>
+                            <label for="showDrafted">
+                                <input type="checkbox" id="showDrafted"> Show Drafted Players
                             </label>
                         </div>
                         <div class="refresh-container">
@@ -240,7 +217,7 @@
                         <h2>Drafted Players</h2>
                         <div class="drafted-team-filter">
                             <label for="draftedTeamFilter">Show Team:</label>
-                            <select id="draftedTeamFilter" onchange="filterDraftedPlayers()">
+                            <select id="draftedTeamFilter">
                                 <option value="all">All Teams</option>
                                 <!-- Team options will be dynamically added -->
                             </select>
@@ -271,7 +248,6 @@
                 <!-- Action Buttons -->
                 <div class="action-buttons full-width-section">
                     <a href="#" id="back-to-league-link" class="btn secondary hidden">Back to League Details</a>
-                    <!-- Start Draft button moved to status section -->
                 </div>
             </div> <!-- End #draft-container -->
         </div> <!-- End #content-container -->
@@ -293,8 +269,7 @@
     </div>
 
     <script src="firebaseConfig.js"></script>
-    <!-- Firebase SDK -->
-    <script type="module" src="draftcentre-simple.js"></script>
+    <script type="module" src="draftcentre.js"></script>
 </body>
 
 </html>
