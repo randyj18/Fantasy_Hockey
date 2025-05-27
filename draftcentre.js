@@ -15,7 +15,7 @@ const fallbackFirebaseConfig = {
 
 const app = initializeApp(window.firebaseConfig || fallbackFirebaseConfig);
 const auth = getAuth();
-setPersistence(auth, browserSessionPersistence).catch(console.error);
+// Remove session persistence - use default (local persistence)
 const provider = new GoogleAuthProvider();
 const database = getDatabase();
 
