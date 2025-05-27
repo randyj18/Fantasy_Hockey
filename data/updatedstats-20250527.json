@@ -1,0 +1,1226 @@
+[
+    {
+        "Player": "Kyle Connor",
+        "playerId": "8478398",
+        "NHL Team": "WPG",
+        "Position": "LW",
+        "FantasyTeam": "Daryl Kay",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 13,
+            "Goals": 5,
+            "Assists": 12,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Connor McDavid",
+        "playerId": "8478402",
+        "NHL Team": "EDM",
+        "Position": "C",
+        "FantasyTeam": "Paul Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 14,
+            "Goals": 5,
+            "Assists": 17,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Nathan MacKinnon",
+        "playerId": "8477492",
+        "NHL Team": "COL",
+        "Position": "C",
+        "FantasyTeam": "Ryan Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 7,
+            "Goals": 7,
+            "Assists": 4,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Jack Eichel",
+        "playerId": "8478403",
+        "NHL Team": "VGK",
+        "Position": "C",
+        "FantasyTeam": "Sunny Sahai",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 11,
+            "Goals": 1,
+            "Assists": 9,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Alex Ovechkin",
+        "playerId": "8471214",
+        "NHL Team": "WSH",
+        "Position": "LW",
+        "FantasyTeam": "Mark Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 10,
+            "Goals": 5,
+            "Assists": 1,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Mark Scheifele",
+        "playerId": "8476460",
+        "NHL Team": "WPG",
+        "Position": "C",
+        "FantasyTeam": "Andrew Porteous",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 11,
+            "Goals": 5,
+            "Assists": 6,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Mitch Marner",
+        "playerId": "8478483",
+        "NHL Team": "TOR",
+        "Position": "RW",
+        "FantasyTeam": "Randy Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 13,
+            "Goals": 2,
+            "Assists": 11,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Leon Draisaitl",
+        "playerId": "8477934",
+        "NHL Team": "EDM",
+        "Position": "C",
+        "FantasyTeam": "Kris Anderson",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 14,
+            "Goals": 6,
+            "Assists": 15,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Cale Makar",
+        "playerId": "8480069",
+        "NHL Team": "COL",
+        "Position": "D",
+        "FantasyTeam": "Kris Anderson",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 7,
+            "Goals": 1,
+            "Assists": 4,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Auston Matthews",
+        "playerId": "8479318",
+        "NHL Team": "TOR",
+        "Position": "C",
+        "FantasyTeam": "Randy Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 13,
+            "Goals": 3,
+            "Assists": 8,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Connor Hellebuyck",
+        "playerId": "8476945",
+        "NHL Team": "WPG",
+        "Position": "G",
+        "FantasyTeam": "Andrew Porteous",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 13,
+            "Goals": 0,
+            "Assists": 0,
+            "Wins": 6,
+            "Shutouts": 2
+        }
+    },
+    {
+        "Player": "Dylan Strome",
+        "playerId": "8478440",
+        "NHL Team": "WSH",
+        "Position": "C",
+        "FantasyTeam": "Mark Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 10,
+            "Goals": 2,
+            "Assists": 9,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "William Nylander",
+        "playerId": "8477939",
+        "NHL Team": "TOR",
+        "Position": "RW",
+        "FantasyTeam": "Sunny Sahai",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 13,
+            "Goals": 6,
+            "Assists": 9,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Sam Reinhart",
+        "playerId": "8477933",
+        "NHL Team": "FLA",
+        "Position": "C",
+        "FantasyTeam": "Ryan Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 14,
+            "Goals": 4,
+            "Assists": 7,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Tom Wilson",
+        "playerId": "8476880",
+        "NHL Team": "WSH",
+        "Position": "RW",
+        "FantasyTeam": "Paul Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 10,
+            "Goals": 3,
+            "Assists": 4,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Sergei Bobrovsky",
+        "playerId": "8475683",
+        "NHL Team": "FLA",
+        "Position": "G",
+        "FantasyTeam": "Daryl Kay",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 0,
+            "Assists": 0,
+            "Wins": 11,
+            "Shutouts": 3
+        }
+    },
+    {
+        "Player": "Aleksander Barkov",
+        "playerId": "8477493",
+        "NHL Team": "FLA",
+        "Position": "C",
+        "FantasyTeam": "Daryl Kay",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 6,
+            "Assists": 9,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Brad Marchand",
+        "playerId": "8473419",
+        "NHL Team": "FLA",
+        "Position": "C",
+        "FantasyTeam": "Paul Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 4,
+            "Assists": 9,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Matthew Tkachuk",
+        "playerId": "8479314",
+        "NHL Team": "FLA",
+        "Position": "LW",
+        "FantasyTeam": "Ryan Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 4,
+            "Assists": 10,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Sebastian Aho",
+        "playerId": "8478427",
+        "NHL Team": "CAR",
+        "Position": "C",
+        "FantasyTeam": "Sunny Sahai",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 14,
+            "Goals": 5,
+            "Assists": 8,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Evan Bouchard",
+        "playerId": "8480803",
+        "NHL Team": "EDM",
+        "Position": "D",
+        "FantasyTeam": "Mark Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 14,
+            "Goals": 6,
+            "Assists": 11,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Nikita Kucherov",
+        "playerId": "8476453",
+        "NHL Team": "TBL",
+        "Position": "RW",
+        "FantasyTeam": "Andrew Porteous",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 5,
+            "Goals": 0,
+            "Assists": 4,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Shea Theodore",
+        "playerId": "8477447",
+        "NHL Team": "VGK",
+        "Position": "D",
+        "FantasyTeam": "Randy Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 11,
+            "Goals": 2,
+            "Assists": 3,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Mackenzie Blackwood",
+        "playerId": "8478406",
+        "NHL Team": "COL",
+        "Position": "G",
+        "FantasyTeam": "Kris Anderson",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 7,
+            "Goals": 0,
+            "Assists": 0,
+            "Wins": 3,
+            "Shutouts": 1
+        }
+    },
+    {
+        "Player": "Martin Necas",
+        "playerId": "8480039",
+        "NHL Team": "COL",
+        "Position": "C",
+        "FantasyTeam": "Kris Anderson",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 7,
+            "Goals": 1,
+            "Assists": 4,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Anthony Stolarz",
+        "playerId": "8476932",
+        "NHL Team": "TOR",
+        "Position": "G",
+        "FantasyTeam": "Randy Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 7,
+            "Goals": 0,
+            "Assists": 0,
+            "Wins": 4,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Victor Hedman",
+        "playerId": "8475167",
+        "NHL Team": "TBL",
+        "Position": "D",
+        "FantasyTeam": "Andrew Porteous",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 5,
+            "Goals": 0,
+            "Assists": 3,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Mark Stone",
+        "playerId": "8475913",
+        "NHL Team": "VGK",
+        "Position": "RW",
+        "FantasyTeam": "Mark Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 10,
+            "Goals": 4,
+            "Assists": 4,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Jake Oettinger",
+        "playerId": "8479979",
+        "NHL Team": "DAL",
+        "Position": "G",
+        "FantasyTeam": "Sunny Sahai",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 0,
+            "Assists": 0,
+            "Wins": 9,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Adin Hill",
+        "playerId": "8478499",
+        "NHL Team": "VGK",
+        "Position": "G",
+        "FantasyTeam": "Ryan Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 11,
+            "Goals": 0,
+            "Assists": 0,
+            "Wins": 5,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Josh Morrissey",
+        "playerId": "8477504",
+        "NHL Team": "WPG",
+        "Position": "D",
+        "FantasyTeam": "Paul Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 12,
+            "Goals": 0,
+            "Assists": 6,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "John Carlson",
+        "playerId": "8474590",
+        "NHL Team": "WSH",
+        "Position": "D",
+        "FantasyTeam": "Daryl Kay",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 10,
+            "Goals": 1,
+            "Assists": 2,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Gabriel Vilardi",
+        "playerId": "8480014",
+        "NHL Team": "WPG",
+        "Position": "C",
+        "FantasyTeam": "Daryl Kay",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 9,
+            "Goals": 1,
+            "Assists": 3,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Shayne Gostisbehere",
+        "playerId": "8476906",
+        "NHL Team": "CAR",
+        "Position": "D",
+        "FantasyTeam": "Paul Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 14,
+            "Goals": 3,
+            "Assists": 5,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Devon Toews",
+        "playerId": "8478038",
+        "NHL Team": "COL",
+        "Position": "D",
+        "FantasyTeam": "Ryan Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 7,
+            "Goals": 1,
+            "Assists": 3,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Morgan Rielly",
+        "playerId": "8476853",
+        "NHL Team": "TOR",
+        "Position": "D",
+        "FantasyTeam": "Sunny Sahai",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 13,
+            "Goals": 4,
+            "Assists": 3,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Jakob Chychrun",
+        "playerId": "8479345",
+        "NHL Team": "WSH",
+        "Position": "D",
+        "FantasyTeam": "Mark Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 10,
+            "Goals": 3,
+            "Assists": 2,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Mikko Rantanen",
+        "playerId": "8478420",
+        "NHL Team": "DAL",
+        "Position": "RW",
+        "FantasyTeam": "Andrew Porteous",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 9,
+            "Assists": 12,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "John Tavares",
+        "playerId": "8475166",
+        "NHL Team": "TOR",
+        "Position": "C",
+        "FantasyTeam": "Randy Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 13,
+            "Goals": 5,
+            "Assists": 2,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Jack Hughes",
+        "playerId": "8481559",
+        "NHL Team": "NJD",
+        "Position": "C",
+        "FantasyTeam": "Kris Anderson",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 0,
+            "Goals": 0,
+            "Assists": 0,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Jesper Bratt",
+        "playerId": "8479407",
+        "NHL Team": "NJD",
+        "Position": "LW",
+        "FantasyTeam": "Kris Anderson",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 5,
+            "Goals": 1,
+            "Assists": 2,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Noah Hanifin",
+        "playerId": "8478396",
+        "NHL Team": "VGK",
+        "Position": "D",
+        "FantasyTeam": "Randy Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 11,
+            "Goals": 1,
+            "Assists": 4,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Drew Doughty",
+        "playerId": "8474563",
+        "NHL Team": "LAK",
+        "Position": "D",
+        "FantasyTeam": "Andrew Porteous",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 6,
+            "Goals": 1,
+            "Assists": 3,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Andrei Vasilevskiy",
+        "playerId": "8476883",
+        "NHL Team": "TBL",
+        "Position": "G",
+        "FantasyTeam": "Mark Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 5,
+            "Goals": 0,
+            "Assists": 0,
+            "Wins": 1,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Thomas Harley",
+        "playerId": "8481581",
+        "NHL Team": "DAL",
+        "Position": "D",
+        "FantasyTeam": "Sunny Sahai",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 4,
+            "Assists": 7,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Alex Pietrangelo",
+        "playerId": "8474565",
+        "NHL Team": "VGK",
+        "Position": "D",
+        "FantasyTeam": "Ryan Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 10,
+            "Goals": 2,
+            "Assists": 4,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Stuart Skinner",
+        "playerId": "8479973",
+        "NHL Team": "EDM",
+        "Position": "G",
+        "FantasyTeam": "Paul Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 8,
+            "Goals": 0,
+            "Assists": 0,
+            "Wins": 4,
+            "Shutouts": 3
+        }
+    },
+    {
+        "Player": "Seth Jones",
+        "playerId": "8477495",
+        "NHL Team": "FLA",
+        "Position": "D",
+        "FantasyTeam": "Daryl Kay",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 3,
+            "Assists": 3,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Valeri Nichushkin",
+        "playerId": "8477501",
+        "NHL Team": "COL",
+        "Position": "RW",
+        "FantasyTeam": "Daryl Kay",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 7,
+            "Goals": 3,
+            "Assists": 1,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Brayden Point",
+        "playerId": "8478010",
+        "NHL Team": "TBL",
+        "Position": "C",
+        "FantasyTeam": "Paul Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 5,
+            "Goals": 2,
+            "Assists": 0,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Brock Nelson",
+        "playerId": "8475754",
+        "NHL Team": "COL",
+        "Position": "C",
+        "FantasyTeam": "Ryan Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 7,
+            "Goals": 0,
+            "Assists": 4,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Matthew Knies",
+        "playerId": "8482720",
+        "NHL Team": "TOR",
+        "Position": "LW",
+        "FantasyTeam": "Sunny Sahai",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 13,
+            "Goals": 5,
+            "Assists": 2,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Brandon Hagel",
+        "playerId": "8479542",
+        "NHL Team": "TBL",
+        "Position": "LW",
+        "FantasyTeam": "Mark Weston",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 3,
+            "Goals": 0,
+            "Assists": 0,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Seth Jarvis",
+        "playerId": "8482093",
+        "NHL Team": "CAR",
+        "Position": "C",
+        "FantasyTeam": "Andrew Porteous",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 14,
+            "Goals": 5,
+            "Assists": 9,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Tomas Hertl",
+        "playerId": "8476881",
+        "NHL Team": "VGK",
+        "Position": "C",
+        "FantasyTeam": "Randy Jones",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 11,
+            "Goals": 3,
+            "Assists": 2,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Neal Pionk",
+        "playerId": "8480145",
+        "NHL Team": "WPG",
+        "Position": "D",
+        "FantasyTeam": "Kris Anderson",
+        "playoffRoundDrafted": 1,
+        "pointsBeforeAcquiring": 0,
+        "preAcqRound": 0,
+        "currentPlayoffStats": {
+            "Games Played": 13,
+            "Goals": 1,
+            "Assists": 6,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Wyatt Johnston",
+        "playerId": "8482740",
+        "NHL Team": "DAL",
+        "Position": "C",
+        "FantasyTeam": "Paul Weston",
+        "playoffRoundDrafted": 2,
+        "pointsBeforeAcquiring": 7,
+        "preAcqRound": 2,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 4,
+            "Assists": 4,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Logan Thompson",
+        "playerId": "8480313",
+        "NHL Team": "WSH",
+        "Position": "G",
+        "FantasyTeam": "Mark Weston",
+        "playoffRoundDrafted": 2,
+        "pointsBeforeAcquiring": 8,
+        "preAcqRound": 2,
+        "currentPlayoffStats": {
+            "Games Played": 10,
+            "Goals": 0,
+            "Assists": 0,
+            "Wins": 5,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Cole Perfetti",
+        "playerId": "8482149",
+        "NHL Team": "WPG",
+        "Position": "C",
+        "FantasyTeam": "Daryl Kay",
+        "playoffRoundDrafted": 2,
+        "pointsBeforeAcquiring": 5,
+        "preAcqRound": 2,
+        "currentPlayoffStats": {
+            "Games Played": 13,
+            "Goals": 3,
+            "Assists": 3,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Zach Hyman",
+        "playerId": "8475786",
+        "NHL Team": "EDM",
+        "Position": "LW",
+        "FantasyTeam": "Kris Anderson",
+        "playoffRoundDrafted": 2,
+        "pointsBeforeAcquiring": 5,
+        "preAcqRound": 2,
+        "currentPlayoffStats": {
+            "Games Played": 14,
+            "Goals": 5,
+            "Assists": 6,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Sam Bennett",
+        "playerId": "8477935",
+        "NHL Team": "FLA",
+        "Position": "C",
+        "FantasyTeam": "Ryan Jones",
+        "playoffRoundDrafted": 2,
+        "pointsBeforeAcquiring": 5,
+        "preAcqRound": 2,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 9,
+            "Assists": 5,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Vladislav Namestnikov",
+        "playerId": "8476480",
+        "NHL Team": "WPG",
+        "Position": "C",
+        "FantasyTeam": "Andrew Porteous",
+        "playoffRoundDrafted": 2,
+        "pointsBeforeAcquiring": 4,
+        "preAcqRound": 2,
+        "currentPlayoffStats": {
+            "Games Played": 13,
+            "Goals": 3,
+            "Assists": 3,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Frederik Andersen",
+        "playerId": "8475883",
+        "NHL Team": "CAR",
+        "Position": "G",
+        "FantasyTeam": "Randy Jones",
+        "playoffRoundDrafted": 3,
+        "pointsBeforeAcquiring": 15,
+        "preAcqRound": 3,
+        "currentPlayoffStats": {
+            "Games Played": 12,
+            "Goals": 0,
+            "Assists": 0,
+            "Wins": 8,
+            "Shutouts": 2
+        }
+    },
+    {
+        "Player": "Roope Hintz",
+        "playerId": "8478449",
+        "NHL Team": "DAL",
+        "Position": "C",
+        "FantasyTeam": "Sunny Sahai",
+        "playoffRoundDrafted": 3,
+        "pointsBeforeAcquiring": 10,
+        "preAcqRound": 3,
+        "currentPlayoffStats": {
+            "Games Played": 15,
+            "Goals": 5,
+            "Assists": 6,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Eetu Luostarinen",
+        "playerId": "8480185",
+        "NHL Team": "FLA",
+        "Position": "C",
+        "FantasyTeam": "Kris Anderson",
+        "playoffRoundDrafted": 3,
+        "pointsBeforeAcquiring": 12,
+        "preAcqRound": 3,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 4,
+            "Assists": 9,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Andrei Svechnikov",
+        "playerId": "8480830",
+        "NHL Team": "CAR",
+        "Position": "RW",
+        "FantasyTeam": "Mark Weston",
+        "playoffRoundDrafted": 3,
+        "pointsBeforeAcquiring": 9,
+        "preAcqRound": 3,
+        "currentPlayoffStats": {
+            "Games Played": 14,
+            "Goals": 8,
+            "Assists": 3,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Logan Stankoven",
+        "playerId": "8482702",
+        "NHL Team": "CAR",
+        "Position": "C",
+        "FantasyTeam": "Randy Jones",
+        "playoffRoundDrafted": 3,
+        "pointsBeforeAcquiring": 5,
+        "preAcqRound": 3,
+        "currentPlayoffStats": {
+            "Games Played": 14,
+            "Goals": 5,
+            "Assists": 3,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Anton Lundell",
+        "playerId": "8482113",
+        "NHL Team": "FLA",
+        "Position": "C",
+        "FantasyTeam": "Paul Weston",
+        "playoffRoundDrafted": 3,
+        "pointsBeforeAcquiring": 10,
+        "preAcqRound": 3,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 4,
+            "Assists": 7,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Carter Verhaeghe",
+        "playerId": "8477409",
+        "NHL Team": "FLA",
+        "Position": "C",
+        "FantasyTeam": "Ryan Jones",
+        "playoffRoundDrafted": 3,
+        "pointsBeforeAcquiring": 8,
+        "preAcqRound": 3,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 5,
+            "Assists": 8,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Nate Schmidt",
+        "playerId": "8477220",
+        "NHL Team": "FLA",
+        "Position": "D",
+        "FantasyTeam": "Daryl Kay",
+        "playoffRoundDrafted": 3,
+        "pointsBeforeAcquiring": 7,
+        "preAcqRound": 3,
+        "currentPlayoffStats": {
+            "Games Played": 16,
+            "Goals": 3,
+            "Assists": 4,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Taylor Hall",
+        "playerId": "8475791",
+        "NHL Team": "CAR",
+        "Position": "LW",
+        "FantasyTeam": "Andrew Porteous",
+        "playoffRoundDrafted": 3,
+        "pointsBeforeAcquiring": 6,
+        "preAcqRound": 3,
+        "currentPlayoffStats": {
+            "Games Played": 14,
+            "Goals": 2,
+            "Assists": 4,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    },
+    {
+        "Player": "Ryan Nugent-Hopkins",
+        "playerId": "8476454",
+        "NHL Team": "EDM",
+        "Position": "C",
+        "FantasyTeam": "Sunny Sahai",
+        "playoffRoundDrafted": 3,
+        "pointsBeforeAcquiring": 9,
+        "preAcqRound": 3,
+        "currentPlayoffStats": {
+            "Games Played": 14,
+            "Goals": 5,
+            "Assists": 11,
+            "Wins": 0,
+            "Shutouts": 0
+        }
+    }
+]
