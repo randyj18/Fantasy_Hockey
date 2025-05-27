@@ -1,0 +1,70 @@
+name: Complete Draft Round
+
+on:
+  workflow_dispatch:
+    inputs:
+      round_number:
+        description: 'Round number being completed (1, 2, 3, etc.)'
+        required: true
+        type: string
+      force_update:
+        description: 'Force update even if no new players drafted'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  complete-round:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests firebase-admin
+          
+      - name: Update playerlist with pre-acquisition stats
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          echo "Processing round ${{ inputs.round_number }} completion..."
+          python scripts/update_playerlist.py
+          
+      - name: Fetch current playoff stats
+        run: |
+          echo "Fetching current playoff stats for all drafted players..."
+          python scripts/fetch_stats.py
+          
+      - name: Calculate updated standings
+        run: |
+          echo "Calculating standings with pre-acquisition adjustments..."
+          python scripts/calculate_standings.py
+          
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'GitHub Actions Bot'
+          git config --global user.email 'actions@github.com'
+          git add data/
+          git commit -m "Complete round ${{ inputs.round_number }} - Update pre-acquisition stats and standings" || echo "No changes to commit"
+          git push
+          
+      - name: Create completion summary
+        run: |
+          echo "## Round ${{ inputs.round_number }} Completion Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Updated playerlist with pre-acquisition stats" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Fetched current playoff stats for all players" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Calculated standings with point adjustments" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Next Steps for League Managers:**" >> $GITHUB_STEP_SUMMARY
+          echo "1. Verify standings are correct in the application" >> $GITHUB_STEP_SUMMARY
+          echo "2. Open next round draft when ready" >> $GITHUB_STEP_SUMMARY
+          echo "3. Run this workflow again after next round concludes" >> $GITHUB_STEP_SUMMARY

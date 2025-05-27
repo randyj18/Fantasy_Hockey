@@ -1,7 +1,11 @@
 import os
 import requests
 import json
+import logging
 from datetime import datetime
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def fetch_player_stats(player_id):
     """Fetch player playoff stats from NHL API"""
@@ -115,9 +119,9 @@ def main():
     
     # Write player data to JSON file
     with open(os.path.join(save_path, filename), "w") as json_file:
-        json.dump(players_data, json_file, indent=4)
+        json.dump(updated_players_data, json_file, indent=4)
     
-    print(f"Successfully saved playoff stats for {len(players_data)} players to {filename}")
+    print(f"Successfully saved playoff stats for {len(updated_players_data)} players to {filename}")
     
     return filename
 

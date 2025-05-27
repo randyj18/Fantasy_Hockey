@@ -21,13 +21,24 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests
+          pip install requests firebase-admin
+          
+      - name: Update playerlist with pre-acquisition stats
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          echo "Updating playerlist with pre-acquisition stats..."
+          python scripts/update_playerlist.py
           
       - name: Run fetch stats script
-        run: python scripts/fetch_stats.py
+        run: |
+          echo "Fetching current playoff stats..."
+          python scripts/fetch_stats.py
         
       - name: Run calculate standings script
-        run: python scripts/calculate_standings.py
+        run: |
+          echo "Calculating standings..."
+          python scripts/calculate_standings.py
         
       - name: Commit and push changes
         run: |

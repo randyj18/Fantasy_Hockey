@@ -1,0 +1,133 @@
+name: Draft Management Actions
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+          - 'setup-initial-draft'
+          - 'complete-current-round'
+          - 'force-stats-update'
+          - 'reset-pre-acquisition-stats'
+      round_number:
+        description: 'Round number (required for complete-current-round)'
+        required: false
+        type: string
+
+jobs:
+  draft-action:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests firebase-admin
+          
+      - name: Setup Initial Draft
+        if: inputs.action == 'setup-initial-draft'
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          echo "🏒 Setting up initial draft environment..."
+          echo "Generating initial playerlist from Firebase..."
+          python scripts/playerlist_initial_population.py
+          echo "✅ Initial draft setup complete"
+          
+      - name: Complete Current Round
+        if: inputs.action == 'complete-current-round'
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "${{ inputs.round_number }}" ]; then
+            echo "❌ Error: round_number is required for complete-current-round action"
+            exit 1
+          fi
+          echo "🏒 Completing draft round ${{ inputs.round_number }}..."
+          echo "Step 1: Updating playerlist with pre-acquisition stats..."
+          python scripts/update_playerlist.py
+          echo "Step 2: Fetching current playoff stats..."
+          python scripts/fetch_stats.py
+          echo "Step 3: Calculating updated standings..."
+          python scripts/calculate_standings.py
+          echo "✅ Round ${{ inputs.round_number }} completion process finished"
+          
+      - name: Force Stats Update
+        if: inputs.action == 'force-stats-update'
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          echo "🔄 Forcing complete stats update..."
+          python scripts/update_playerlist.py
+          python scripts/fetch_stats.py
+          python scripts/calculate_standings.py
+          echo "✅ Forced stats update complete"
+          
+      - name: Reset Pre-Acquisition Stats
+        if: inputs.action == 'reset-pre-acquisition-stats'
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          echo "🔄 Resetting pre-acquisition stats..."
+          echo "This will regenerate all pre-acquisition calculations..."
+          python scripts/update_playerlist.py
+          echo "✅ Pre-acquisition stats reset complete"
+          
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'GitHub Actions Bot'
+          git config --global user.email 'actions@github.com'
+          git add data/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Draft management: ${{ inputs.action }} $(date +'%Y-%m-%d %H:%M')"
+            git push
+          fi
+          
+      - name: Create Action Summary
+        run: |
+          echo "## Draft Management Action: ${{ inputs.action }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          case "${{ inputs.action }}" in
+            "setup-initial-draft")
+              echo "✅ Initial draft environment setup complete" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "**Next Steps:**" >> $GITHUB_STEP_SUMMARY
+              echo "1. Open draft in the application" >> $GITHUB_STEP_SUMMARY
+              echo "2. After round 1 completes, run 'complete-current-round' with round_number=1" >> $GITHUB_STEP_SUMMARY
+              ;;
+            "complete-current-round")
+              echo "✅ Round ${{ inputs.round_number }} processing complete" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "**What was updated:**" >> $GITHUB_STEP_SUMMARY
+              echo "- Pre-acquisition stats calculated for new players" >> $GITHUB_STEP_SUMMARY
+              echo "- Current playoff stats fetched" >> $GITHUB_STEP_SUMMARY
+              echo "- Standings recalculated with point adjustments" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "**Next Steps:**" >> $GITHUB_STEP_SUMMARY
+              echo "1. Verify standings in application" >> $GITHUB_STEP_SUMMARY
+              echo "2. Open next round when ready" >> $GITHUB_STEP_SUMMARY
+              ;;
+            "force-stats-update")
+              echo "✅ Complete stats update performed" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "All player stats and standings have been refreshed" >> $GITHUB_STEP_SUMMARY
+              ;;
+            "reset-pre-acquisition-stats")
+              echo "✅ Pre-acquisition stats recalculated" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "All pre-acquisition calculations have been refreshed" >> $GITHUB_STEP_SUMMARY
+              ;;
+          esac
