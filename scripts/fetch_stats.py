@@ -97,14 +97,18 @@ def main():
         # 'playoffRoundDrafted' is also preserved as it indicates when the player was acquired.
         updated_player_data_entry = {
             "Player": player_name,
-            "playerId": player_id_for_api, # Standardized field name for player's NHL ID
+            "Player ID": player_id_for_api, # Field name expected by calculate_standings.py
             "NHL Team": nhl_team_abbr,
             "Position": position,
-            "FantasyTeam": fantasy_team_name, # Clarified field name
+            "Team": fantasy_team_name, # Field name expected by calculate_standings.py
             "playoffRoundDrafted": player_entry.get('playoffRoundDrafted', 0),
-            "pointsBeforeAcquiring": player_entry.get('pointsBeforeAcquiring', 0),
+            "Points Before Acquiring": player_entry.get('pointsBeforeAcquiring', 0),
             "preAcqRound": player_entry.get('preAcqRound', 0),
-            "currentPlayoffStats": current_playoff_stats # Fetched current playoff stats for the ongoing NHL playoff round
+            # Flatten the stats to top level for calculate_standings.py
+            "Goals": current_playoff_stats.get("Goals", 0),
+            "Assists": current_playoff_stats.get("Assists", 0),
+            "Wins": current_playoff_stats.get("Wins", 0),
+            "Shutouts": current_playoff_stats.get("Shutouts", 0)
         }
         
         updated_players_data.append(updated_player_data_entry)
