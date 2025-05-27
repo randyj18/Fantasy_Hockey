@@ -47,34 +47,34 @@
           }
         },
         "draftedPlayers": {
-          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
-          ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()"
+          ".read": "auth != null",
+          ".write": "auth != null"
         },
         "draftStatus": {
-          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          ".read": "auth != null",
           ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true"
         },
         "chat": {
-          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
-          ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          ".read": "auth != null",
+          ".write": "auth != null",
           ".validate": "newData.hasChildren(['uid', 'name', 'text', 'timestamp']) && newData.child('uid').val() == auth.uid"
         },
         "presence": {
-          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          ".read": "auth != null",
           "$uid": {
             ".write": "auth != null && auth.uid == $uid"
           }
         },
         "eliminatedPlayers": {
-          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          ".read": "auth != null",
           ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true"
         },
         "eliminatedNHLTeams": {
-          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          ".read": "auth != null",
           ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true"
         },
         "playoffRound": {
-          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          ".read": "auth != null",
           ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true"
         },
         "draftQueues": {
