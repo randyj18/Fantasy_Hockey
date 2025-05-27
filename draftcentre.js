@@ -50,13 +50,26 @@ let bankedPicks = {};
 let nextRoundDraftOrderSetup = []; 
 
 // --- DOM Elements ---
-const loginBtn = document.getElementById('login-btn');
-const logoutBtn = document.getElementById('logout-btn');
-const authStatus = document.getElementById('auth-status');
-const contentContainer = document.getElementById('content-container');
-const leagueSelectContainer = document.getElementById('league-select-container');
-const leagueListEl = document.getElementById('league-list');
-const draftContainer = document.getElementById('draft-container');
+// Initialize DOM elements with error checking
+function initializeDOM() {
+    loginBtn = document.getElementById('login-btn');
+    logoutBtn = document.getElementById('logout-btn');
+    authStatus = document.getElementById('auth-status');
+    contentContainer = document.getElementById('content-container');
+    leagueSelectContainer = document.getElementById('league-select-container');
+    leagueListEl = document.getElementById('league-list');
+    draftContainer = document.getElementById('draft-container');
+    
+    if (!loginBtn || !logoutBtn || !authStatus) {
+        console.error('Critical DOM elements missing:', {loginBtn, logoutBtn, authStatus});
+        return false;
+    }
+    return true;
+}
+
+// Temporary variables until DOM is loaded
+let loginBtn, logoutBtn, authStatus;
+let contentContainer, leagueSelectContainer, leagueListEl, draftContainer;
 const leagueInfoContainer = document.getElementById('league-info');
 const leagueNameEl = document.getElementById('league-name');
 const leagueTeamCountEl = document.getElementById('league-team-count');
@@ -143,22 +156,7 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-loginBtn.addEventListener('click', () => {
-    signInWithPopup(auth, provider).catch(error => {
-        console.error("Auth error:", error);
-        authStatus.textContent = `Error: ${error.message}`;
-        showNotification(`Sign-in Error: ${error.message}`, 7000);
-    });
-});
-
-logoutBtn.addEventListener('click', () => {
-    signOut(auth).then(() => {
-        window.location.reload(); 
-    }).catch(error => {
-        console.error("Sign out error:", error);
-        showNotification(`Sign-out Error: ${error.message}`, 7000);
-    });
-});
+// Event listeners are now set up in DOMContentLoaded
 
 function storeUserProfile(user) {
     const userRef = ref(database, `users/${user.uid}/profile`);
@@ -556,7 +554,6 @@ function sendChatMessage() { /* ... */ }
 function updateChatMessages(messagesObject) { /* ... */ }
 function getUserColor(uid) { /* ... */ }
 function scrollToChatBottom(force = false) { /* ... */ }
-function showNotification(message, duration = 5000) { /* ... */ }
 function updateBankedPicksDisplay() { /* ... */ }
 function updateDraftOrderDisplay() { /* ... */ }
 function cleanupListeners() { /* ... */ }
@@ -641,5 +638,33 @@ function setupCommissionerControls() {
     console.log('Setting up commissioner controls...');
 }
 
-// Final call to initialize the page logic
-initializeDraftCentre();
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing...');
+    
+    if (!initializeDOM()) {
+        console.error('Failed to initialize DOM elements');
+        return;
+    }
+    
+    // Set up event listeners
+    loginBtn.addEventListener('click', () => {
+        signInWithPopup(auth, provider).catch(error => {
+            console.error("Auth error:", error);
+            authStatus.textContent = `Error: ${error.message}`;
+            showNotification(`Sign-in Error: ${error.message}`, 7000);
+        });
+    });
+
+    logoutBtn.addEventListener('click', () => {
+        signOut(auth).then(() => {
+            window.location.reload(); 
+        }).catch(error => {
+            console.error("Sign out error:", error);
+            showNotification(`Sign-out Error: ${error.message}`, 7000);
+        });
+    });
+    
+    // Initialize the page logic
+    initializeDraftCentre();
+});
