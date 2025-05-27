@@ -1,1 +1,82 @@
-[]
+[
+    {
+        "Rank": 1,
+        "Team": "Sunny Sahai",
+        "Total Points": 89,
+        "Players": 9,
+        "Goals": 35,
+        "Assists": 55,
+        "Wins": 9,
+        "Shutouts": 0
+    },
+    {
+        "Rank": 2,
+        "Team": "Daryl Kay",
+        "Total Points": 75,
+        "Players": 9,
+        "Goals": 25,
+        "Assists": 37,
+        "Wins": 11,
+        "Shutouts": 3
+    },
+    {
+        "Rank": 3,
+        "Team": "Ryan Jones",
+        "Total Points": 74,
+        "Players": 9,
+        "Goals": 32,
+        "Assists": 45,
+        "Wins": 5,
+        "Shutouts": 0
+    },
+    {
+        "Rank": 4,
+        "Team": "Andrew Porteous",
+        "Total Points": 73,
+        "Players": 9,
+        "Goals": 25,
+        "Assists": 44,
+        "Wins": 6,
+        "Shutouts": 2
+    },
+    {
+        "Rank": 5,
+        "Team": "Paul Weston",
+        "Total Points": 71,
+        "Players": 9,
+        "Goals": 25,
+        "Assists": 52,
+        "Wins": 4,
+        "Shutouts": 3
+    },
+    {
+        "Rank": 6,
+        "Team": "Randy Jones",
+        "Total Points": 60,
+        "Players": 9,
+        "Goals": 21,
+        "Assists": 33,
+        "Wins": 12,
+        "Shutouts": 2
+    },
+    {
+        "Rank": 7,
+        "Team": "Kris Anderson",
+        "Total Points": 55,
+        "Players": 9,
+        "Goals": 19,
+        "Assists": 46,
+        "Wins": 3,
+        "Shutouts": 1
+    },
+    {
+        "Rank": 8,
+        "Team": "Mark Weston",
+        "Total Points": 53,
+        "Players": 9,
+        "Goals": 28,
+        "Assists": 30,
+        "Wins": 6,
+        "Shutouts": 0
+    }
+]
