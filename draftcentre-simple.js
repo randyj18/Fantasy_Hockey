@@ -42,8 +42,10 @@ onAuthStateChanged(auth, (user) => {
         contentContainer.classList.remove('hidden');
         
         if (leagueId) {
+            console.log('Loading league:', leagueId);
             loadLeague();
         } else {
+            console.log('No league ID in URL');
             authStatus.textContent = 'No league selected. Please select a league from manage-leagues.html';
         }
     } else {
@@ -73,25 +75,40 @@ logoutBtn.addEventListener('click', () => {
 });
 
 function loadLeague() {
-    if (!leagueId) return;
+    if (!leagueId) {
+        console.log('No leagueId provided');
+        return;
+    }
+    
+    console.log(`Attempting to load league: ${leagueId}`);
+    authStatus.textContent = 'Loading league...';
     
     const leagueRef = ref(database, `leagues/${leagueId}`);
     get(leagueRef).then((snapshot) => {
+        console.log('League snapshot received:', snapshot.exists());
+        
         if (snapshot.exists()) {
             const leagueData = snapshot.val();
             console.log("League data loaded:", leagueData);
             
             // Check if user is member
             if (!leagueData.teams || !leagueData.teams[currentUser.uid]) {
+                console.log('User not a member. Teams:', leagueData.teams);
+                console.log('Current user UID:', currentUser.uid);
                 authStatus.textContent = `Access denied. You are not a member of this league.`;
                 return;
             }
+            
+            // Hide league selection, show draft interface
+            document.getElementById('league-select-container').classList.add('hidden');
+            document.getElementById('draft-container').classList.remove('hidden');
             
             // Update UI
             document.getElementById('league-name').textContent = leagueData.name || 'League';
             authStatus.textContent = `Signed in as ${currentUser.displayName} - League: ${leagueData.name}`;
             
         } else {
+            console.log('League not found in database');
             authStatus.textContent = `League not found.`;
         }
     }).catch(error => {
