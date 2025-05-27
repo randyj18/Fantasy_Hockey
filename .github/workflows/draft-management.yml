@@ -93,6 +93,7 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Draft management: ${{ inputs.action }} $(date +'%Y-%m-%d %H:%M')"
+            git pull --rebase origin master || echo "No remote changes to pull"
             git push
           fi
           
