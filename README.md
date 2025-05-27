@@ -1,134 +1,196 @@
 # NHL Playoff Fantasy Hockey Stats Web App
 
-A zero-cost fantasy hockey tracker that uses GitHub Pages for hosting and GitHub Actions for automated data updates. This web app allows you to track NHL player stats, calculate fantasy points, and display team standings without any hosting costs.
+This is a zero-cost fantasy hockey web application designed for NHL playoff pools. It allows users to create and run their own fantasy leagues, manage drafts over multiple playoff rounds, track player statistics, and view league standings. The application leverages GitHub Pages for hosting and GitHub Actions for automated data updates.
 
 ## Features
 
-- 📊 Real-time standings and player statistics
-- 🏒 Player selection interface for managing your league
-- 📱 Mobile-friendly design
-- 🔄 Automatic daily updates via GitHub Actions
-- ⚡ Live updates during games (when your players are playing)
-- 📉 Interactive charts and visualizations
-- 💰 Zero hosting or maintenance costs
+-   **User Accounts and Authentication:** Secure sign-in with Google.
+-   **Multi-League Support:** Create, join, and manage multiple fantasy hockey leagues.
+-   **Intuitive Interfaces:** User-friendly design for league setup, multi-round draft management (including banking picks), and viewing detailed standings and player/team statistics.
+-   **Dynamic Player Stats:** Fetches and updates NHL player stats for both regular season and playoffs.
+-   **Playoff-Specific Logic:**
+    -   Supports drafts occurring over multiple NHL playoff rounds.
+    -   "Points Before Acquiring" system ensures fair scoring for players drafted mid-playoffs.
+    -   Banked pick system allows teams to save picks for future rounds.
+    -   Commissioner tools for managing player/team eliminations and round progression.
+-   **Automated Updates:** GitHub Actions for daily (or more frequent) updates of player stats and standings.
+-   **Interactive Charts:** Visualizations for league standings and team/player performance breakdowns.
+-   **Cost-Free Hosting:** Runs entirely on GitHub Pages and GitHub Actions.
+-   **Improved Codebase:** Separated HTML, CSS (with a common style base), and JavaScript files for better organization and maintainability.
+-   **Enhanced Security:** Firebase Realtime Database rules implemented to protect league data.
+-   **Unit Tested:** Core logic, such as standings calculation, includes unit tests.
 
-## Playoff Draft Features
+## Getting Started as a User
 
-- **Multiple Round Drafts**: Support for subsequent drafts as playoff rounds progress
-- **Bank Pick System**: Teams can skip current picks to bank them for future rounds
-- **Elimination Tracking**: Visualizations for eliminated players and teams
-- **Round Management**: Commissioners can manually conclude rounds and set draft order
-- **Team Roster Management**: Track which players are active or eliminated
+1.  **Sign In:** Access the main page (`index.html`) and sign in using your Google account.
+2.  **Manage Leagues (`manage-leagues.html`):**
+    *   **Create a League:** Navigate to the "Create League" tab, fill in the details (name, number of teams, password), and invite other managers via email if desired.
+    *   **Join a League:**
+        *   If you have an invitation link or a league code, go to the "Join League" tab.
+        *   Enter the league code to find the league.
+        *   If a password is required (and you weren't directly invited via email to that league), you'll be prompted to enter it.
+    *   **View Your Leagues:** The "My Leagues" tab will list all leagues you've created or joined, along with any pending invitations.
+3.  **Navigate to Your League:**
+    *   From "My Leagues" on `manage-leagues.html` or the list on `index.html`, click "View League" to go to `league.html` for that league's standings, rosters, and stats.
+    *   Click "Go to Draftcentre" to access `draftcentre.html` for the league's draft.
+4.  **Draft Centre (`draftcentre.html`):**
+    *   If the draft is active, you can draft players when it's your turn.
+    *   Commissioners can start the draft, manage draft rounds (conclude current, set up next), and enable commissioner mode to draft for any team.
+    *   Utilize the player search, filters, and personal draft queue.
+5.  **League Page (`league.html`):**
+    *   View overall league standings, individual team rosters, detailed player statistics, and team point breakdowns.
+    *   Commissioners have access to controls for marking NHL teams/players as eliminated.
 
-## Setup Instructions
+## Setup Instructions (For Self-Hosting Your Own Instance)
 
-### 1. Fork this Repository
-
-Click the "Fork" button in the top-right corner of this repository to create your own copy.
-
-### 2. Enable GitHub Pages
-
-1. Go to your repository settings
-2. Navigate to "Pages" in the sidebar
-3. Under "Source", select "main" branch
-4. Click "Save"
-5. Wait for GitHub to deploy your site (URL will be provided)
-
-### 3. Configure Your Fantasy League
-
-1. Go to `player-selection.html` on your deployed site
-2. Use the interface to search for NHL players
-3. Assign players to teams in your fantasy league
-4. Click "Save to GitHub" (or download and manually add to your repository)
-
-### 4. Enable GitHub Actions
-
-1. Go to the "Actions" tab in your repository
-2. Click "Enable Actions"
-3. The automated workflows will now run according to schedule:
-   - Daily update at 8:00 UTC
-   - Game day checks every 3 hours
+1.  **Fork this Repository:** Create your own copy of this repository on GitHub.
+2.  **Configure Firebase:**
+    *   Create a new project on [Firebase](https://firebase.google.com/).
+    *   In your Firebase project, go to "Project settings" > "General". Under "Your apps", click the "Web" icon (`</>`) to add a web app.
+    *   Copy the `firebaseConfig` object provided.
+    *   Create a `firebaseConfig.js` file in the root of your repository with the copied configuration:
+        ```javascript
+        // public/firebaseConfig.js (or root, adjust paths in HTML if in root)
+        window.firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL", // Important: Realtime Database URL
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        ```
+        *Ensure your HTML files correctly reference this file (e.g., `<script src="firebaseConfig.js"></script>`).*
+    *   **Authentication:** Enable "Google" as a Sign-in method in Firebase Authentication > "Sign-in method" tab.
+    *   **Realtime Database:**
+        *   Set up the Realtime Database (not Firestore).
+        *   Go to the "Rules" tab and import the `database.rules.json` file from this repository.
+3.  **Set GitHub Secrets:**
+    *   In your forked GitHub repository, go to "Settings" > "Secrets and variables" > "Actions".
+    *   Create a new repository secret named `FIREBASE_SERVICE_ACCOUNT_JSON`.
+    *   The value should be the JSON content of your Firebase service account key. To get this:
+        *   In Firebase console: Project settings > Service accounts.
+        *   Select "Firebase Admin SDK" and generate a new private key (Node.js). This will download a JSON file.
+        *   Copy the entire content of this JSON file and paste it as the value for the GitHub secret.
+4.  **Enable GitHub Pages:**
+    *   In your repository settings, go to "Pages".
+    *   Under "Build and deployment", for "Source", select "Deploy from a branch".
+    *   Select the `main` (or your primary) branch and the `/ (root)` folder. Click "Save".
+    *   Your site will be deployed to `https://<your-username>.github.io/<repository-name>/`.
+5.  **Enable GitHub Actions:**
+    *   Go to the "Actions" tab in your repository.
+    *   Enable workflows if prompted. The included workflows (`daily-update.yml`) should now run on their defined schedule or when manually dispatched.
 
 ## How It Works
 
-### Data Collection
+### Data Flow & Collection Scripts
 
-1. `fetch_stats.py` retrieves player statistics from the NHL API
-2. `calculate_standings.py` processes the data and calculates fantasy points
-3. `update_playerlist.py` tracks player acquisition timing to calculate pre-acquisition stats
-4. Results are stored as JSON files in the `data/` directory
+1.  **`scripts/update_playoff_playerlist.py`**:
+    *   Fetches the latest playoff statistics for *all* NHL players directly from the NHL API.
+    *   Outputs this data to `data/nhl_playoff_players.json`. This file serves as a comprehensive source of current playoff stats for display in the UI (e.g., when browsing available players in the draft centre).
+2.  **`scripts/update_playerlist.py`** (Requires Firebase Admin SDK via `FIREBASE_SERVICE_ACCOUNT_JSON` secret):
+    *   Reads all drafted players across all leagues from Firebase Realtime Database (`leagues/$leagueId/draftedPlayers`).
+    *   For players drafted in NHL playoff rounds > 1, if their "points before acquiring" for that specific acquisition round haven't been recorded (`preAcqRound < playoffRoundDrafted`), it fetches their *current* total playoff points (using `fetch_nhl_player_stats` which hits the NHL API).
+    *   It then updates the player's entry in Firebase under `leagues/$leagueId/draftedPlayers/$playerKey` with:
+        *   `pointsBeforeAcquiring`: The fetched current total playoff points at that moment.
+        *   `preAcqRound`: Set to the `playoffRoundDrafted` value to indicate pre-acquisition stats for that round are now recorded.
+    *   Finally, it compiles a consolidated list of all unique drafted players (with their potentially updated pre-acquisition stats) from all leagues into `data/playerlist_drafted_with_pre_acq_stats.json`.
+3.  **`scripts/fetch_stats.py`**:
+    *   Reads `data/playerlist_drafted_with_pre_acq_stats.json` (which contains all drafted players and their pre-acquisition stats).
+    *   For each player in this list, it fetches their *latest* playoff stats from the NHL API (using `fetch_player_stats` utility).
+    *   It preserves the `pointsBeforeAcquiring` and `playoffRoundDrafted` fields from the input file.
+    *   Outputs the combined data (original drafted info + current stats) to `data/updatedstats-<YYYYMMDD>.json`. This file is the primary source for calculating current fantasy points in the standings.
+4.  **`scripts/calculate_standings.py`**:
+    *   Reads the latest `data/updatedstats-<YYYYMMDD>.json` file.
+    *   Calculates fantasy points for each player based on their current stats and subtracts `pointsBeforeAcquiring` if applicable (i.e., if `playoffRoundDrafted > 1` and `preAcqRound` matches `playoffRoundDrafted`).
+    *   Aggregates points for each fantasy team.
+    *   Outputs the final league standings to `data/current-standings.json`. This file is then read by `league.html` to display standings.
 
-### Playoff Draft System
+### Playoff Draft System & Logic
 
-1. Teams complete an initial draft (playoff round 1) at the start of the playoffs
-   - This is a multi-round draft (typically 7 rounds)
-   - Each round in this draft has `playoffRoundDrafted = 1`
-2. As NHL teams are eliminated, players become unavailable for future drafts
-3. When a playoff round concludes, commissioners can:
-   - Mark the round as complete
-   - Set custom draft order for the next round
-   - Incorporate banked picks into the draft order
-4. Teams can choose to bank picks for future rounds
-5. The system supports separate concepts:
-   - **Playoff Round**: Tracked in `playoffRound/currentRound` (1-4)
-   - **Draft Round**: Each playoff round has its own single-round draft, tracked in `draftStatus/round`
-6. Players drafted in subsequent playoff rounds are tracked with `playoffRoundDrafted` (2-4)
-7. Pre-acquisition points are automatically calculated for playoff-drafted players
+-   **Initial Draft:** Leagues start with an initial draft (typically for NHL Playoff Round 1). Players drafted here have `playoffRoundDrafted: 1`.
+-   **Subsequent Rounds:** As actual NHL playoff rounds progress, commissioners can conclude the current fantasy draft segment and initiate a new one for the next NHL round.
+    -   Commissioners manage the draft order for these new segments, which can include standard picks and picks previously "banked" by teams.
+-   **Banked Picks:**
+    -   Teams can choose to "bank" a pick during a draft segment (only in NHL Playoff Rounds 2+).
+    -   This records a placeholder `isBankedPick: true` in `draftedPlayers` and increments a counter for the team under `leagues/$leagueId/playoffRound/bankedPicks`.
+    -   When setting up the next round's draft order, the commissioner can drag these banked picks into the sequence. Using a banked pick consumes it (decrements the counter).
+-   **Player Elimination:** Commissioners can mark players or entire NHL teams as eliminated via `league.html`. Eliminated players cannot be drafted and (optionally, based on league rules not strictly enforced by code yet) may not contribute further points.
+-   **`playoffRoundDrafted` vs. `draftStatus.round`**:
+    -   `playoffRoundDrafted`: Stored on each player record in `draftedPlayers`. It indicates the *NHL Playoff Round* (1-4) during which the player was acquired by their current fantasy team. Crucial for `pointsBeforeAcquiring` logic.
+    -   `draftStatus.round`: Tracks the current *internal draft round* or pass (e.g., 1st round, 2nd round of a snake draft) *within a specific draft segment* (which itself corresponds to an NHL Playoff Round). This resets when a new NHL Playoff Round's draft segment begins.
 
 ### Scoring System
 
-The scoring system used for this fantasy league is:
-- 1 point for each goal
-- 1 point for each assist
-- 2 points for each goalie win
-- 1 point for each shutout
-- Custom points for Gordie Howe Hat Tricks and Conn Smythe awards
-- Points before a player was acquired are subtracted
+The default scoring rules are:
+-   Goal: 1 point
+-   Assist: 1 point
+-   Goalie Win: 2 points
+-   Goalie Shutout: 1 point
+-   **Points Before Acquiring:** For players drafted after the initial NHL playoff round (i.e., `playoffRoundDrafted > 1`), any points they scored *before* being acquired by their current fantasy team in that specific NHL playoff round are subtracted from their current playoff total to get their effective fantasy points for that team.
 
-### Customization
+## Customization
 
-You can customize the app by:
-- Editing the team names in `player-selection.html`
-- Modifying the scoring formula in `calculate_standings.py`
-- Changing the UI design by editing the HTML/CSS
+-   **UI Design:** Modify HTML structure and CSS rules in `common-styles.css` and page-specific CSS files (`index.css`, `league.css`, `manage-leagues.css`, `draftcentre.css`).
+-   **Scoring Rules:** Adjust the point calculation logic in `scripts/calculate_standings.py`.
+-   **NHL Teams List:** The `nhlTeams` object in `league.js` and `draftcentre.js` can be updated if team names or abbreviations change.
+-   **Site Content:** Edit text and layout in the HTML files.
 
 ## File Structure
 
 ```
 /
 ├── .github/workflows/
-│   ├── daily-update.yml
-│   ├── game-day-update.yml  (fixed version)
-│   └── player-database-update.yml
+│   └── daily-update.yml            # GitHub Action for all data updates
 ├── data/
-│   ├── current-standings.json
-│   ├── nhl_players.json
-│   └── playerlist.json
+│   ├── current-standings.json      # Output of calculate_standings.py, used by league.html
+│   ├── nhl_players.json            # Base list of all NHL players (regular season focus)
+│   ├── nhl_playoff_players.json    # List of all NHL players with current playoff stats
+│   └── playerlist_drafted_with_pre_acq_stats.json # Output of update_playerlist.py, input for fetch_stats.py
+│   └── updatedstats-YYYYMMDD.json  # Daily output of fetch_stats.py, input for calculate_standings.py
 ├── scripts/
-│   ├── check_active_games.py
-│   ├── fetch_stats.py
 │   ├── calculate_standings.py
-│   ├── get_all_players.py
-│   └── update_playerlist.py (new script)
-├── index.html
-├── league.html
-├── draftcentre.html
-├── manage-leagues.html
+│   ├── check_active_games.py       # (Note: This script's utility might be reduced if live updates are minimal)
+│   ├── fetch_stats.py
+│   ├── get_all_players.py          # Generates nhl_players.json
+│   ├── update_playerlist.py        # Updates Firebase with pre-acq stats, generates playerlist_drafted_with_pre_acq_stats.json
+│   └── update_playoff_playerlist.py # Generates nhl_playoff_players.json
+│   └── tests/
+│       ├── __init__.py
+│       └── test_calculate_standings.py # Unit tests for standings calculation
+├── common-styles.css               # Shared CSS rules for all pages
+├── index.html                      # Main landing page, lists user's leagues
+├── index.css                       # Styles specific to index.html
+├── league.html                     # Displays league standings, rosters, player stats
+├── league.js                       # JavaScript for league.html
+├── league.css                      # Styles specific to league.html
+├── draftcentre.html                # Interface for live drafting
+├── draftcentre.js                  # JavaScript for draftcentre.html
+├── draftcentre.css                 # Styles specific to draftcentre.html
+├── manage-leagues.html             # Interface for creating, joining, and listing user's leagues
+├── manage-leagues.js               # JavaScript for manage-leagues.html
+├── manage-leagues.css              # Styles specific to manage-leagues.html
+├── firebaseConfig.js               # Holds Firebase project configuration (user-generated)
+├── gmailConfig.js                  # Holds Gmail API client ID & API Key (user-generated, for email invites)
+├── database.rules.json             # Firebase Realtime Database security rules
+├── firebase.json                   # Firebase deployment configuration (points to database.rules.json)
 └── README.md
 ```
 
 ## Troubleshooting
 
-- **Missing data?** Check the GitHub Actions logs to see if there were any API errors
-- **Want to force an update?** You can manually trigger the workflows from the Actions tab
-- **Need to add custom stats?** Edit both the `fetch_stats.py` and `calculate_standings.py` files
+-   **Data Not Updating?** Check the GitHub Actions logs in your repository ("Actions" tab) for any errors in the `daily-update` workflow.
+-   **Authentication Issues?** Ensure your `firebaseConfig.js` is correct and Google Sign-In is enabled in your Firebase project. Also, check that the authorized domains for OAuth include your GitHub Pages URL.
+-   **Force Update:** Manually trigger the `Daily Stats Update` workflow from the "Actions" tab in your GitHub repository.
+-   **Incorrect Pre-Acquisition Stats?** Ensure the `FIREBASE_SERVICE_ACCOUNT_JSON` secret is correctly set up for `scripts/update_playerlist.py` to run.
 
 ## Credits
 
-This project uses:
-- NHL Stats API
-- Chart.js for visualizations
-- GitHub Pages and GitHub Actions
+-   NHL Stats API for player and game data.
+-   Chart.js for data visualizations.
+-   Firebase for authentication and Realtime Database.
+-   GitHub Pages and GitHub Actions for hosting and automation.
 
 ## Disclaimer
 

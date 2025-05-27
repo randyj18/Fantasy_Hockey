@@ -1,0 +1,142 @@
+/* Styles specific to index.html */
+
+/* Override common container for centering content if needed */
+.container {
+    /* align-items: center; -- This was in body, but for container might be useful */
+    /* text-align: center; -- If text within container needs centering */
+}
+
+header h1 { /* If index.html header h1 has specific styling not in common */
+    /* Example: font-size: 2.5rem; */
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: 40px;
+    background-color: #fff; /* Card-like, could use .card if padding/border are same */
+    padding: 30px;
+    border-radius: 8px; /* Slightly more rounded than common .card */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 800px; 
+}
+
+.hero h2 { /* Specific h2 styling for hero */
+    font-size: 2.2rem; 
+    color: var(--primary-color); /* Common color */
+    margin-bottom: 15px;
+}
+
+.subtitle {
+    font-size: 1.1rem; 
+    color: #666; /* Specific color */
+    margin-bottom: 30px;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 15px; 
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* .btn and .btn-outline are common, no need to redefine unless overriding */
+
+.features {
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 30px;
+    margin-top: 50px;
+    width: 100%;
+}
+
+.feature { /* Card-like but with specific hover and content alignment */
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 0.25rem; /* Matches common .card */
+    background-color: #fff; /* Matches common .card */
+    border: 1px solid var(--border-color); /* Matches common .card */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.feature:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.feature h3 { /* h3 is common, specific margin might be okay here */
+    color: var(--primary-color); /* Common color */
+    margin-top: 0;
+    margin-bottom: 10px; 
+}
+
+/* User's Leagues Section specific to index.html */
+#user-leagues-section { /* ID for the section */
+    width: 100%;
+    max-width: 800px; /* Match hero width */
+    margin-top: 30px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#user-leagues-section h3 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.leagues-list-container { /* Class for the div holding league items */
+    /* No specific styles needed here if league-item handles its own */
+}
+
+.leagues-list-container .league-item { /* Styles for each league item in the list */
+    background-color: var(--light-bg); /* Slightly different from .card */
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+}
+
+.leagues-list-container .league-item h4 { 
+    margin-top: 0; 
+    margin-bottom: 5px; 
+    color: var(--primary-color); 
+}
+
+.leagues-list-container .league-item a { 
+    margin-right: 10px; 
+    text-decoration: none;
+    /* color: var(--secondary-color); -- Common link style will apply */
+}
+
+.leagues-list-container .league-item a.btn { /* Ensure buttons within list items are styled correctly */
+    margin-top: 5px; /* Add some space if buttons wrap */
+}
+
+
+.leagues-list-container .league-item p {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Responsive adjustments for index.html specifics */
+@media (max-width: 768px) {
+    .features {
+        grid-template-columns: 1fr;
+    }
+    .cta-buttons {
+        flex-direction: column;
+        width: 100%; /* Make CTA buttons container full width */
+    }
+    .cta-buttons .btn { /* Make buttons inside CTA full width */
+        width: 100%;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    .cta-buttons .btn:last-child {
+        margin-bottom: 0;
+    }
+}

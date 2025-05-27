@@ -1,0 +1,869 @@
+/* Styles specific to Draft Centre page */
+
+/* Override common container for wider layout if needed */
+.container {
+    max-width: 1300px; 
+}
+
+/* Specific page layout */
+.league-info {
+    background-color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.league-name { /* This style is potentially common if league name display is consistent */
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+.league-details { /* This style is potentially common */
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.league-selection-area { /* This might be common if used on other pages for selecting leagues */
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.draft-area {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 992px) {
+    .draft-area {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .available-players-section {
+        grid-column: 1 / 2;
+    }
+    .drafted-players-section {
+        grid-column: 2 / 3;
+    }
+    .full-width-section { /* This class itself is common, but its application in grid is page-specific */
+        grid-column: 1 / -1;
+    }
+}
+
+.controls-section, /* These are common class names, but their grid placement is specific */
+.status-section,
+.action-buttons.full-width-section { /* Made selector more specific */
+    grid-column: 1 / -1;
+}
+
+/* --- Controls & Filters --- */
+.controls-section .controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    align-items: center;
+}
+
+.search-container,
+.position-filter-container,
+.view-options-container {
+    margin-bottom: 0; /* Grid handles gap */
+}
+
+#searchInput { /* Common input, but specific usage context might justify keeping if width needs to be different from common */
+    width: 100%;
+    /* box-sizing: border-box; already in common */
+}
+
+.position-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.position-filter button { /* Extends common button */
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+    background-color: var(--light-bg);
+    border-color: var(--border-color);
+    color: var(--dark-text);
+}
+
+.position-filter button:hover {
+    background-color: var(--hover-bg);
+}
+
+.position-filter button.active {
+    background-color: var(--primary-color);
+    color: var(--light-text);
+    border-color: var(--primary-color);
+}
+
+.view-options-container label { /* Common label, specific layout */
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+input[type="checkbox"] { /* Common input, specific margin if needed */
+    margin-right: 5px;
+}
+
+.drafted-team-filter {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Commissioner Toggle */
+.commissioner-controls { /* This is a specific component */
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.commissioner-controls strong {
+    color: #856404;
+}
+
+.commish-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.commish-toggle-container label { /* Potentially common label styling was moved */
+    font-weight: normal; /* Overrides common bold label if needed */
+    cursor: pointer;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 20px; /* Specific to this slider type */
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--primary-color);
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked+.slider:before {
+    transform: translateX(20px);
+}
+
+/* --- Tables --- */
+/* .table-container, table, th, td base styles are common */
+/* draftcentre specific table styles */
+th, td { /* Overriding common padding */
+    padding: 0.6rem 0.75rem; 
+    font-size: 0.85rem;
+}
+th {
+    font-weight: 600; 
+    cursor: pointer; /* Specific to sortable headers */
+}
+
+th.sorted-asc::after { /* Specific to sortable headers */
+    content: " ▲";
+    font-size: 0.8em;
+}
+
+th.sorted-desc::after { /* Specific to sortable headers */
+    content: " ▼";
+    font-size: 0.8em;
+}
+
+tr.drafted {
+    background-color: var(--drafted-bg) !important;
+    color: var(--drafted-text);
+}
+
+tr.drafted .draft-button {
+    visibility: hidden;
+}
+
+tr.drafted td {
+    text-decoration: line-through;
+}
+
+td .draft-button, /* Specific button styling within cells */
+td .remove-button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+td .remove-button { /* Extends/overrides .btn.danger for specific context */
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+td .remove-button:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+/* --- Current Drafter & Status --- */
+.status-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.current-drafter {
+    background-color: var(--info-bg);
+    border-left: 4px solid var(--info-border);
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.95rem;
+    flex-grow: 1;
+    margin-bottom: 0;
+}
+
+.current-drafter.my-turn {
+    background-color: var(--success-bg);
+    border-left-color: var(--success-border);
+}
+
+.current-drafter p {
+    margin: 0;
+}
+
+#start-draft-btn, /* Specific IDs */
+#bank-pick-btn {
+    margin-bottom: 0;
+}
+
+.draft-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#bank-pick-btn { /* Specific button styling */
+    background-color: #795548;
+    border-color: #5d4037;
+}
+
+#bank-pick-btn:hover {
+    background-color: #6d4c41;
+    border-color: #5d4037;
+}
+
+/* --- Action Buttons (specific layout for draft page) --- */
+.action-buttons { /* This is a common class name, but layout might be specific */
+    display: flex;
+    gap: 10px;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.action-buttons button,
+.action-buttons a.btn {
+    padding: 0.6rem 1rem;
+    margin-top: 0;
+}
+
+/* --- Instructions --- */
+.instructions { /* Specific component */
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--primary-color);
+    border: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+.instructions summary {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.instructions ol {
+    margin-top: 0.5rem;
+    padding-left: 20px;
+}
+
+/* --- Chat --- */
+.chat-container {
+    position: fixed;
+    bottom: 0;
+    right: 20px;
+    width: 320px;
+    max-width: 90vw;
+    max-height: 80vh;
+    height: 450px;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 5px 5px 0 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Common high z-index, could be a variable */
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease-in-out;
+}
+
+.chat-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--primary-color);
+}
+
+.chat-header span:first-child {
+    font-weight: bold;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #eee;
+    background-color: white;
+}
+
+.chat-input input { /* Extends common input */
+    flex-grow: 1;
+    margin-right: 10px;
+    border-radius: 15px;
+    padding: 0.4rem 0.8rem;
+}
+
+.chat-input button { /* Extends common button */
+    border-radius: 15px;
+    padding: 0.4rem 0.8rem;
+}
+
+.chat-message {
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.chat-user {
+    font-weight: bold;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+}
+
+.user-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+    background-color: #eee;
+}
+
+.chat-time {
+    font-size: 0.75em;
+    color: #999;
+    margin-left: 8px;
+    font-weight: normal;
+}
+
+.chat-text {
+    background-color: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    display: inline-block;
+    max-width: 95%;
+    word-wrap: break-word;
+    margin-left: 32px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    font-size: 0.9rem;
+}
+
+.chat-system {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 10px 0;
+    font-size: 0.85em;
+}
+
+.chat-container.minimized {
+    transform: translateY(calc(100% - 45px));
+    box-shadow: none;
+}
+
+.chat-container.minimized .chat-messages,
+.chat-container.minimized .chat-input {
+    display: none;
+}
+
+/* --- Draft Order Management --- */
+.draft-order-container {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.draft-team-item {
+    padding: 8px 12px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    cursor: grab;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.draft-team-item:hover {
+    background-color: #f4f6f9;
+}
+
+.draft-team-item.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.draft-team-name {
+    font-weight: bold;
+}
+
+.draft-team-picks { /* Specific badge-like element */
+    background-color: var(--primary-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+}
+
+.banked-pick-item {
+    background-color: #e8f4ff !important;
+    border: 1px solid #b8daff !important;
+}
+
+.banked-pick-count {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.banked-pick-row { /* Used on drafted table for banked picks */
+    background-color: #e8f4ff !important;
+}
+
+.banked-pick-row:hover {
+    background-color: #d1e7ff !important;
+}
+
+.undo-banked-pick-button { /* Extends .btn.danger */
+    background-color: #795548 !important; 
+    border-color: #5d4037 !important;
+}
+
+.banked-picks-instructions {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.draft-team-pick-type {
+    font-size: 0.8rem;
+    color: #666;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background-color: #f0f0f0;
+}
+
+.round-indicator { /* Specific badge-like element */
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    margin-left: 5px;
+}
+
+.eliminated-player td { /* Combined with common .eliminated-player */
+     /* text-decoration and color are common */
+}
+.eliminated-player::after { /* Common utility style if used elsewhere */
+    content: 'ELIMINATED';
+    position: absolute;
+    right: 10px;
+    font-size: 0.7rem;
+    background-color: #dc3545;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+    opacity: 0.8;
+}
+
+.eliminated-player td:nth-child(2)::after { /* Specific to table layout */
+    display: none;
+}
+
+/* --- Draft Queue Styles --- */
+.my-draft-queue-section {
+    margin-bottom: 1.5rem;
+}
+
+.queue-instructions {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.queue-container {
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    background-color: #fff;
+    padding: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.draft-queue-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.queue-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 0.25rem;
+    cursor: grab;
+}
+
+.queue-item:hover {
+    background-color: #e9ecef;
+}
+
+.queue-item.dragging { /* Common dragging style pattern */
+    opacity: 0.5;
+    cursor: grabbing;
+    background-color: #e8f4ff; /* Specific highlight */
+    transform: scale(1.02);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 10;
+}
+.queue-item.over { /* Common drag over style pattern */
+    border: 2px dashed var(--primary-color);
+    padding: calc(0.75rem - 1px); /* Adjust padding to account for border */
+    background-color: #f0f8ff; /* Specific highlight */
+}
+
+
+.queue-item-info {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.queue-item-name {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.queue-item-details {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.queue-item-rank { /* Specific badge-like element */
+    background-color: var(--primary-color);
+    color: white;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
+
+.remove-from-queue { /* Extends .btn.danger */
+    background-color: #dc3545;
+}
+.remove-from-queue:hover {
+    background-color: #c82333;
+}
+
+.add-to-queue { /* Extends .btn.secondary or a new common variant */
+    background-color: #6c757d;
+    /* margin-right: 0.5rem; already in common button */
+}
+.add-to-queue:hover {
+    background-color: #5a6268;
+}
+
+.selected-player { /* Utility to highlight a selected player row */
+    background-color: #e8f4ff !important;
+    border-left: 3px solid var(--primary-color) !important;
+}
+
+/* --- League Selection (if shown on this page) --- */
+/* These are likely common with manage-leagues.html if the component is shared */
+#league-list .league-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#league-list .league-item:last-child {
+    border-bottom: none;
+}
+
+#league-list .league-name { /* This is a more specific .league-name */
+    font-size: 1.1rem;
+}
+
+#league-list .league-details { /* Specific context for .league-details */
+    font-size: 0.85rem;
+}
+
+#league-list .btn { /* Specific context for .btn */
+    margin-top: 0;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+}
+
+/* --- Responsive Adjustments for Draft Centre --- */
+@media (max-width: 768px) {
+    /* h1, h2 font sizes are common */
+    .controls-section .controls-grid {
+        grid-template-columns: 1fr; /* Stack controls */
+    }
+    .search-container,
+    .position-filter-container,
+    .view-options-container {
+        margin-bottom: 1rem; /* Add margin back when stacked */
+    }
+    .league-info { /* Common responsive pattern for this type of block */
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .table-container { /* Common responsive pattern */
+        max-height: 350px; 
+    }
+    th, td { /* Common responsive pattern */
+        font-size: 0.8rem;
+        padding: 0.5rem 0.6rem;
+    }
+    /* .hide-mobile is common */
+    /* Hiding specific columns is page-specific table layout */
+    th:nth-child(4), td:nth-child(4), /* GP */
+    th:nth-child(8), td:nth-child(8), /* W */
+    th:nth-child(9), td:nth-child(9)  /* SO */
+        {
+        /* display: none; */ /* Example, can be uncommented if needed */
+    }
+    .draft-order-list { 
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .draft-order-item {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .chat-container { /* Specific to chat */
+        width: 95vw;
+    }
+    .action-buttons { /* Common pattern for action buttons on small screens */
+        justify-content: center;
+    }
+    .action-buttons button,
+    .action-buttons a.btn {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+    .drafted-team-filter { /* Specific filter layout */
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .drafted-team-filter select {
+        width: 100%;
+    }
+}
+
+/* Styles for draft-order-display (visual representation of current draft order) */
+.draft-order-display {
+    margin-bottom: 1.5rem;
+}
+.draft-order-list { /* Container for the order items */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+.draft-order-item {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    padding: 0.6rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.draft-order-item.current {
+    background-color: var(--success-bg);
+    border-color: var(--success-border);
+    font-weight: bold;
+}
+.draft-order-number { /* Badge-like */
+    background-color: var(--primary-color);
+    color: white;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+.draft-order-item.current .draft-order-number {
+    background-color: #28a745; /* Specific color for current pick number */
+}
+.banked-pick-indicator { /* Specific badge */
+    background-color: #795548;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 5px;
+}
+.draft-direction-label { /* Specific to draft order display */
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    background-color: #f0f4f8;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+.draft-order-items { 
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: stretch; 
+}
+.draft-order-details {
+    flex: 1;
+    margin-left: 10px;
+}
+.draft-order-positions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+    font-size: 0.75rem;
+}
+.round-position {
+    background-color: #f0f0f0;
+    padding: 2px 5px;
+    border-radius: 3px;
+    color: #666;
+}
+.round-position.current-round {
+    background-color: var(--primary-color); /* Using primary color for current round pick */
+    color: white;
+    font-weight: bold;
+}
+
+/* Drop indicator for draft queue drag and drop */
+.drop-indicator {
+    display: none;
+    position: absolute;
+    left: 0;
+    height: 4px;
+    background-color: var(--primary-color);
+    z-index: 100;
+    border-radius: 2px;
+    pointer-events: none;
+}

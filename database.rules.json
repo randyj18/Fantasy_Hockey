@@ -1,0 +1,93 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        "profile": {
+          ".write": "auth != null && auth.uid == $uid"
+        },
+        "leagues": {
+          ".write": "auth != null && auth.uid == $uid"
+        }
+      }
+    },
+    "leagues": {
+      "$leagueId": {
+        ".read": "auth != null",
+        "name": {
+          ".write": "auth != null && (data.exists() ? root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true : true)"
+        },
+        "description": {
+          ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true"
+        },
+        "settings": {
+          ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true"
+        },
+        "maxTeams": {
+           ".write": "auth != null && (data.exists() ? root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true : true)"
+        },
+        "code": {
+          ".write": "auth != null && !data.exists()"
+        },
+        "password": {
+          ".write": "auth != null && (data.exists() ? root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true : true)"
+        },
+        "createdBy": {
+          ".write": "auth != null && !data.exists()"
+        },
+        "createdAt": {
+          ".write": "auth != null && !data.exists()"
+        },
+        "teams": {
+          "$uid": {
+            ".write": "auth != null && (auth.uid == $uid || root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true)",
+            "isCommissioner": {
+              ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true"
+            }
+          }
+        },
+        "draftedPlayers": {
+          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()"
+        },
+        "draftStatus": {
+          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true"
+        },
+        "chat": {
+          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          ".validate": "newData.hasChildren(['uid', 'name', 'text', 'timestamp']) && newData.child('uid').val() == auth.uid"
+        },
+        "presence": {
+          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          "$uid": {
+            ".write": "auth != null && auth.uid == $uid"
+          }
+        },
+        "eliminatedPlayers": {
+          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true"
+        },
+        "eliminatedNHLTeams": {
+          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true"
+        },
+        "playoffRound": {
+          ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid).exists()",
+          ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true"
+        },
+        "draftQueues": {
+          "$uid": {
+            ".read": "auth != null && auth.uid == $uid",
+            ".write": "auth != null && auth.uid == $uid"
+          }
+        },
+        "invitedManagers": {
+            ".read": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true",
+            ".write": "auth != null && root.child('leagues/' + $leagueId + '/teams/' + auth.uid + '/isCommissioner').val() === true"
+        }
+      }
+    }
+  }
+}

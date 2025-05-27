@@ -4,174 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fantasy Hockey League Hub</title>
+    <link rel="stylesheet" href="common-styles.css">
+    <link rel="stylesheet" href="index.css">
     <style>
-        :root {
-            --primary-color: #003366;
-            --secondary-color: #0055a4; /* Slightly lighter blue */
-            --accent-color: #ffd700; /* Gold */
-            --light-bg: #f8f9fa;
-            --dark-text: #212529;
-            --light-text: #f8f9fa;
-            --border-color: #dee2e6;
-            --hover-bg: #e9ecef;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            color: var(--dark-text);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            background-color: var(--light-bg);
-        }
-        header {
-            background-color: var(--primary-color);
-            color: var(--light-text);
-            padding: 1rem 0;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2rem;
-        }
-        .container {
-            max-width: 1100px; /* Slightly wider  */
-            margin: 20px auto; /* Add margin top/bottom */
-            padding: 20px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* Center content */
-        }
-        .auth-container {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-        }
-        #auth-status {
-            margin-top: 10px;
-            font-style: italic;
-            color: #555;
-        }
-        .hero {
-            text-align: center;
-            margin-bottom: 40px;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 800px; /* Limit hero width */
-        }
-        .hero h2 { /* Changed from h1 to h2 for semantics */
-            font-size: 2.2rem; /* Adjusted size */
-            color: #003366;
-            margin-bottom: 15px;
-        }
-        .subtitle {
-            font-size: 1.1rem; /* Adjusted size */
-            color: #666;
-            margin-bottom: 30px;
-        }
-        .cta-buttons {
-            display: flex;
-            gap: 15px; /* Adjusted gap */
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .btn, button { /* Style buttons consistently */
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: var(--light-text);
-            text-decoration: none;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.25rem;
-            font-size: 0.9rem;
-            transition: all 0.2s ease-in-out;
-            border: 1px solid var(--primary-color);
-            cursor: pointer;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-        .btn:hover, button:hover {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }
-        .btn-outline, .btn.secondary {
-            background-color: transparent;
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-        }
-        .btn-outline:hover, .btn.secondary:hover {
-            background-color: var(--hover-bg);
-        }
-        button.hidden, .btn.hidden { /* Class to hide elements */
-             display: none;
-         }
-        .features {
-            display: grid; /* Use grid for better alignment */
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
-            gap: 30px;
-            margin-top: 50px;
-            width: 100%;
-        }
-        .feature {
-            text-align: center;
-            padding: 1.5rem;
-            border-radius: 0.25rem;
-            background-color: #fff;
-            border: 1px solid var(--border-color);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .feature:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .features {
-                grid-template-columns: 1fr;
-            }
-            .cta-buttons {
-                flex-direction: column;
-                width: 100%;
-            }
-            .cta-buttons .btn {
-                width: 100%;
-                margin-bottom: 0.5rem;
-                text-align: center;
-            }
-        }
-        .feature h3 {
-            color: #003366;
-            margin-top: 0;
-            margin-bottom: 10px; /* Space below heading */
-        }
-        footer {
-            background-color: #e9ecef; /* Lighter footer */
-            padding: 15px; /* Increased padding */
-            text-align: center;
-            font-size: 14px;
-            color: #666;
-            margin-top: 30px; /* Space above footer */
-            border-top: 1px solid #dee2e6;
-        }
-         footer a {
-             color: #005ea5;
-             text-decoration: none;
-         }
-         footer a:hover {
-             text-decoration: underline;
-         }
+        /* Inline styles removed, moved to common-styles.css and index.css */
     </style>
-    <!-- REMOVED the auto-redirect script -->
 </head>
 <body>
     <header>
@@ -192,7 +29,6 @@
                 <h2>Welcome to the Ultimate Fantasy Hockey Experience</h2>
                 <p class="subtitle">Create or join leagues, draft your dream team, track live scores, and compete with friends!</p>
                 <div class="cta-buttons">
-                    <!-- Login button is the primary CTA when logged out -->
                     <button class="btn" onclick="document.getElementById('login-btn').click();">Get Started (Sign In)</button>
                 </div>
             </div>
@@ -202,8 +38,14 @@
                 <div class="cta-buttons">
                     <a href="manage-leagues.html" class="btn">Manage My Leagues</a>
                     <a href="manage-leagues.html?tab=create" class="btn btn-outline">Create New League</a>
-                     <!-- Link to draftcentre could be added if a default league is known -->
-                    <!-- <a href="draftcentre.html" class="btn">Go to Draft</a> -->
+                </div>
+
+                <!-- User's Leagues Section -->
+                <div id="user-leagues-section" class="hidden" style="margin-top: 30px;">
+                    <h3>My Leagues</h3>
+                    <div id="user-leagues-list" class="leagues-list-container">
+                        <p>Loading leagues...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -211,15 +53,15 @@
         <!-- Features Section -->
         <div class="features">
             <div class="feature">
-                <h3><i class="fas fa-plus-circle"></i> Create Your League</h3> <!-- Example using FontAwesome icons if added -->
+                <h3>Create Your League</h3>
                 <p>Start a league with friends. Customize settings, invite managers, and set your draft time.</p>
             </div>
             <div class="feature">
-                <h3><i class="fas fa-drafting-compass"></i> Live Draft Centre</h3>
+                <h3>Live Draft Centre</h3>
                 <p>Experience an interactive draft with real-time updates, player stats, and team tracking.</p>
             </div>
             <div class="feature">
-                <h3><i class="fas fa-clipboard-list"></i> Track Standings</h3>
+                <h3>Track Standings</h3>
                 <p>Follow your team's performance throughout the season with updated scores and standings.</p>
             </div>
         </div>
@@ -235,29 +77,6 @@
         </div>
     </footer>
     
-    <style>
-        footer {
-            background-color: var(--light-bg);
-            padding: 15px;
-            text-align: center;
-            font-size: 14px;
-            color: #666;
-            margin-top: 30px;
-            border-top: 1px solid var(--border-color);
-        }
-        .footer-links {
-            margin-top: 10px;
-        }
-        .footer-links a {
-            margin: 0 10px;
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-        .footer-links a:hover {
-            text-decoration: underline;
-        }
-    </style>
-
     <!-- Firebase Configuration -->
     <script src="firebaseConfig.js"></script>
 
@@ -266,11 +85,11 @@
         // Import necessary Firebase functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        // import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"; // Only needed if storing profile or listing leagues here
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"; 
 
         // Initialize Firebase
         const app = initializeApp(window.firebaseConfig || {
-            apiKey: "PLACEHOLDER", // Fallback if config injection fails
+            apiKey: "PLACEHOLDER", 
             authDomain: "playofffantasyhockey.firebaseapp.com",
             databaseURL: "https://playofffantasyhockey-default-rtdb.firebaseio.com",
             projectId: "playofffantasyhockey",
@@ -279,27 +98,25 @@
             appId: "PLACEHOLDER"
          });
         const auth = getAuth();
-        // const database = getDatabase(); // Uncomment if needed
+        const database = getDatabase(); 
         const provider = new GoogleAuthProvider();
 
-        // Set session persistence
          setPersistence(auth, browserSessionPersistence)
              .catch((error) => {
                  console.error("Error setting auth persistence:", error);
              });
 
-        // DOM Elements
         const loginBtn = document.getElementById('login-btn');
         const logoutBtn = document.getElementById('logout-btn');
         const authStatus = document.getElementById('auth-status');
         const loggedOutContent = document.getElementById('logged-out-content');
         const loggedInContent = document.getElementById('logged-in-content');
         const userNameSpan = document.getElementById('user-name');
+        const userLeaguesSection = document.getElementById('user-leagues-section');
+        const userLeaguesListDiv = document.getElementById('user-leagues-list');
 
-        // Auth State Observer
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in
                 console.log("User signed in:", user.displayName);
                 loginBtn.classList.add('hidden');
                 logoutBtn.classList.remove('hidden');
@@ -309,11 +126,10 @@
                 loggedInContent.classList.remove('hidden');
                 userNameSpan.textContent = user.displayName;
 
-                // Optional: Store/update user profile in database
-                // storeUserProfile(user);
+                userLeaguesSection.classList.remove('hidden');
+                displayUserLeagues(user);
 
             } else {
-                // User is signed out
                 console.log("User signed out");
                 loginBtn.classList.remove('hidden');
                 logoutBtn.classList.add('hidden');
@@ -321,15 +137,16 @@
 
                 loggedOutContent.classList.remove('hidden');
                 loggedInContent.classList.add('hidden');
-                userNameSpan.textContent = ''; // Clear name
+                userNameSpan.textContent = ''; 
+                
+                userLeaguesSection.classList.add('hidden');
+                userLeaguesListDiv.innerHTML = '<p>Loading leagues...</p>'; 
             }
         });
 
-        // Sign in
         loginBtn.addEventListener('click', () => {
             signInWithPopup(auth, provider)
                 .then((result) => {
-                    // onAuthStateChanged will handle UI updates
                     console.log("Sign in successful for:", result.user.displayName);
                 }).catch((error) => {
                     console.error("Authentication error:", error);
@@ -337,31 +154,66 @@
                 });
         });
 
-        // Sign out
         logoutBtn.addEventListener('click', () => {
             signOut(auth).then(() => {
-                // onAuthStateChanged will handle UI updates
                 console.log("Sign out successful");
             }).catch((error) => {
                 console.error("Sign out error:", error);
             });
         });
+        
+        async function displayUserLeagues(user) {
+            if (!user) {
+                userLeaguesListDiv.innerHTML = '<p>Please sign in to see your leagues.</p>';
+                return;
+            }
+            userLeaguesListDiv.innerHTML = '<p>Loading leagues...</p>'; 
 
-        /* Optional: Function to store user profile (Uncomment database import/init if using)
-        function storeUserProfile(user) {
-            const userRef = ref(database, `users/${user.uid}/profile`);
-            set(userRef, {
-                uid: user.uid,
-                displayName: user.displayName,
-                email: user.email,
-                photoURL: user.photoURL,
-                lastLogin: new Date().toISOString()
-            }).catch(error => console.error("Error storing user profile:", error));
+            const userLeaguesRef = ref(database, `users/${user.uid}/leagues`);
+            try {
+                const snapshot = await get(userLeaguesRef);
+                if (snapshot.exists()) {
+                    const leaguesData = snapshot.val();
+                    userLeaguesListDiv.innerHTML = ''; 
+
+                    const leagueIds = Object.keys(leaguesData);
+                    if (leagueIds.length === 0) {
+                        userLeaguesListDiv.innerHTML = "<p>You are not part of any leagues yet. <a href='manage-leagues.html'>Create or Join a League</a></p>";
+                        return;
+                    }
+
+                    for (const leagueId of leagueIds) {
+                        const leagueDetailsRef = ref(database, `leagues/${leagueId}`);
+                        const leagueDetailsSnapshot = await get(leagueDetailsRef);
+                        if (leagueDetailsSnapshot.exists()) {
+                            const league = leagueDetailsSnapshot.val();
+                            const leagueItem = document.createElement('div');
+                            leagueItem.className = 'league-item';
+                            
+                            let teamCount = 0;
+                            if (league.teams && typeof league.teams === 'object') {
+                                teamCount = Object.keys(league.teams).length;
+                            }
+
+                            leagueItem.innerHTML = `
+                                <h4>${league.name || 'Unnamed League'}</h4>
+                                <p>Role: ${leaguesData[leagueId].role || 'Member'} | Teams: ${teamCount}/${league.maxTeams || 'N/A'}</p>
+                                <a href="league.html?id=${leagueId}" class="btn btn-outline">View League</a>
+                                <a href="draftcentre.html?league=${leagueId}" class="btn">Go to Draft</a>
+                            `;
+                            userLeaguesListDiv.appendChild(leagueItem);
+                        } else {
+                            console.warn(`Details for league ID ${leagueId} not found.`);
+                        }
+                    }
+                } else {
+                    userLeaguesListDiv.innerHTML = "<p>You are not part of any leagues yet. <a href='manage-leagues.html'>Create or Join a League</a></p>";
+                }
+            } catch (error) {
+                console.error("Error fetching user leagues:", error);
+                userLeaguesListDiv.innerHTML = "<p>Error loading leagues. Please try again.</p>";
+            }
         }
-        */
-
     </script>
-    <!-- Optional: Add FontAwesome for icons -->
-    <!-- <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script> -->
 </body>
 </html>
