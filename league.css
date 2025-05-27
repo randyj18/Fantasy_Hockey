@@ -1,0 +1,353 @@
+/* Styles specific to League Details page */
+
+/* Override common container for wider layout if needed */
+.container {
+    max-width: 1200px; 
+}
+
+/* Specific header styling for league page if different from a potential common header */
+header { 
+    /* Base header styles (bg, color, padding, shadow) could be common. */
+    /* This block can be used for overrides or if league page header is unique. */
+}
+.header-content {
+    /* Base header content styles (max-width, margin, display, align, padding) could be common. */
+}
+
+/* Page-specific layout sections */
+.standings-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+.standings-table {
+    flex: 1;
+    min-width: 300px;
+}
+.standings-chart {
+    flex: 2;
+    min-width: 500px; 
+    height: 400px;
+}
+
+/* Page-specific table cell padding and font-size (overrides common table styles if any) */
+th, td {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
+}
+/* th:hover is common */
+/* tbody tr:last-child td and tbody tr:hover are common */
+
+
+/* Tab styling - Assuming a common base for .tabs, .tab, .tab-content exists. */
+/* These would be overrides or specific looks for this page's tabs. */
+.tabs { /* If common, this might just be margin/border overrides */
+    border-bottom: 1px solid var(--border-color); 
+}
+.tab { /* If common, this might just be padding/font-size overrides */
+    padding: 10px 20px;
+    font-size: 1rem; /* Example override */
+}
+.tab.active { /* Common active state styling */ }
+.tab-content.active { /* Common active state styling */ }
+
+
+.player-detail { 
+    margin-top: 30px;
+}
+
+.last-updated { /* This is a common utility style */ }
+
+.live-indicator { 
+    background-color: #ff4136; 
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    margin-left: 10px;
+    animation: pulse 2s infinite;
+    display: none; 
+}
+@keyframes pulse { 
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* .auth-container is common */
+
+.league-info { 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee; 
+}
+.league-details h2 { 
+    margin-bottom: 5px;
+}
+.league-details p {
+    color: #666;
+    margin-top: 0;
+}
+.league-actions { 
+    display: flex;
+    gap: 10px;
+}
+/* .btn and its variants are common */
+
+.members-list { 
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+.member-item { 
+    background-color: #f0f0f0; 
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+/* .notification and its animation are common */
+/* .hidden is common */
+
+/* Team Roster View specific styles */
+.team-selector {
+    margin-bottom: 20px;
+}
+.team-selector select { /* Extends common select */
+    padding: 8px;
+    font-size: 16px;
+    min-width: 200px;
+}
+.roster-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.position-group {
+    flex: 1;
+    min-width: 300px; 
+    margin-bottom: 20px;
+}
+.position-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px;
+    border-radius: 4px 4px 0 0;
+}
+.position-count { 
+    font-weight: bold;
+    background-color: white;
+    color: var(--primary-color);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+.position-players {
+    border: 1px solid var(--border-color); 
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    overflow: hidden;
+}
+.player-card {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    border-bottom: 1px solid #eee; 
+    align-items: center;
+}
+.player-card:last-child {
+    border-bottom: none;
+}
+.player-card:hover {
+    background-color: var(--hover-bg); 
+}
+.player-info {
+    flex: 1;
+}
+.player-name {
+    font-weight: bold;
+}
+.player-team { 
+    color: #666;
+    font-size: 0.9em;
+}
+.player-stats {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.player-points {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.1em;
+}
+/* .eliminated-player is common (text-decoration, color) */
+.player-actions {
+    margin-left: 10px;
+}
+.elimination-btn { /* Corrected typo */
+    font-size: 12px;
+    padding: 3px 8px;
+}
+
+/* Summary Stats Section */
+.summary-stats {
+    background-color: #f9f9f9; 
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    border: 1px solid var(--border-color); 
+}
+.summary-stat {
+    flex: 1;
+    min-width: 150px;
+    text-align: center;
+}
+.stat-value {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+/* .stat-label is common */
+
+/* Player Breakdown Section */
+.player-breakdown {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+}
+.breakdown-chart { 
+    flex: 2;
+    min-width: 500px;
+    height: 400px;
+}
+.breakdown-table { 
+    flex: 1;
+    min-width: 300px;
+}
+
+/* Team Breakdown Section */
+.team-breakdown {
+    margin-top: 20px;
+}
+.position-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+.position-summary-card { 
+    flex: 1;
+    min-width: 100px;
+    background-color: #f8f8f8; 
+    border-radius: 4px;
+    padding: 15px;
+    text-align: center;
+    border: 1px solid #eee; 
+}
+.position-summary-value {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* Commissioner Controls on League Page */
+.commissioner-controls { 
+    background-color: #fff3cd; 
+    border: 1px solid #ffeeba; 
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+.commissioner-title {
+    color: #856404; 
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.multi-select-container {
+    margin-top: 10px;
+}
+.multi-select-container select { /* Extends common select */
+    width: 100%;
+    padding: 8px;
+    height: 120px; 
+}
+.control-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+/* .loader and its animation are common */
+
+/* Responsive adjustments for league page specifics */
+@media (max-width: 768px) {
+    .standings-container,
+    .player-breakdown { 
+        flex-direction: column;
+    }
+    .standings-chart,
+    .breakdown-chart,
+    .breakdown-table,
+    .standings-table {
+        min-width: 100%; 
+    }
+    .header-content { 
+        flex-direction: column;
+        text-align: center;
+    }
+    .league-info { 
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .league-actions { 
+        margin-top: 1rem;
+        width: 100%;
+        justify-content: center;
+    }
+    .tabs { 
+        flex-wrap: wrap;
+    }
+    .tab { 
+        flex-grow: 1;
+        text-align: center;
+        margin-bottom: 5px; /* Added to prevent overlap when wrapped */
+    }
+    .position-group { 
+        min-width: 100%;
+    }
+}
+/* Footer styles are common */
+/* .hide-mobile is common */
+/* Other base elements (h1, h2, h3, p, a) are common */
+/* .btn and its variants are common */
+/* .notification and its animation are common */
+/* .badge and .commissioner-badge are common */
+/* .auth-container and #auth-status are common */
+/* .container is common (base styles) */
+/* Eliminated player style is common */
+/* .error-message is common */
+/* .empty-message is common */
+/* Responsive adjustments for common elements (like .container padding or th,td padding) are in common-styles.css */
+/* Specific responsive adjustments for this page's components (like .tabs, .standings-container) remain here. */
+
+/* Ensure that the .elimyination-btn typo correction is applied if it was specific to this file before, 
+   or ensure the common .btn.danger or a new variant is used appropriately in the JS that generates this button.
+   Assuming it's a variant of .btn.danger or .btn.secondary if it's for 'restore'.
+   If it needs unique styling beyond color/bg, it remains here.
+*/
+.elimination-btn { /* Corrected typo */
+    font-size: 12px; /* Specific font size */
+    padding: 3px 8px; /* Specific padding */
+    /* Color and background would come from .btn.danger or .btn.secondary */
+}

@@ -58,7 +58,7 @@ def initialize_firebase():
         exit(1)
 
 def fetch_nhl_player_stats(player_id):
-    """Fetch player stats from NHL API"""
+    """Fetch player stats from NHL API. This is used to get CURRENT playoff points."""
     try:
         # Updated NHL API URL
         stats_url = f"https://api-web.nhle.com/v1/player/{player_id}/landing"
@@ -99,17 +99,26 @@ def fetch_nhl_player_stats(player_id):
         return 0  # Return 0 as default
 
 def process_drafted_players(database):
-    """Process all drafted players and update points before acquiring"""
+    """
+    Processes all drafted players from Firebase.
+    If a player was drafted in an NHL playoff round > 1, and their stats prior to that round
+    haven't been recorded yet, it fetches their current playoff stats and updates
+    `pointsBeforeAcquiring` and `preAcqRound` in Firebase.
+    It then writes a JSON file (`data/playerlist_drafted_with_pre_acq_stats.json`) 
+    containing all drafted players with these potentially updated stats.
+    """
     try:
         # Get all leagues
-        leagues_snapshot = database.child('leagues').get()  # Changed from database.get()
+        leagues_snapshot = database.child('leagues').get()
         if not leagues_snapshot:
             logger.warning("No leagues found in database")
             return 0, 0
         
         logger.info(f"Found leagues: {list(leagues_snapshot.keys() if isinstance(leagues_snapshot, dict) else [])[:5]}")
         
-        # Prepare output data
+        # Prepare output data - this will be a dictionary of players, keyed by NHL player ID.
+        # It will contain all drafted players from all leagues, ensuring each player appears once
+        # with their latest pre-acquisition stats if applicable.
         output_data = {}
         updated_count = 0
         skipped_count = 0
@@ -123,86 +132,96 @@ def process_drafted_players(database):
             league_count += 1
             logger.info(f"Processing league: {league_id}")
             
-            # Check if league_data is a dict
             if not isinstance(league_data, dict):
                 logger.info(f"League data for {league_id} is not a dictionary: {type(league_data)}")
                 continue
             
-            # Check if draftedPlayers exists in this league
             if 'draftedPlayers' not in league_data:
                 logger.info(f"No draftedPlayers found in league {league_id}")
                 continue
                 
-            drafted_players = league_data['draftedPlayers']
-            if not isinstance(drafted_players, dict):
-                logger.info(f"draftedPlayers in league {league_id} is not a dictionary: {type(drafted_players)}")
+            drafted_players_in_league = league_data['draftedPlayers']
+            if not isinstance(drafted_players_in_league, dict):
+                logger.info(f"draftedPlayers in league {league_id} is not a dictionary: {type(drafted_players_in_league)}")
                 continue
             
             # Process all players in this league
-            for player_id, player_data in drafted_players.items():
+            for firebase_player_key, player_data in drafted_players_in_league.items():
                 player_entries_count += 1
                 
                 if not isinstance(player_data, dict):
-                    logger.info(f"Player data for {player_id} is not a dictionary: {type(player_data)}")
+                    logger.info(f"Player data for {firebase_player_key} is not a dictionary: {type(player_data)}")
                     continue
                 
                 nhl_player_id = player_data.get("playerId")
                 if not nhl_player_id:
-                    logger.info(f"No playerId found in player {player_id}")
+                    logger.info(f"No playerId found in player {firebase_player_key}")
                     continue
                     
                 player_with_id_count += 1
                 
                 # Get playoff round drafted (default to 0 if not set)
+                # playoffRoundDrafted is the NHL playoff round (1-4) in which the player was acquired by this team.
                 playoff_round_drafted = player_data.get('playoffRoundDrafted', 0)
+                # preAcqRound stores the NHL playoff round *for which* the pointsBeforeAcquiring were last calculated.
+                # This helps avoid re-calculating if the script runs multiple times for the same round.
                 pre_acq_round = player_data.get('preAcqRound', 0)
                 
-                logger.info(f"Found player {nhl_player_id}: Round drafted: {playoff_round_drafted}, PreAcqRound: {pre_acq_round}")
+                logger.info(f"Found player {nhl_player_id} (Firebase key: {firebase_player_key}): Round drafted: {playoff_round_drafted}, PreAcqRound: {pre_acq_round}")
                 
-                # Store in output data using NHL player ID as key
+                # Update the master output_data. If a player is in multiple leagues,
+                # this ensures we have their latest pre-acquisition stats if they were updated.
                 if nhl_player_id not in output_data:
-                    output_data[nhl_player_id] = player_data
-                
-                # Only process players drafted in playoff rounds where preAcqRound needs updating
+                    output_data[nhl_player_id] = player_data.copy() # Use a copy
+                else: # Player might be in multiple leagues; ensure we have the most up-to-date preAcq info
+                    if player_data.get('preAcqRound', 0) > output_data[nhl_player_id].get('preAcqRound', 0):
+                        output_data[nhl_player_id]['pointsBeforeAcquiring'] = player_data.get('pointsBeforeAcquiring')
+                        output_data[nhl_player_id]['preAcqRound'] = player_data.get('preAcqRound')
+
+                # Logic to determine if pre-acquisition stats need to be fetched and updated:
+                # - Player must have been drafted in an NHL playoff round greater than 1.
+                # - The preAcqRound recorded for the player must be less than the round they were drafted in.
+                #   This means their pre-acquisition stats for *this specific* playoffRoundDrafted haven't been captured yet.
                 if playoff_round_drafted > 1 and pre_acq_round < playoff_round_drafted:
-                    logger.info(f"Processing player {nhl_player_id}: drafted in round {playoff_round_drafted}, preAcqRound {pre_acq_round}")
+                    logger.info(f"Processing player {nhl_player_id}: drafted in NHL round {playoff_round_drafted}, preAcqRound currently {pre_acq_round}. Needs update.")
                     
-                    # Fetch points from NHL API
+                    # Fetch current playoff stats from NHL API. These become the "points before acquiring" for this round.
                     points_before_acquiring = fetch_nhl_player_stats(nhl_player_id)
                     
-                    if points_before_acquiring is not None:
-                        # Update player data in Realtime Database
-                        player_ref = database.child(f"leagues/{league_id}/draftedPlayers/{player_id}")
+                    if points_before_acquiring is not None: # fetch_nhl_player_stats returns 0 on error or no stats, not None unless truly exceptional.
+                        # Update player data in Realtime Database for this specific drafted player entry
+                        player_ref = database.child(f"leagues/{league_id}/draftedPlayers/{firebase_player_key}")
                         
                         update_data = {
                             'pointsBeforeAcquiring': points_before_acquiring,
-                            'preAcqRound': playoff_round_drafted
+                            'preAcqRound': playoff_round_drafted # Mark that pre-acq stats for this round are now set
                         }
                         
                         player_ref.update(update_data)
-                        logger.info(f"Updated database at leagues/{league_id}/draftedPlayers/{player_id} with {update_data}")
+                        logger.info(f"Updated Firebase at leagues/{league_id}/draftedPlayers/{firebase_player_key} with {update_data}")
                         
-                        # Update output data
+                        # Update the master output_data for this NHL player ID
                         output_data[nhl_player_id]['pointsBeforeAcquiring'] = points_before_acquiring
                         output_data[nhl_player_id]['preAcqRound'] = playoff_round_drafted
                         
                         updated_count += 1
-                        logger.info(f"Updated player {nhl_player_id} with {points_before_acquiring} points before acquiring")
+                        logger.info(f"Updated player {nhl_player_id} with {points_before_acquiring} points before acquiring for NHL round {playoff_round_drafted}")
                 else:
-                    logger.info(f"Skipping player {nhl_player_id}: playoffRoundDrafted={playoff_round_drafted}, preAcqRound={pre_acq_round}")
+                    logger.info(f"Skipping update for player {nhl_player_id}: playoffRoundDrafted={playoff_round_drafted}, preAcqRound={pre_acq_round}")
                     skipped_count += 1
         
-        logger.info(f"Found {league_count} leagues, {player_entries_count} player entries, {player_with_id_count} players with IDs")
+        logger.info(f"Found {league_count} leagues, {player_entries_count} player entries, {player_with_id_count} players with NHL IDs")
         
         # Ensure data directory exists
         os.makedirs('data', exist_ok=True)
         
-        # Write output to playerlist.json
-        with open('data/playerlist.json', 'w') as f:
+        # Write output_data (all unique drafted players with updated pre-acq stats) to the new JSON file
+        output_filename = 'data/playerlist_drafted_with_pre_acq_stats.json'
+        with open(output_filename, 'w') as f:
             json.dump(output_data, f, indent=2)
         
-        logger.info(f"Process complete: Updated {updated_count} players, skipped {skipped_count} players")
-        logger.info(f"Saved player data to playerlist.json")
+        logger.info(f"Process complete: Updated {updated_count} players in Firebase, skipped {skipped_count} players (already up-to-date or R1 draft).")
+        logger.info(f"Saved consolidated drafted player data to {output_filename}")
         
         return updated_count, skipped_count
     
@@ -216,9 +235,9 @@ if __name__ == "__main__":
     logger.info("Starting update_playerlist.py script")
     
     # Initialize Firebase
-    db = initialize_firebase()
+    db_connection = initialize_firebase() # Renamed variable to avoid conflict with 'db' module
     
     # Process players
-    updated, skipped = process_drafted_players(db)
+    updated_players, skipped_players = process_drafted_players(db_connection) # Pass the connection
     
-    logger.info(f"Script completed: {updated} players updated, {skipped} players skipped")
+    logger.info(f"Script completed: {updated_players} players updated, {skipped_players} players skipped")

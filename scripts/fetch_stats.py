@@ -46,97 +46,69 @@ def main():
     # Create data directory if it doesn't exist
     os.makedirs('data', exist_ok=True)
     
-    # Load player list from JSON file
+    # Load player list from the specified JSON file
+    input_filename = "data/playerlist_drafted_with_pre_acq_stats.json"
     try:
-        with open("data/playerlist.json", "r") as file:
+        with open(input_filename, "r") as file:
             player_list_data = json.load(file)
+        logger.info(f"Successfully loaded player data from {input_filename}")
     except FileNotFoundError:
-        print("Error: playerlist.json file not found.")
+        logger.error(f"Error: The required input file '{input_filename}' was not found. Please run the update_playerlist.py script first.")
+        exit(1)
+    except json.JSONDecodeError:
+        logger.error(f"Error: Could not decode JSON from '{input_filename}'. File might be corrupted or not valid JSON.")
         exit(1)
     
-    # Lists to collect player data by category
-    players_data = []
+    # List to collect player data
+    updated_players_data = []
     
-    # Handle different formats of playerlist.json
-    # If it's an object with keys (not an array), convert to array format for processing
-    if isinstance(player_list_data, dict):
-        print("Processing playerlist.json in object format")
-        player_entries = []
+    # The input is expected to be an object where keys are NHL player IDs
+    if not isinstance(player_list_data, dict):
+        logger.error(f"Error: Expected '{input_filename}' to contain a JSON object (dictionary), but found {type(player_list_data)}.")
+        exit(1)
         
-        # Convert object to array of player objects with ID included
-        for player_id, player_info in player_list_data.items():
-            player_entry = player_info.copy()  # Create a copy to avoid modifying the original
-            
-            # Ensure player_id is included (could be in playerId field or we use the key)
-            if 'playerId' not in player_entry:
-                player_entry['playerId'] = player_id
-                
-            player_entries.append(player_entry)
-            
-        player_list = player_entries
-    else:
-        print("Processing playerlist.json in array format")
-        player_list = player_list_data
+    logger.info(f"Processing {len(player_list_data)} player entries from {input_filename}.")
     
     # Loop through each player and fetch player data
-    for player_entry in player_list:
-        # Try different field names for player ID since formats may vary
-        player_id = (
-            player_entry.get('playerId') or 
-            player_entry.get('Player ID') or
-            player_entry.get('player_id')
-        )
-        
-        # If no player ID found, skip this player
-        if not player_id:
-            player_name = (
-                player_entry.get('Player') or 
-                player_entry.get('playerName') or
-                player_entry.get('name') or
-                'Unknown'
-            )
-            print(f"Skipping player {player_name} due to missing player ID.")
+    # player_list_data is a dictionary where keys are NHL player IDs
+    for nhl_player_id_str, player_entry in player_list_data.items():
+        if not isinstance(player_entry, dict):
+            logger.warning(f"Skipping entry for key '{nhl_player_id_str}' as it's not a valid player object.")
             continue
+
+        # The key in player_list_data is the NHL Player ID (as a string from JSON key)
+        player_id_for_api = nhl_player_id_str 
         
-        # Get player name
-        player_name = (
-            player_entry.get('Player') or 
-            player_entry.get('playerName') or 
-            player_entry.get('name') or
-            f"Player {player_id}"
-        )
+        player_name = player_entry.get('Player', f"Player {player_id_for_api}")
+        # 'Team' in playerlist_drafted_with_pre_acq_stats.json refers to the fantasy team.
+        fantasy_team_name = player_entry.get('Team', 'Unknown Fantasy Team') 
+        nhl_team_abbr = player_entry.get('NHL Team', 'N/A') 
+        position = player_entry.get('Position', 'N/A')
+
+        logger.info(f"Fetching current playoff stats for {player_name} (ID: {player_id_for_api})")
+        current_playoff_stats = fetch_player_stats(player_id_for_api)
         
-        # Get team name
-        team_name = (
-            player_entry.get('Team') or
-            player_entry.get('teamName') or
-            player_entry.get('NHL Team') or
-            'Unknown Team'
-        )
-        
-        print(f"Fetching playoff stats for {player_name} (ID: {player_id})")
-        stats = fetch_player_stats(player_id)
-        
-        # Points before acquiring (if available)
-        points_before_acquiring = 0
-        if 'pointsBeforeAcquiring' in player_entry:
-            points_before_acquiring = player_entry['pointsBeforeAcquiring']
-        
-        # Create player data record
-        player_data = {
+        # Preserve existing fields and add/update new stats
+        # Crucially, 'pointsBeforeAcquiring' and 'preAcqRound' are preserved from the input.
+        # 'playoffRoundDrafted' is also preserved as it indicates when the player was acquired.
+        updated_player_data_entry = {
             "Player": player_name,
-            "Player ID": player_id,
-            "Team": team_name,
-            "Points Before Acquiring": points_before_acquiring,
-            **stats
+            "playerId": player_id_for_api, # Standardized field name for player's NHL ID
+            "NHL Team": nhl_team_abbr,
+            "Position": position,
+            "FantasyTeam": fantasy_team_name, # Clarified field name
+            "playoffRoundDrafted": player_entry.get('playoffRoundDrafted', 0),
+            "pointsBeforeAcquiring": player_entry.get('pointsBeforeAcquiring', 0),
+            "preAcqRound": player_entry.get('preAcqRound', 0),
+            "currentPlayoffStats": current_playoff_stats # Fetched current playoff stats for the ongoing NHL playoff round
         }
         
-        players_data.append(player_data)
-        print(f"Processed player: {player_name}")
+        updated_players_data.append(updated_player_data_entry)
+        logger.info(f"Processed player: {player_name}, Current Playoff Stats: {current_playoff_stats}")
     
     # Generate the filename with the current date
-    current_date = datetime.now().strftime("%b%d")
-    filename = f"updatedstats-{current_date}.json"
+    current_date_str = datetime.now().strftime("%Y%m%d") # Using YYYYMMDD for better sorting
+    filename = f"updatedstats-{current_date_str}.json"
     
     # Path to save the file
     save_path = "data"

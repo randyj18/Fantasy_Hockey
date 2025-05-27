@@ -1,0 +1,240 @@
+/* Styles specific to Manage Leagues page */
+
+/* Override common main for specific max-width if needed */
+main {
+    max-width: 800px;
+}
+
+/* Responsive adjustments for manage-leagues page */
+@media (max-width: 768px) {
+    main { /* Already common: padding: 15px; */ }
+    /* .container padding is common */
+    .tab button { /* Specific to tab component on this page */
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    .league-action {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .league-action button { /* Extends common button */
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .tab { /* Specific responsive behavior for tabs */
+        display: flex;
+        flex-direction: column;
+    }
+    .tab button {
+        width: 100%;
+        border-radius: 0;
+        border-bottom: 1px solid #ccc; /* Consider var(--border-color) */
+    }
+    .tab button:last-child {
+        border-bottom: none;
+    }
+}
+
+/* Form elements are common, form-group is common */
+/* Labels are common */
+/* Inputs, selects, textareas are common */
+/* Focus styles for inputs are common */
+/* Base button styles are common */
+
+.managers-list {
+    margin-top: 15px;
+}
+.manager-item {
+    background-color: #f0f0f0; /* Consider var(--light-bg) or var(--hover-bg) */
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.remove-btn { /* This could be a common utility if used elsewhere, e.g., .btn-danger-text */
+    background-color: #ff4444; /* Consider var(--danger-color) if defined */
+    color: white; /* Use var(--light-text) */
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.remove-btn:hover {
+    background-color: #cc0000; /* Darker shade of red */
+}
+
+/* Auth container and status are common */
+/* .hidden, .error, .success, .loading, @keyframes dots are common */
+/* .notification, @keyframes slideInOut are common */
+
+/* League listing styles (could be common if league lists appear on multiple pages with same style) */
+.leagues-list {
+    margin-top: 30px;
+}
+.league-item {
+    background-color: #f0f0f0; /* Consider var(--light-bg) or var(--hover-bg) */
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    /* cursor: pointer; - only if the whole item is clickable */
+    border: 1px solid var(--border-color); /* Added border for consistency with .card */
+}
+.league-item:hover {
+    background-color: #e0e0e0; /* Consider var(--hover-bg) */
+}
+.league-name { /* Common styling for league names, could be in common */
+    font-weight: bold;
+    font-size: 1.1rem; /* Slightly smaller than h3 */
+    color: var(--primary-color);
+}
+.league-details { /* Common styling for details text */
+    color: #666;
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+
+/* Tab component specific to manage-leagues.html */
+.tab {
+    overflow: hidden;
+    border: 1px solid var(--border-color); /* Use CSS variable */
+    background-color: #f1f1f1; /* Consider var(--light-bg) or var(--hover-bg) */
+    margin-bottom: 20px;
+}
+.tab button { /* Extends common button */
+    background-color: #f1f1f1;
+    float: left; /* Consider flexbox for alignment instead of float */
+    border: none;
+    outline: none;
+    padding: 10px 16px;
+    transition: 0.3s;
+    font-size: 1rem; /* Slightly larger for tab buttons */
+    color: var(--primary-color);
+    font-weight: 500;
+    border-radius: 0; /* Tabs typically aren't rounded like general buttons */
+}
+.tab button:hover {
+    background-color: #ddd; /* Consider var(--hover-bg) */
+}
+.tab button.active {
+    background-color: var(--primary-color);
+    color: white; /* Use var(--light-text) */
+    font-weight: 600;
+}
+.tabcontent {
+    display: none;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    animation: fadeEffect 1s; /* fadeEffect can be common if used elsewhere */
+}
+@keyframes fadeEffect { /* This animation could be common */
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+.league-section { /* Specific layout division for this page */
+    margin-bottom: 30px;
+}
+.league-status { /* Badge-like element, could be common with variants */
+    display: inline-block;
+    padding: 0.2em 0.6em; /* Adjusted padding */
+    border-radius: 0.25rem; /* Consistent with buttons */
+    font-size: 0.75em; /* Smaller text */
+    margin-left: 10px;
+    font-weight: 600;
+}
+.status-active {
+    background-color: #4CAF50; /* Consider var(--success-bg) */
+    color: white; /* Use var(--light-text) */
+}
+.status-pending {
+    background-color: #FFC107; /* Consider var(--warning-bg) if defined */
+    color: black; /* Ensure contrast */
+}
+.status-invitation {
+    background-color: #2196F3; /* Consider var(--info-bg) or a specific invite color */
+    color: white; /* Use var(--light-text) */
+}
+
+.league-action { /* Container for action buttons in a league item */
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.league-action button { /* Specific sizing for buttons within these actions */
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.share-box { /* Specific component for sharing league info */
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #e9f7fe; /* Light blue, consider a variable if used elsewhere */
+    border: 1px solid #b3e5fc;
+    border-radius: 4px;
+}
+.share-link { /* Specific styling for the share link input */
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.copy-btn { /* Extends .btn */
+    background-color: #4CAF50; /* Consider var(--success-bg) or a specific copy color */
+    /* margin-right: 10px; -- Handled by gap in .league-action or parent flex */
+}
+#password-confirm-group { /* Specific ID, layout spacing */
+    margin-top: 10px;
+}
+/* .password-toggle and .toggle-password are common */
+/* .badge and .commissioner-badge are common */
+
+.join-password-group { /* Specific layout for password input when joining */
+    margin-top: 15px;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: #f9f9f9; /* Consider var(--light-bg) */
+}
+
+/* .nav-links and its 'a' styling are common and defined in common-styles.css */
+
+/* Specific responsive adjustments for manage-leagues */
+@media (max-width: 768px) {
+    .league-action {
+        flex-direction: column; /* Stack buttons vertically */
+        align-items: stretch; /* Make buttons full width of their container */
+    }
+    .league-action button,
+    .league-action a.btn { /* Ensure 'a' styled as buttons are also full width */
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    .league-action button:last-child,
+    .league-action a.btn:last-child {
+        margin-bottom: 0; /* Remove bottom margin from last button in stacked layout */
+    }
+}
+
+@media (max-width: 576px) {
+    .tab { /* Stack tabs vertically */
+        flex-direction: column;
+    }
+    .tab button {
+        width: 100%; /* Make tab buttons full width */
+        border-radius: 0;
+        border-bottom: 1px solid var(--border-color); /* Use CSS variable */
+    }
+    .tab button:last-child {
+        border-bottom: none; /* Remove border from last tab button */
+    }
+}

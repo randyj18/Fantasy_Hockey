@@ -1,0 +1,423 @@
+/* --- Root Variables --- */
+:root {
+    --primary-color: #003366;
+    --secondary-color: #0055a4;
+    --accent-color: #ffd700;
+    --light-bg: #f8f9fa;
+    --dark-text: #212529;
+    --light-text: #f8f9fa;
+    --border-color: #dee2e6;
+    --hover-bg: #e9ecef;
+    --success-bg: #d1e7dd;
+    --success-border: #a3cfbb;
+    --info-bg: #cff4fc;
+    --info-border: #9eeaf9;
+    --drafted-bg: #e9ecef; /* Used in draftcentre, but potentially common if other pages show drafted status */
+    --drafted-text: #6c757d; /* Used in draftcentre */
+}
+
+/* --- General Body Styles --- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    color: var(--dark-text);
+    background-color: var(--light-bg);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- Container --- */
+.container {
+    width: 100%;
+    max-width: 1100px; /* A common default, can be overridden by page-specific CSS */
+    margin: 20px auto;
+    padding: 20px;
+    box-sizing: border-box;
+    flex-grow: 1;
+}
+
+/* --- Headings --- */
+h1, h2, h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    margin-top: 1rem; /* Consistent top margin */
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
+h3 {
+    font-size: 1.25rem;
+}
+
+/* --- Buttons & Inputs --- */
+button,
+input,
+select,
+textarea, /* Added textarea here */
+.btn {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    background-color: #fff;
+    transition: all 0.2s ease-in-out;
+    vertical-align: middle;
+    box-sizing: border-box; /* Ensure padding doesn't increase size */
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"], /* Added email type */
+select,
+textarea {
+    width: 100%; /* Make form elements full width by default within their container */
+    max-width: 400px; /* Max width for typical input fields */
+}
+select {
+     min-width: 150px; /* Keep for select if needed */
+     width: auto; /* Allow select to be its natural width unless overridden */
+}
+
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+}
+
+button,
+.btn {
+    cursor: pointer;
+    background-color: var(--primary-color);
+    color: var(--light-text);
+    border-color: var(--primary-color);
+    width: auto; /* Ensure buttons are not full width by default */
+}
+
+button:hover,
+.btn:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+button:disabled,
+.btn:disabled {
+    background-color: #cccccc;
+    border-color: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.btn.secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: var(--light-text);
+}
+
+.btn.secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+.btn.danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: var(--light-text);
+}
+
+.btn.danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.btn-outline { /* For buttons that are outlined */
+    background-color: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+}
+.btn-outline:hover {
+    background-color: var(--hover-bg);
+}
+
+a.btn {
+    text-decoration: none;
+    display: inline-block; /* Ensure it behaves like a button */
+}
+
+/* --- Form Group & Labels --- */
+.form-group {
+    margin-bottom: 1rem; /* Consistent spacing */
+}
+label {
+    display: block;
+    margin-bottom: 0.5rem; /* Consistent spacing */
+    font-weight: bold;
+}
+
+/* --- Cards --- */
+.card {
+    background-color: #fff;
+    padding: 1.5rem; /* Standardized padding */
+    border-radius: 0.25rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08); /* Subtle shadow */
+    margin-bottom: 1.5rem; 
+}
+
+/* --- Auth Container --- */
+.auth-container {
+    background-color: #fff;
+    padding: 1rem 15px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 1.5rem; /* Consistent margin */
+}
+
+#auth-status { /* ID specific, but common usage */
+    margin: 0.5rem 0 0 0;
+    font-style: italic;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* --- Utility Classes --- */
+.hidden {
+    display: none !important;
+}
+
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    width: 100%;
+}
+
+.loader::after {
+    content: " ";
+    display: block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 4px solid var(--primary-color);
+    border-color: var(--primary-color) transparent var(--primary-color) transparent;
+    animation: loader-spin 1.2s linear infinite; /* Renamed animation */
+}
+
+@keyframes loader-spin { /* Renamed animation */
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 2000; /* High z-index */
+    animation: notification-fade-in-out 5s forwards; /* Renamed animation */
+}
+
+@keyframes notification-fade-in-out { /* Renamed animation */
+    0%,
+    100% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    10%,
+    90% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.error-message {
+    color: #dc3545; /* Bootstrap danger color */
+    font-size: 0.875em;
+    margin-top: 0.25rem;
+}
+
+.success-message { /* Standardized from .success */
+    color: #198754; /* Bootstrap success color */
+    font-size: 0.875em;
+    margin-top: 0.25rem;
+}
+
+/* --- Basic Table Styles --- */
+.table-container {
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    background-color: #fff;
+    margin-bottom: 1rem; /* Common bottom margin */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 0.75rem; /* Slightly more padding for general tables */
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+    font-size: 0.9rem; /* Standardized font size */
+    white-space: nowrap;
+}
+
+th {
+    background-color: var(--light-bg);
+    font-weight: 600; /* Bolder headers */
+    position: sticky; /* Make headers sticky if table scrolls */
+    top: 0;
+    z-index: 1;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background-color: var(--hover-bg);
+}
+
+/* --- Navigation & Footer --- */
+.nav-links { /* Common for main page navigation */
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    gap: 15px;
+}
+
+.nav-links a {
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    border: 1px solid var(--primary-color);
+    transition: all 0.3s;
+}
+
+.nav-links a:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+footer {
+    background-color: var(--light-bg);
+    padding: 20px; /* Standardized padding */
+    text-align: center;
+    font-size: 0.9rem; /* Standardized font size */
+    color: #6c757d; /* Softer text color */
+    margin-top: auto; /* Pushes footer to bottom in flex column */
+    border-top: 1px solid var(--border-color);
+}
+
+footer .footer-links { /* Specific to footer links if needed */
+    margin-top: 10px;
+}
+
+footer .footer-links a {
+    margin: 0 10px;
+    color: var(--secondary-color); /* Slightly different color for footer links */
+    text-decoration: none;
+    border: none; /* Footer links typically don't have borders */
+    padding: 5px;
+}
+
+footer .footer-links a:hover {
+    text-decoration: underline;
+    background-color: transparent; /* Ensure no background change on hover */
+    color: var(--primary-color);
+}
+
+/* Basic link styling */
+a {
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+    color: var(--primary-color);
+}
+
+/* General list styling */
+ul, ol {
+    padding-left: 20px;
+}
+li {
+    margin-bottom: 0.5rem;
+}
+
+/* Badge styling (from manage-leagues) */
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.5em; /* Adjusted padding */
+    font-size: 0.75em; /* Adjusted size */
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    margin-left: 5px;
+}
+.commissioner-badge { /* Specific type of badge */
+    background-color: var(--accent-color);
+    color: var(--dark-text); /* Better contrast with gold */
+}
+
+/* Password toggle common style */
+.password-toggle {
+    position: relative;
+}
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%; /* Vertically center */
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+    font-size: 14px;
+    padding: 5px; /* Easier to click */
+}
+
+/* Visually hidden class for accessibility */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* Common empty message style */
+.empty-message {
+    color: #999;
+    font-style: italic;
+    text-align: center;
+    padding: 15px;
+}
