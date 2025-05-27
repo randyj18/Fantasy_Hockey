@@ -89,7 +89,7 @@ def main():
     standings = calculate_standings(stats_file_path)
     
     # Generate the standings file with current date
-    current_date = datetime.now().strftime("%b%d")
+    current_date = datetime.now().strftime("%Y%m%d")
     standings_file = f"data/standings-{current_date}.json"
     
     # Format standings for output

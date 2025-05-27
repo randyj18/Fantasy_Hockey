@@ -247,10 +247,8 @@ function loadLeagueData() {
 async function loadPlayerStats() {
     try {
         const now = new Date();
-        // Format to match 'MonthDD' e.g. 'Jul09'
-        const month = now.toLocaleString('en-us', { month: 'short' });
-        const day = now.toLocaleString('en-us', { day: '2-digit' });
-        const currentDate = `${month}${day}`; // Example: Jul09
+        // Format to match 'YYYYMMDD' e.g. '20250527'
+        const currentDate = now.toISOString().split('T')[0].replace(/-/g, ''); // Example: 20250527
         
         const rawGitHubBaseUrl = 'https://raw.githubusercontent.com/randyj18/Fantasy_Hockey/master/data/';
         const latestStatsFile = `${rawGitHubBaseUrl}updatedstats-${currentDate}.json`;
@@ -261,9 +259,7 @@ async function loadPlayerStats() {
             console.warn(`Stats file for today (${currentDate}) not found, trying yesterday's file`);
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
-            const yesterdayMonth = yesterday.toLocaleString('en-us', { month: 'short' });
-            const yesterdayDay = yesterday.toLocaleString('en-us', { day: '2-digit' });
-            const yesterdayDate = `${yesterdayMonth}${yesterdayDay}`;
+            const yesterdayDate = yesterday.toISOString().split('T')[0].replace(/-/g, ''); // Example: 20250526
             
             const yesterdayStatsFile = `${rawGitHubBaseUrl}updatedstats-${yesterdayDate}.json`;
             response = await fetch(yesterdayStatsFile);
