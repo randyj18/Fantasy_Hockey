@@ -903,9 +903,9 @@
     "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
     "pickNumber": 1,
     "playerId": "8475883",
-    "playoffRoundDrafted": 2,
-    "pointsBeforeAcquiring": 0,
-    "preAcqRound": 2,
+    "playoffRoundDrafted": 3,
+    "pointsBeforeAcquiring": 15,
+    "preAcqRound": 3,
     "round": 1,
     "teamUid": "sRtihakg3Qavwei7KcToId47LrX2"
   },
@@ -920,7 +920,7 @@
     "pickNumber": 2,
     "playerId": "8478449",
     "playoffRoundDrafted": 3,
-    "pointsBeforeAcquiring": 0,
+    "pointsBeforeAcquiring": 10,
     "preAcqRound": 3,
     "round": 1,
     "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
@@ -936,7 +936,7 @@
     "pickNumber": 3,
     "playerId": "8480185",
     "playoffRoundDrafted": 3,
-    "pointsBeforeAcquiring": 0,
+    "pointsBeforeAcquiring": 12,
     "preAcqRound": 3,
     "round": 1,
     "teamUid": "b2G10m5isKRjnNdjjymvv8dB7na2"
@@ -952,7 +952,7 @@
     "pickNumber": 4,
     "playerId": "8480830",
     "playoffRoundDrafted": 3,
-    "pointsBeforeAcquiring": 0,
+    "pointsBeforeAcquiring": 9,
     "preAcqRound": 3,
     "round": 1,
     "teamUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
@@ -968,7 +968,7 @@
     "pickNumber": 5,
     "playerId": "8482702",
     "playoffRoundDrafted": 3,
-    "pointsBeforeAcquiring": 0,
+    "pointsBeforeAcquiring": 5,
     "preAcqRound": 3,
     "round": 1,
     "teamUid": "sRtihakg3Qavwei7KcToId47LrX2"
@@ -984,7 +984,7 @@
     "pickNumber": 6,
     "playerId": "8482113",
     "playoffRoundDrafted": 3,
-    "pointsBeforeAcquiring": 0,
+    "pointsBeforeAcquiring": 10,
     "preAcqRound": 3,
     "round": 1,
     "teamUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
@@ -1000,7 +1000,7 @@
     "pickNumber": 7,
     "playerId": "8477409",
     "playoffRoundDrafted": 3,
-    "pointsBeforeAcquiring": 0,
+    "pointsBeforeAcquiring": 8,
     "preAcqRound": 3,
     "round": 1,
     "teamUid": "wgLGKONV4DZXydnhf4yzTuut55c2"
@@ -1016,7 +1016,7 @@
     "pickNumber": 8,
     "playerId": "8477220",
     "playoffRoundDrafted": 3,
-    "pointsBeforeAcquiring": 0,
+    "pointsBeforeAcquiring": 7,
     "preAcqRound": 3,
     "round": 1,
     "teamUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
@@ -1032,7 +1032,7 @@
     "pickNumber": 9,
     "playerId": "8475791",
     "playoffRoundDrafted": 3,
-    "pointsBeforeAcquiring": 0,
+    "pointsBeforeAcquiring": 6,
     "preAcqRound": 3,
     "round": 1,
     "teamUid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
@@ -1048,7 +1048,7 @@
     "pickNumber": 10,
     "playerId": "8476454",
     "playoffRoundDrafted": 3,
-    "pointsBeforeAcquiring": 0,
+    "pointsBeforeAcquiring": 9,
     "preAcqRound": 3,
     "round": 1,
     "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
