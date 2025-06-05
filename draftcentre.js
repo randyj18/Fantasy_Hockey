@@ -460,7 +460,95 @@ function setupLeagueListeners() {
         if (chatMessages) chatMessages.innerHTML = '<div class="chat-system error-message">Error loading chat messages.</div>';
     });
 
+    // Listener 4: Eliminated Players
+    const eliminatedPlayersRef = ref(database, `leagues/${leagueId}/eliminatedPlayers`);
+    eliminatedPlayersListener = onValue(eliminatedPlayersRef, (snapshot) => {
+        console.log("Eliminated players data received.");
+        eliminatedPlayers = new Set();
+        const eliminatedData = snapshot.val() || {};
+        Object.entries(eliminatedData).forEach(([playerId, isEliminated]) => {
+            if (isEliminated === true) {
+                eliminatedPlayers.add(playerId);
+            }
+        });
+        console.log(`${eliminatedPlayers.size} eliminated players loaded.`);
+        filterPlayers();
+        filterDraftedPlayers();
+        updateDraftOrderDisplay();
+    }, (error) => {
+        console.error("Error reading eliminated players:", error);
+        showNotification("Error loading eliminated players list.", 7000);
+    });
+
+    // Listener 5: Eliminated NHL Teams
+    const eliminatedTeamsRef = ref(database, `leagues/${leagueId}/eliminatedNHLTeams`);
+    eliminatedTeamsListener = onValue(eliminatedTeamsRef, (snapshot) => {
+        console.log("Eliminated NHL teams data received.");
+        eliminatedNHLTeams = new Set();
+        const eliminatedData = snapshot.val() || {};
+        Object.entries(eliminatedData).forEach(([teamCode, isEliminated]) => {
+            if (isEliminated === true) {
+                eliminatedNHLTeams.add(teamCode);
+            }
+        });
+        console.log(`${eliminatedNHLTeams.size} eliminated NHL teams loaded:`, Array.from(eliminatedNHLTeams));
+        filterPlayers();
+        filterDraftedPlayers();
+    }, (error) => {
+        console.error("Error reading eliminated NHL teams:", error);
+        showNotification("Error loading eliminated NHL teams list.", 7000);
+    });
+
+    // Listener 6: Playoff Round Data
+    const playoffRoundRef = ref(database, `leagues/${leagueId}/playoffRound`);
+    playerListeners.playoffRound = onValue(playoffRoundRef, (snapshot) => {
+        console.log("🔥 Playoff round data received.");
+        const playoffData = snapshot.val() || {};
+        console.log("🔥 Raw playoff data from Firebase:", playoffData);
+        
+        const previousRound = currentRound;
+        currentRound = playoffData.currentRound || 1;
+        bankedPicks = playoffData.bankedPicks || {};
+        nextRoundDraftOrder = playoffData.nextRoundDraftOrder || [];
+
+        console.log(`🔥 Current playoff round: ${currentRound} (was ${previousRound})`);
+        console.log(`🔥 Banked picks:`, bankedPicks);
+        console.log(`🔥 Next round draft order:`, nextRoundDraftOrder);
+
+        // Update UI to reflect current round
+        if (roundDisplay) {
+            roundDisplay.textContent = `Round ${currentRound}`;
+        }
+        if (currentRoundNumber) {
+            currentRoundNumber.textContent = currentRound.toString();
+        }
+
+        // If the round has changed, reload player data for everyone
+        if (previousRound !== currentRound) {
+            console.log(`🔥 Round changed from ${previousRound} to ${currentRound}, reloading player data...`);
+            allPlayers = [];
+            loadPlayerData();
+            showNotification(`Round ${currentRound} has started! Player stats updated.`, 5000);
+        }
+
+        updateBankedPicksDisplay();
+    }, (error) => {
+        console.error("Error reading playoff round data:", error);
+    });
+
+    // Listener 7: Online Presence
+    const presenceRef = ref(database, `leagues/${leagueId}/presence/${currentUser.uid}`);
+    const connectedRef = ref(database, '.info/connected');
+    playerListeners.presence = onValue(connectedRef, (snap) => {
+        if (snap.val() === true) {
+            set(presenceRef, { online: true, lastSeen: serverTimestamp() });
+            onDisconnect(presenceRef).set({ online: false, lastSeen: serverTimestamp() });
+            console.log("User presence set to online.");
+        }
+    });
+
     console.log("League listeners set up.");
+    updateDraftOrderDisplay();
 }
 
 function cleanupListeners() {
@@ -1493,28 +1581,45 @@ function handleBankPick() {
 
 // --- Playoff Round Management Functions ---
 function handleConcludeRound() {
+    console.log("🔥 CONCLUDE ROUND CLICKED - Debug Info:");
+    console.log("- isCommissioner:", isCommissioner);
+    console.log("- currentRound:", currentRound);
+    console.log("- leagueData:", leagueData);
+    console.log("- draftStatus:", leagueData?.draftStatus);
+    
     if (!isCommissioner) {
+        console.log("❌ Not commissioner");
         showNotification("Only the commissioner can conclude rounds.");
         return;
     }
 
     if (!leagueData?.draftStatus?.active) {
+        console.log("❌ Draft not active, draftStatus:", leagueData?.draftStatus);
         showNotification("Cannot conclude round: Draft is not active.");
         return;
     }
 
     const draftOrder = leagueData?.draftStatus?.draftOrder || [];
     const currentPickIndex = (leagueData?.draftStatus?.pickNumber || 1) - 1;
+    
+    console.log("- draftOrder length:", draftOrder.length);
+    console.log("- currentPickIndex:", currentPickIndex);
+    console.log("- pickNumber:", leagueData?.draftStatus?.pickNumber);
 
     if (currentPickIndex < draftOrder.length) {
         const remainingPicks = draftOrder.length - currentPickIndex;
+        console.log("❌ Picks remaining:", remainingPicks);
         showNotification(`Cannot conclude round: There are still ${remainingPicks} picks remaining.`, 7000);
         return;
     }
 
+    console.log("✅ Validation passed, asking for confirmation");
     if (!confirm(`Are you sure you want to conclude Round ${currentRound}? This will pause the draft and allow you to set up the next round.`)) {
+        console.log("❌ User cancelled");
         return;
     }
+    
+    console.log("✅ User confirmed, proceeding with conclude round");
 
     const draftStatusRef = ref(database, `leagues/${leagueId}/draftStatus`);
     update(draftStatusRef, { active: false })
@@ -1675,6 +1780,100 @@ function handleSaveDraftOrder() {
 function handleCancelDraftOrder() {
     if (draftOrderManager) {
         draftOrderManager.classList.add('hidden');
+    }
+}
+
+// --- Helper Functions ---
+function updateBankedPicksDisplay() {
+    if (!bankedPicks || !currentUser) return;
+
+    const myBankedPicks = bankedPicks[currentUser.uid] || 0;
+    const currentDrafterUid = leagueData?.draftStatus?.currentDrafter;
+
+    if (currentDrafterUid === currentUser.uid) {
+        if (myBankedPicks > 0) {
+            bankedPicksInfo.classList.remove('hidden');
+            currentTeamBankedPicks.textContent = myBankedPicks;
+        } else {
+            bankedPicksInfo.classList.add('hidden');
+        }
+        bankPickBtn.classList.remove('hidden');
+    } else {
+        bankedPicksInfo.classList.add('hidden');
+        bankPickBtn.classList.add('hidden');
+    }
+}
+
+function updateDraftOrderDisplay() {
+    const draftOrderDisplay = document.getElementById('draft-order-display');
+    if (!draftOrderDisplay) return;
+    
+    draftOrderDisplay.innerHTML = '';
+    
+    if (!leagueData || !leagueData.draftStatus || !leagueData.draftStatus.draftOrder) {
+        draftOrderDisplay.innerHTML = '<div class="empty-message">Draft order not set yet</div>';
+        return;
+    }
+    
+    const draftOrder = leagueData.draftStatus.draftOrder || [];
+    const currentRoundDraft = leagueData.draftStatus.round || 1;
+    const currentDrafterUid = leagueData.draftStatus.currentDrafter;
+    const isEvenRound = currentRoundDraft % 2 === 0;
+    
+    const directionLabel = document.createElement('div');
+    directionLabel.className = 'draft-direction-label';
+    directionLabel.innerHTML = `Round ${currentRound}: ${isEvenRound ? '← Reverse Order' : '→ Normal Order'}`;
+    draftOrderDisplay.appendChild(directionLabel);
+    
+    const orderContainer = document.createElement('div');
+    orderContainer.className = 'draft-order-items';
+    draftOrderDisplay.appendChild(orderContainer);
+    
+    draftOrder.forEach((teamUid, index) => {
+        const team = currentTeams[teamUid];
+        if (!team) return;
+        
+        const orderItem = document.createElement('div');
+        orderItem.className = 'draft-order-item';
+        
+        const currentIndex = draftOrder.indexOf(currentDrafterUid);
+        if (index === currentIndex) {
+            orderItem.classList.add('current');
+        }
+        
+        if (teamUid === currentUser?.uid) {
+            orderItem.style.borderColor = '#4caf50';
+            orderItem.style.borderWidth = '2px';
+        }
+        
+        const teamBankedPicks = bankedPicks[teamUid] || 0;
+        const bankedPicksIndicator = teamBankedPicks > 0 
+            ? `<span class="banked-pick-indicator">${teamBankedPicks} Banked</span>` 
+            : '';
+        
+        let roundPositions = '';
+        for (let r = 1; r <= 4; r++) {
+            let positionInRound = r % 2 === 0 
+                ? draftOrder.length - index  
+                : index + 1;                 
+            
+            roundPositions += `<span class="round-position ${r === currentRound ? 'current-round' : ''}">R${r}: #${positionInRound}</span>`;
+        }
+        
+        orderItem.innerHTML = `
+            <span class="draft-order-number">${index + 1}</span>
+            <div class="draft-order-details">
+                <span class="draft-order-name">${team.name}</span>
+                <div class="draft-order-positions">${roundPositions}</div>
+            </div>
+            ${bankedPicksIndicator}
+        `;
+        
+        orderContainer.appendChild(orderItem);
+    });
+    
+    if (draftOrder.length === 0) {
+        orderContainer.innerHTML = '<div class="empty-message">Draft order not set yet</div>';
     }
 }
 
