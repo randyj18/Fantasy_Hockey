@@ -1050,10 +1050,10 @@
     "pickNumber": 1,
     "playerId": "8475784",
     "playoffRoundDrafted": 4,
+    "pointsBeforeAcquiring": 2,
+    "preAcqRound": 4,
     "round": 1,
-    "teamUid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1",
-    "pointsBeforeAcquiring": 0,
-    "preAcqRound": 4
+    "teamUid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
   },
   "8478055": {
     "NHL Team": "FLA",
@@ -1066,10 +1066,10 @@
     "pickNumber": 2,
     "playerId": "8478055",
     "playoffRoundDrafted": 4,
+    "pointsBeforeAcquiring": 4,
+    "preAcqRound": 4,
     "round": 1,
-    "teamUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2",
-    "pointsBeforeAcquiring": 0,
-    "preAcqRound": 4
+    "teamUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
   },
   "8470621": {
     "NHL Team": "EDM",
@@ -1082,10 +1082,10 @@
     "pickNumber": 3,
     "playerId": "8470621",
     "playoffRoundDrafted": 4,
+    "pointsBeforeAcquiring": 10,
+    "preAcqRound": 4,
     "round": 1,
-    "teamUid": "b2G10m5isKRjnNdjjymvv8dB7na2",
-    "pointsBeforeAcquiring": 0,
-    "preAcqRound": 4
+    "teamUid": "b2G10m5isKRjnNdjjymvv8dB7na2"
   },
   "8475169": {
     "NHL Team": "EDM",
@@ -1098,10 +1098,10 @@
     "pickNumber": 4,
     "playerId": "8475169",
     "playoffRoundDrafted": 4,
+    "pointsBeforeAcquiring": 11,
+    "preAcqRound": 4,
     "round": 1,
-    "teamUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2",
-    "pointsBeforeAcquiring": 0,
-    "preAcqRound": 4
+    "teamUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
   },
   "8478542": {
     "NHL Team": "FLA",
@@ -1114,10 +1114,10 @@
     "pickNumber": 5,
     "playerId": "8478542",
     "playoffRoundDrafted": 4,
+    "pointsBeforeAcquiring": 11,
+    "preAcqRound": 4,
     "round": 1,
-    "teamUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62",
-    "pointsBeforeAcquiring": 0,
-    "preAcqRound": 4
+    "teamUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
   },
   "8475717": {
     "NHL Team": "EDM",
@@ -1130,10 +1130,10 @@
     "pickNumber": 6,
     "playerId": "8475717",
     "playoffRoundDrafted": 4,
+    "pointsBeforeAcquiring": 12,
+    "preAcqRound": 4,
     "round": 1,
-    "teamUid": "sRtihakg3Qavwei7KcToId47LrX2",
-    "pointsBeforeAcquiring": 0,
-    "preAcqRound": 4
+    "teamUid": "sRtihakg3Qavwei7KcToId47LrX2"
   },
   "8477932": {
     "NHL Team": "FLA",
@@ -1146,10 +1146,10 @@
     "pickNumber": 7,
     "playerId": "8477932",
     "playoffRoundDrafted": 4,
+    "pointsBeforeAcquiring": 10,
+    "preAcqRound": 4,
     "round": 1,
-    "teamUid": "wgLGKONV4DZXydnhf4yzTuut55c2",
-    "pointsBeforeAcquiring": 0,
-    "preAcqRound": 4
+    "teamUid": "wgLGKONV4DZXydnhf4yzTuut55c2"
   },
   "8477015": {
     "NHL Team": "EDM",
@@ -1162,9 +1162,9 @@
     "pickNumber": 8,
     "playerId": "8477015",
     "playoffRoundDrafted": 4,
+    "pointsBeforeAcquiring": 8,
+    "preAcqRound": 4,
     "round": 1,
-    "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1",
-    "pointsBeforeAcquiring": 0,
-    "preAcqRound": 4
+    "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
   }
 }
