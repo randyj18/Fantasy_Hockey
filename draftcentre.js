@@ -1555,12 +1555,29 @@ function handleConcludeRound() {
     console.log("- draftOrder length:", draftOrder.length);
     console.log("- currentPickIndex:", currentPickIndex);
     console.log("- pickNumber:", leagueData?.draftStatus?.pickNumber);
+    console.log("- Total drafted players:", draftedPlayers.length);
+    
+    // Count picks for current playoff round
+    const picksForCurrentRound = draftedPlayers.filter(p => p.playoffRoundDrafted === currentRound).length;
+    console.log(`- Picks for playoff round ${currentRound}:`, picksForCurrentRound);
 
-    if (currentPickIndex < draftOrder.length) {
-        const remainingPicks = draftOrder.length - currentPickIndex;
-        console.log("❌ Picks remaining:", remainingPicks);
-        showNotification(`Cannot conclude round: There are still ${remainingPicks} picks remaining.`, 7000);
-        return;
+    // For playoff rounds, we can be more flexible - allow concluding if reasonable number of picks made
+    if (currentRound > 1) {
+        // For playoff rounds, allow concluding if at least 8+ picks have been made
+        if (picksForCurrentRound < 8) {
+            console.log("❌ Not enough picks for playoff round yet");
+            showNotification(`Cannot conclude round: Only ${picksForCurrentRound} picks made for Round ${currentRound}. Need at least 8 picks.`, 7000);
+            return;
+        }
+        console.log("✅ Enough picks made for playoff round, allowing conclude");
+    } else {
+        // For regular draft, use original validation
+        if (currentPickIndex < draftOrder.length) {
+            const remainingPicks = draftOrder.length - currentPickIndex;
+            console.log("❌ Picks remaining:", remainingPicks);
+            showNotification(`Cannot conclude round: There are still ${remainingPicks} picks remaining.`, 7000);
+            return;
+        }
     }
 
     console.log("✅ Validation passed, asking for confirmation");
@@ -1751,79 +1768,6 @@ function updateBankedPicksDisplay() {
     } else {
         bankedPicksInfo.classList.add('hidden');
         bankPickBtn.classList.add('hidden');
-    }
-}
-
-function updateDraftOrderDisplay() {
-    const draftOrderDisplay = document.getElementById('draft-order-display');
-    if (!draftOrderDisplay) return;
-    
-    draftOrderDisplay.innerHTML = '';
-    
-    if (!leagueData || !leagueData.draftStatus || !leagueData.draftStatus.draftOrder) {
-        draftOrderDisplay.innerHTML = '<div class="empty-message">Draft order not set yet</div>';
-        return;
-    }
-    
-    const draftOrder = leagueData.draftStatus.draftOrder || [];
-    const currentRoundDraft = leagueData.draftStatus.round || 1;
-    const currentDrafterUid = leagueData.draftStatus.currentDrafter;
-    const isEvenRound = currentRoundDraft % 2 === 0;
-    
-    const directionLabel = document.createElement('div');
-    directionLabel.className = 'draft-direction-label';
-    directionLabel.innerHTML = `Round ${currentRound}: ${isEvenRound ? '← Reverse Order' : '→ Normal Order'}`;
-    draftOrderDisplay.appendChild(directionLabel);
-    
-    const orderContainer = document.createElement('div');
-    orderContainer.className = 'draft-order-items';
-    draftOrderDisplay.appendChild(orderContainer);
-    
-    draftOrder.forEach((teamUid, index) => {
-        const team = currentTeams[teamUid];
-        if (!team) return;
-        
-        const orderItem = document.createElement('div');
-        orderItem.className = 'draft-order-item';
-        
-        const currentIndex = draftOrder.indexOf(currentDrafterUid);
-        if (index === currentIndex) {
-            orderItem.classList.add('current');
-        }
-        
-        if (teamUid === currentUser?.uid) {
-            orderItem.style.borderColor = '#4caf50';
-            orderItem.style.borderWidth = '2px';
-        }
-        
-        const teamBankedPicks = bankedPicks[teamUid] || 0;
-        const bankedPicksIndicator = teamBankedPicks > 0 
-            ? `<span class="banked-pick-indicator">${teamBankedPicks} Banked</span>` 
-            : '';
-        
-        let roundPositions = '';
-        for (let r = 1; r <= 4; r++) {
-            let positionInRound = r % 2 === 0 
-                ? draftOrder.length - index  
-                : index + 1;                 
-            
-            roundPositions += `<span class="round-position ${r === currentRound ? 'current-round' : ''}">R${r}: #${positionInRound}</span>`;
-        }
-        
-        orderItem.innerHTML = `
-            <span class="draft-order-number">${index + 1}</span>
-            <div class="draft-order-details">
-                <span class="draft-order-name">${team.name}</span>
-                <div class="draft-order-positions">${roundPositions}</div>
-            </div>
-            ${bankedPicksIndicator}
-        `;
-        
-        orderContainer.appendChild(orderItem);
-    });
-    
-    if (draftOrder.length === 0) {
-        orderContainer.innerHTML = '<div class="empty-message">Draft order not set yet</div>';
     }
 }
 
