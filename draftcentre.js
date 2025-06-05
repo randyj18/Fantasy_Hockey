@@ -1461,56 +1461,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("Draft Centre initialized successfully.");
 });
 
-// --- Undo Functions ---
-function undoLastDraftPick(firebaseKey, playerNameForMessage, pickNumberToUndo, roundToRestore, teamUidToRestore, teamNameToRestore) {
-    if (!isCommissioner) {
-        showNotification("Only the commissioner can undo draft picks.");
-        return;
-    }
-
-    if (!firebaseKey) {
-        console.error("Cannot undo pick: Missing Firebase key");
-        showNotification("Error: Cannot undo pick due to missing data.");
-        return;
-    }
-
-    pickNumberToUndo = parseInt(pickNumberToUndo) || 0;
-    roundToRestore = parseInt(roundToRestore) || 1;
-
-    const actualLastPickNumber = draftedPlayers.length;
-    if (pickNumberToUndo !== actualLastPickNumber) {
-        showNotification(`Cannot undo pick #${pickNumberToUndo}. Only the very last pick (#${actualLastPickNumber}) can be undone.`);
-        return;
-    }
-
-    const name = playerNameForMessage || 'last player';
-    const teamName = teamNameToRestore || 'the previous team';
-
-    if (!confirm(`Are you sure you want to UNDO the last pick (#${pickNumberToUndo} - ${name} by ${teamName})?`)) {
-        return;
-    }
-
-    const updates = {};
-    updates[`leagues/${leagueId}/draftedPlayers/${firebaseKey}`] = null;
-    updates[`leagues/${leagueId}/draftStatus/currentDrafter`] = teamUidToRestore;
-    updates[`leagues/${leagueId}/draftStatus/pickNumber`] = pickNumberToUndo;
-    updates[`leagues/${leagueId}/draftStatus/round`] = roundToRestore;
-
-    const dbRef = ref(database);
-    update(dbRef, updates).then(() => {
-        console.log(`Pick #${pickNumberToUndo} (${name}) undone successfully.`);
-        showNotification(`Pick #${pickNumberToUndo} (${name}) undone. It's now ${teamName}'s turn.`);
-        addChatMessage({
-            type: 'system',
-            text: `${currentUser.displayName} (Commish) undid the last pick (#${pickNumberToUndo} - ${name}).`,
-            timestamp: serverTimestamp()
-        });
-    }).catch(error => {
-        console.error(`Error undoing pick #${pickNumberToUndo}:`, error);
-        showNotification(`Error undoing pick: ${error.message}`, 7000);
-    });
-}
-
 // --- Banking Pick Functions ---
 function handleBankPick() {
     if (currentRound <= 1) {

@@ -1,0 +1,2067 @@
+{
+  "leagues": {
+    "-ONaEwjf0r2hguG0LaAu": {
+      "chat": {
+        "-ONaEwkXv1_LtoyUlxZh": {
+          "text": "League \"League of Men 2025\" created by Randy Jones",
+          "timestamp": "2025-04-11T19:07:17.408Z",
+          "type": "system"
+        },
+        "-ONaGiyqMuInhUufemd4": {
+          "text": "Ryan Jones joined the league",
+          "timestamp": "2025-04-11T19:15:05.653Z",
+          "type": "system"
+        },
+        "-ONaGiz06wztfmDO2vko": {
+          "text": "Ryan Jones joined the draft",
+          "timestamp": 1744398905331,
+          "type": "system"
+        },
+        "-ONad5g56x3-pLsqpkzn": {
+          "text": "Andrew Porteous joined the draft",
+          "timestamp": 1744405031726,
+          "type": "system"
+        },
+        "-ONad5gnJvC0jzRutnwJ": {
+          "text": "Andrew Porteous joined the league",
+          "timestamp": "2025-04-11T20:57:11.750Z",
+          "type": "system"
+        },
+        "-ONagyY3lmLfqW11jU1_": {
+          "text": "Andrew Porteous joined the draft",
+          "timestamp": 1744406046965,
+          "type": "system"
+        },
+        "-ONby1FF_nDg6IUAD_bc": {
+          "text": "Kris Anderson joined the league",
+          "timestamp": "2025-04-12T03:08:16.102Z",
+          "type": "system"
+        },
+        "-ONdTyd9LiKy1P21eg18": {
+          "text": "Kris Anderson joined the draft",
+          "timestamp": 1744452708991,
+          "type": "system"
+        },
+        "-ONjILzPcqFy4VjiU-a_": {
+          "text": "Mark Weston joined the league",
+          "timestamp": "2025-04-13T13:18:46.131Z",
+          "type": "system"
+        },
+        "-ONlS7FmjOZ0nI7eqgGD": {
+          "text": "Daryl Kay joined the league",
+          "timestamp": "2025-04-13T23:20:40.465Z",
+          "type": "system"
+        },
+        "-ONlY1l5OYyAzdmKPm8W": {
+          "name": "Ryan Jones",
+          "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocKxvscK6sfHdLKmpk05dscOllYBSMxnhTjQq4-dRebqkpuEboeJyA=s96-c",
+          "text": "Party Time!",
+          "timestamp": 1744587992247,
+          "type": "user",
+          "uid": "wgLGKONV4DZXydnhf4yzTuut55c2"
+        },
+        "-ONmCzWSIyUZ3Yj-B3ol": {
+          "text": "Daryl Kay joined the draft",
+          "timestamp": 1744599251089,
+          "type": "system"
+        },
+        "-ONoQHWUYBbShiLLmavR": {
+          "text": "Mark Weston joined the draft",
+          "timestamp": 1744636291212,
+          "type": "system"
+        },
+        "-ONoQHWVq-bubsvk1_ID": {
+          "text": "Kris Anderson joined the draft",
+          "timestamp": 1744636291213,
+          "type": "system"
+        },
+        "-ONoQHWWXQW1CyhsgoMT": {
+          "text": "Daryl Kay joined the draft",
+          "timestamp": 1744636291215,
+          "type": "system"
+        },
+        "-ONoa7tr6T808ZJClE7G": {
+          "text": "Paul Weston joined the draft",
+          "timestamp": 1744639135388,
+          "type": "system"
+        },
+        "-ONoa7uX5pUtN3BB3jAz": {
+          "text": "Paul Weston joined the league",
+          "timestamp": "2025-04-14T13:58:55.710Z",
+          "type": "system"
+        },
+        "-ONol_ROh2aqAi0tbs05": {
+          "text": "Sunny Sahai joined the draft",
+          "timestamp": 1744642135869,
+          "type": "system"
+        },
+        "-ONol_RpSXVGdvqkTR1l": {
+          "text": "Sunny Sahai joined the league",
+          "timestamp": "2025-04-14T14:48:54.918Z",
+          "type": "system"
+        },
+        "-ONov4RrFYoo4elWK6NO": {
+          "text": "Draft started by Randy Jones! Draft order randomized. Daryl Kay is up first.",
+          "timestamp": 1744644626278,
+          "type": "system"
+        },
+        "-ONqfS-9VOxHpuaf_Oo8": {
+          "text": "Daryl Kay drafted Kyle Connor (LW, WPG) (Pick 1)",
+          "timestamp": 1744674082888,
+          "type": "system"
+        },
+        "-ONuPXweV2J9NKoFXHbu": {
+          "name": "Andrew Porteous",
+          "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocILcN78kiVqwpVBArq7UJiD5_9TCjKW-P3C1PDQLXexMVgsEA=s96-c",
+          "text": "Test, test, titties",
+          "timestamp": 1744736759694,
+          "type": "user",
+          "uid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
+        },
+        "-ONueNcnH8-y4loFtHZV": {
+          "name": "Randy Jones",
+          "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocKgii6XhmV_UbZt0aU5noTzxnwQ3xeEwJ92wQZRZ5JYCQ0gThqP=s96-c",
+          "text": "👀",
+          "timestamp": 1744740911709,
+          "type": "user",
+          "uid": "sRtihakg3Qavwei7KcToId47LrX2"
+        },
+        "-ONyH-sUIP6Vk4Ih0qvk": {
+          "name": "Paul Weston",
+          "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocLPcOczPpMLLY0DAhUbkXk2ZFp0h8nXmPoxXa9o3ovIgdlN=s96-c",
+          "text": "How do I pick mcdavid I have him up",
+          "timestamp": 1744801631864,
+          "type": "user",
+          "uid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
+        },
+        "-ONyHt1PBlrbFD5SuCnA": {
+          "text": "Paul Weston drafted Connor McDavid (C, EDM) (Pick 2)",
+          "timestamp": 1744801861858,
+          "type": "system"
+        },
+        "-ONyYH14EJCgpHIHmnAr": {
+          "text": "Randy Jones (Commish) drafted Nathan MacKinnon for Ryan Jones (Pick 3)",
+          "timestamp": 1744806158524,
+          "type": "system"
+        },
+        "-ONyrwB7yvNc9WwP8IeK": {
+          "text": "Sunny Sahai drafted Jack Eichel (C, VGK) (Pick 4)",
+          "timestamp": 1744811574096,
+          "type": "system"
+        },
+        "-ONyu2J74GEmJTiS3o9t": {
+          "text": "Mark Weston drafted Alex Ovechkin (LW, WSH) (Pick 5)",
+          "timestamp": 1744812127535,
+          "type": "system"
+        },
+        "-ONzBOolVrfxJo2TqnkW": {
+          "text": "Randy Jones (Commish) drafted Mark Scheifele for Andrew Porteous (Pick 6)",
+          "timestamp": 1744816938348,
+          "type": "system"
+        },
+        "-ONzCDZi-w-Di8bfBRn1": {
+          "text": "Randy Jones drafted Mitch Marner (RW, TOR) (Pick 7)",
+          "timestamp": 1744817154402,
+          "type": "system"
+        },
+        "-OO-4BoN0-2oOcw8bxLd": {
+          "text": "Kris Anderson drafted Leon Draisaitl (C, EDM) (Pick 8)",
+          "timestamp": 1744831827750,
+          "type": "system"
+        },
+        "-OO-4GgBfqoJRrs46gX0": {
+          "text": "Kris Anderson drafted Cale Makar (D, COL) (Pick 9)",
+          "timestamp": 1744831847706,
+          "type": "system"
+        },
+        "-OO-4rjTNecVnZajZ0Ta": {
+          "name": "Kris Anderson",
+          "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocK_L4Iw_Uuja0j7lQGKKYhSMy8YWiWWFBT2fppRngF35PAvcx0h=s96-c",
+          "text": "( . ) ( . )",
+          "timestamp": 1744832003570,
+          "type": "user",
+          "uid": "b2G10m5isKRjnNdjjymvv8dB7na2"
+        },
+        "-OO-5Bk8e1-ImcVGCMYD": {
+          "text": "Randy Jones drafted Auston Matthews (C, TOR) (Pick 10)",
+          "timestamp": 1744832089172,
+          "type": "system"
+        },
+        "-OO-81ctek3x_KMURJvr": {
+          "text": "Randy Jones (Commish) drafted Connor Hellebuyck for Andrew Porteous (Pick 11)",
+          "timestamp": 1744832834171,
+          "type": "system"
+        },
+        "-OO-B-Pf_86WBISTq_Gf": {
+          "text": "Randy Jones (Commish) drafted Dylan Strome for Mark Weston (Pick 12)",
+          "timestamp": 1744833611500,
+          "type": "system"
+        },
+        "-OO-FGuLNCLlX0isOQK2": {
+          "text": "Randy Jones (Commish) drafted William Nylander for Sunny Sahai (Pick 13)",
+          "timestamp": 1744834731734,
+          "type": "system"
+        },
+        "-OO-I_NiorFyk4phx3Mc": {
+          "text": "Ryan Jones drafted Sam Reinhart (C, FLA) (Pick 14)",
+          "timestamp": 1744835597935,
+          "type": "system"
+        },
+        "-OO-J1rvQmug1NM8yEpP": {
+          "text": "Randy Jones (Commish) drafted Tom Wilson for Paul Weston (Pick 15)",
+          "timestamp": 1744835718714,
+          "type": "system"
+        },
+        "-OO-qZGdYF_ZfoT_pakE": {
+          "text": "Daryl Kay drafted Sergei Bobrovsky (G, FLA) (Pick 16)",
+          "timestamp": 1744844768409,
+          "type": "system"
+        },
+        "-OO-ryTucisLNzD_AkjT": {
+          "text": "Daryl Kay drafted Aleksander Barkov (C, FLA) (Pick 17)",
+          "timestamp": 1744845137915,
+          "type": "system"
+        },
+        "-OO0DmvKvhqDbI4ahmns": {
+          "text": "Randy Jones (Commish) drafted Brad Marchand for Paul Weston (Pick 18)",
+          "timestamp": 1744851119890,
+          "type": "system"
+        },
+        "-OO0Fi4xoJy1HdowKysZ": {
+          "text": "Ryan Jones drafted Matthew Tkachuk (LW, FLA) (Pick 19)",
+          "timestamp": 1744851624383,
+          "type": "system"
+        },
+        "-OO0O2g6cT6nYTgWUToV": {
+          "text": "Randy Jones (Commish) drafted Sebastian Aho for Sunny Sahai (Pick 20)",
+          "timestamp": 1744853809989,
+          "type": "system"
+        },
+        "-OO0_rkoDshkuAl1utXH": {
+          "text": "Mark Weston drafted Evan Bouchard (D, EDM) (Pick 21)",
+          "timestamp": 1744857168999,
+          "type": "system"
+        },
+        "-OO25d4iytVbav7EzWm3": {
+          "text": "Randy Jones (Commish) drafted Nikita Kucherov for Andrew Porteous (Pick 22)",
+          "timestamp": 1744882536862,
+          "type": "system"
+        },
+        "-OO2ASaoF4FIVsQPWFbl": {
+          "text": "Randy Jones drafted Shea Theodore (D, VGK) (Pick 23)",
+          "timestamp": 1744883800541,
+          "type": "system"
+        },
+        "-OO2qEhFV-hTifBA-u_u": {
+          "text": "Kris Anderson drafted Mackenzie Blackwood (G, COL) (Pick 24)",
+          "timestamp": 1744895015846,
+          "type": "system"
+        },
+        "-OO2qGduS438eup3VSiw": {
+          "text": "Kris Anderson drafted Martin Necas (C, COL) (Pick 25)",
+          "timestamp": 1744895023824,
+          "type": "system"
+        },
+        "-OO3AMz_2HemqA0OmmqH": {
+          "text": "Randy Jones drafted Anthony Stolarz (G, TOR) (Pick 26)",
+          "timestamp": 1744900554766,
+          "type": "system"
+        },
+        "-OO3FvX2zaRwsft5AVe0": {
+          "text": "Randy Jones (Commish) drafted Victor Hedman for Andrew Porteous (Pick 27)",
+          "timestamp": 1744902011062,
+          "type": "system"
+        },
+        "-OO3MOgPR6SD_fuxKAOV": {
+          "text": "Mark Weston drafted Mark Stone (RW, VGK) (Pick 28)",
+          "timestamp": 1744903707480,
+          "type": "system"
+        },
+        "-OO3Tm0AbAzVHpCTfb07": {
+          "text": "Randy Jones (Commish) drafted Jake Oettinger for Sunny Sahai (Pick 29)",
+          "timestamp": 1744905642096,
+          "type": "system"
+        },
+        "-OO3WX1UsdUPgPMu69NE": {
+          "text": "Randy Jones (Commish) drafted Adin Hill for Ryan Jones (Pick 30)",
+          "timestamp": 1744906363078,
+          "type": "system"
+        },
+        "-OO3WYQ6XH24IIeNcWWZ": {
+          "text": "Randy Jones (Commish) drafted Josh Morrissey for Paul Weston (Pick 31)",
+          "timestamp": 1744906368749,
+          "type": "system"
+        },
+        "-OO3luwm05n4h549CPHZ": {
+          "text": "Randy Jones (Commish) drafted John Carlson for Daryl Kay (Pick 32)",
+          "timestamp": 1744910659422,
+          "type": "system"
+        },
+        "-OO3xxw49lpC--CKiz-w": {
+          "text": "Randy Jones (Commish) drafted Gabriel Vilardi for Daryl Kay (Pick 33)",
+          "timestamp": 1744913817405,
+          "type": "system"
+        },
+        "-OO45dWwiAEBsG8J3IyV": {
+          "text": "Paul Weston drafted Shayne Gostisbehere (D, CAR) (Pick 34)",
+          "timestamp": 1744916093088,
+          "type": "system"
+        },
+        "-OO4C8MHzrqBfLMVMyor": {
+          "text": "Randy Jones (Commish) drafted Devon Toews for Ryan Jones (Pick 35)",
+          "timestamp": 1744917796261,
+          "type": "system"
+        },
+        "-OO4GuRBzeTERQzpEqzh": {
+          "text": "Randy Jones (Commish) drafted Morgan Rielly for Sunny Sahai (Pick 36)",
+          "timestamp": 1744919045974,
+          "type": "system"
+        },
+        "-OO4HNn-xP9cbHqSC-xv": {
+          "text": "Mark Weston drafted Mikko Rantanen (RW, DAL) (Pick 37)",
+          "timestamp": 1744919170391,
+          "type": "system"
+        },
+        "-OO4PvXzT7imA7ks9NyS": {
+          "text": "Randy Jones (Commish) undid the last pick (#37 - Mikko Rantanen). Reverted to Pick #37 (Mark Weston's turn).",
+          "timestamp": 1744921409774,
+          "type": "system"
+        },
+        "-OO4UhUWAU3eLY9zwg24": {
+          "text": "Mark Weston drafted Mikko Rantanen (RW, DAL) (Pick 37)",
+          "timestamp": 1744922663013,
+          "type": "system"
+        },
+        "-OO4a7PuulU_PHRrcc8a": {
+          "text": "Randy Jones (Commish) undid the last pick (#37 - Mikko Rantanen). Reverted to Pick #37 (Mark Weston's turn).",
+          "timestamp": 1744924346083,
+          "type": "system"
+        },
+        "-OO4aCLjK8wwVZTH30vO": {
+          "text": "Randy Jones (Commish) drafted Jakob Chychrun for Mark Weston (Pick 37)",
+          "timestamp": 1744924366297,
+          "type": "system"
+        },
+        "-OO52n4J7gv5d4omNrUd": {
+          "text": "Randy Jones (Commish) drafted Mikko Rantanen for Andrew Porteous (Pick 38)",
+          "timestamp": 1744932123009,
+          "type": "system"
+        },
+        "-OO52qkqIS9HDxezyPIS": {
+          "text": "Randy Jones drafted John Tavares (C, TOR) (Pick 39)",
+          "timestamp": 1744932138084,
+          "type": "system"
+        },
+        "-OO5Vol9Sl5groqoNS6E": {
+          "text": "Kris Anderson drafted Jack Hughes (C, NJD) (Pick 40)",
+          "timestamp": 1744939732121,
+          "type": "system"
+        },
+        "-OO5W-eBFSc82IM2C-on": {
+          "text": "Kris Anderson drafted Jesper Bratt (LW, NJD) (Pick 41)",
+          "timestamp": 1744939780830,
+          "type": "system"
+        },
+        "-OO5dAtOoA1AwYo7sMBt": {
+          "text": "Randy Jones drafted Noah Hanifin (D, VGK) (Pick 42)",
+          "timestamp": 1744941923974,
+          "type": "system"
+        },
+        "-OO5jgopg4s0EBqm2Ix2": {
+          "text": "Randy Jones (Commish) drafted Drew Doughty for Andrew Porteous (Pick 43)",
+          "timestamp": 1744943631844,
+          "type": "system"
+        },
+        "-OO7FaHk4R5MQYnu3CyO": {
+          "text": "Mark Weston drafted Andrei Vasilevskiy (G, TBL) (Pick 44)",
+          "timestamp": 1744969032923,
+          "type": "system"
+        },
+        "-OO81q-McF2j-iOs3yUJ": {
+          "text": "Randy Jones (Commish) drafted Thomas Harley for Sunny Sahai (Pick 45)",
+          "timestamp": 1744982204490,
+          "type": "system"
+        },
+        "-OO82L3VQ9nvfUXN-iCL": {
+          "text": "Ryan Jones drafted Alex Pietrangelo (D, VGK) (Pick 46)",
+          "timestamp": 1744982335821,
+          "type": "system"
+        },
+        "-OO8GM-z4iOn9vFfrANG": {
+          "text": "Randy Jones (Commish) drafted Stuart Skinner for Paul Weston (Pick 47)",
+          "timestamp": 1744986009711,
+          "type": "system"
+        },
+        "-OO8GUmSakErnZfiekql": {
+          "text": "Randy Jones (Commish) drafted Seth Jones for Daryl Kay (Pick 48)",
+          "timestamp": 1744986045646,
+          "type": "system"
+        },
+        "-OO8G_VGyUDL3Kebtp70": {
+          "text": "Randy Jones (Commish) drafted Valeri Nichushkin for Daryl Kay (Pick 49)",
+          "timestamp": 1744986069055,
+          "type": "system"
+        },
+        "-OO8GbvIs68UdRV7ZqOc": {
+          "text": "Randy Jones (Commish) drafted Brayden Point for Paul Weston (Pick 50)",
+          "timestamp": 1744986078975,
+          "type": "system"
+        },
+        "-OO8Nh-I_6nMaKvtjjaC": {
+          "text": "Ryan Jones drafted Brock Nelson (C, COL) (Pick 51)",
+          "timestamp": 1744987934877,
+          "type": "system"
+        },
+        "-OO8TU8Y83EMZ3isRu4F": {
+          "text": "Randy Jones (Commish) drafted Matthew Knies for Sunny Sahai (Pick 52)",
+          "timestamp": 1744989451018,
+          "type": "system"
+        },
+        "-OO8TVozyBwYNiuoiGX5": {
+          "text": "Randy Jones (Commish) drafted Brandon Hagel for Mark Weston (Pick 53)",
+          "timestamp": 1744989457892,
+          "type": "system"
+        },
+        "-OO8TlS3G1fOEVWWNPSN": {
+          "text": "Randy Jones (Commish) drafted Seth Jarvis for Andrew Porteous (Pick 54)",
+          "timestamp": 1744989525859,
+          "type": "system"
+        },
+        "-OO8Uk9-xiaMe4Um9Qc2": {
+          "text": "Randy Jones drafted Tomas Hertl (C, VGK) (Pick 55)",
+          "timestamp": 1744989782688,
+          "type": "system"
+        },
+        "-OO8WT23c1-Xsq-rH__N": {
+          "text": "Kris Anderson drafted Neal Pionk (D, WPG) (Pick 56)",
+          "timestamp": 1744990232855,
+          "type": "system"
+        },
+        "-OO8g6U9VNaGiBZq-tHg": {
+          "text": "Round 1 concluded by commissioner. Preparing for Round 2.",
+          "timestamp": 1744993024078,
+          "type": "system"
+        },
+        "-OPVe8yvTllBTAovpv7X": {
+          "text": "Round 1 concluded by commissioner. Preparing for Round 2.",
+          "timestamp": 1746452127726,
+          "type": "system"
+        },
+        "-OPVeUds23dP5WNlQx_0": {
+          "text": "Round 3 started by commissioner. Draft is now active.",
+          "timestamp": 1746452216490,
+          "type": "system"
+        },
+        "-OPW5ONwlRqu63JiCGi6": {
+          "text": "Randy Jones (Commish) drafted Wyatt Johnston for Paul Weston (Pick 1)",
+          "timestamp": 1746459530858,
+          "type": "system"
+        },
+        "-OPWClG-91gO7kcqm3Ie": {
+          "text": "Randy Jones (Commish) drafted Logan Thompson for Mark Weston (Pick 2)",
+          "timestamp": 1746461463698,
+          "type": "system"
+        },
+        "-OPWCqHigjwgjrfxSQqW": {
+          "text": "Randy Jones (Commish) drafted Cole Perfetti for Daryl Kay (Pick 3)",
+          "timestamp": 1746461484278,
+          "type": "system"
+        },
+        "-OPWUXVC7qCxzh2SrfN_": {
+          "text": "Kris Anderson drafted Zach Hyman (LW, EDM) (Pick 4)",
+          "timestamp": 1746466121827,
+          "type": "system"
+        },
+        "-OPWaTHu19N0Qao1UifP": {
+          "text": "Randy Jones banked their pick for a future round.",
+          "timestamp": 1746467939614,
+          "type": "system"
+        },
+        "-OPWbj8-Zh4LiF4JgxAC": {
+          "text": "Ryan Jones drafted Sam Bennett (C, FLA) (Pick 6)",
+          "timestamp": 1746468270708,
+          "type": "system"
+        },
+        "-OPX3HYSg4zDXUOBwXpI": {
+          "text": "Sunny Sahai banked their pick for a future round.",
+          "timestamp": 1746475755787,
+          "type": "system"
+        },
+        "-OPXPNzAWcKhd8NByuwq": {
+          "text": "Andrew Porteous drafted Vladislav Namestnikov (C, WPG) (Pick 8)",
+          "timestamp": 1746481549303,
+          "type": "system"
+        },
+        "-OQd40RJvaLIZheeLehX": {
+          "text": "Round 2 concluded by commissioner. Preparing for Round 3.",
+          "timestamp": 1747667130292,
+          "type": "system"
+        },
+        "-OQd4iQqFKlYBleW0gZe": {
+          "text": "Round 2 concluded by commissioner. Preparing for Round 3.",
+          "timestamp": 1747667314463,
+          "type": "system"
+        },
+        "-OQd4z43pz-9jX4qD4iN": {
+          "text": "Round 4 started by commissioner. Draft is now active.",
+          "timestamp": 1747667382642,
+          "type": "system"
+        },
+        "-OQd50tJRpA5vjUfChZQ": {
+          "text": "Randy Jones drafted Frederik Andersen (G, CAR) (Pick 1)",
+          "timestamp": 1747667394173,
+          "type": "system"
+        },
+        "-OQezhLgtHbrsBdHWP-K": {
+          "text": "Sunny Sahai drafted Roope Hintz (C, DAL) (Pick 2)",
+          "timestamp": 1747699291612,
+          "type": "system"
+        },
+        "-OQfNJDIxtNZ0SDCJNKI": {
+          "text": "Kris Anderson drafted Eetu Luostarinen (C, FLA) (Pick 3)",
+          "timestamp": 1747705742305,
+          "type": "system"
+        },
+        "-OQiBAiSp0XUZpA5HZid": {
+          "text": "Mark Weston drafted Andrei Svechnikov (RW, CAR) (Pick 4)",
+          "timestamp": 1747752893371,
+          "type": "system"
+        },
+        "-OQiKJYuJrOP7-ejMQqM": {
+          "text": "Randy Jones drafted Logan Stankoven (C, CAR) (Pick 5)",
+          "timestamp": 1747755288876,
+          "type": "system"
+        },
+        "-OQiW4aGatMNsFg3MKMM": {
+          "text": "Randy Jones (Commish) drafted Anton Lundell for Paul Weston (Pick 6)",
+          "timestamp": 1747758373306,
+          "type": "system"
+        },
+        "-OQiW8_lHGFUSq1kI94k": {
+          "text": "Randy Jones (Commish) drafted Carter Verhaeghe for Ryan Jones (Pick 7)",
+          "timestamp": 1747758389657,
+          "type": "system"
+        },
+        "-OQid13FqZjyHMBDkSjS": {
+          "text": "Daryl Kay drafted Nate Schmidt (D, FLA) (Pick 8)",
+          "timestamp": 1747760452838,
+          "type": "system"
+        },
+        "-OQjYUgCBsmK7kWqhuvY": {
+          "text": "Randy Jones (Commish) drafted Taylor Hall for Andrew Porteous (Pick 9)",
+          "timestamp": 1747775781724,
+          "type": "system"
+        },
+        "-OQjcLmwiEGjBjISbZNl": {
+          "text": "Randy Jones (Commish) drafted Ryan Nugent-Hopkins for Sunny Sahai (Pick 10)",
+          "timestamp": 1747777055986,
+          "type": "system"
+        },
+        "-OQjcONdCwn0y3szGsPI": {
+          "text": "Round 3 concluded by commissioner. Preparing for Round 4.",
+          "timestamp": 1747777066586,
+          "type": "system"
+        }
+      },
+      "code": "HFD7DH",
+      "createdAt": "2025-04-11T19:07:17.408Z",
+      "createdBy": {
+        "email": "randyjones87@gmail.com",
+        "name": "Randy Jones",
+        "uid": "sRtihakg3Qavwei7KcToId47LrX2"
+      },
+      "description": "Go Leafs Go!",
+      "draftQueues": {
+        "b2G10m5isKRjnNdjjymvv8dB7na2": [
+          {
+            "assists": 4,
+            "fullName": "Eetu Luostarinen",
+            "goals": 1,
+            "id": 8480185,
+            "points": 5,
+            "position": "C",
+            "shutouts": 0,
+            "teamAbbreviation": "FLA",
+            "wins": 0
+          },
+          {
+            "assists": 3,
+            "fullName": "Anton Lundell",
+            "goals": 2,
+            "id": 8482113,
+            "points": 5,
+            "position": "C",
+            "shutouts": 0,
+            "teamAbbreviation": "FLA",
+            "wins": 0
+          }
+        ]
+      },
+      "draftStatus": {
+        "active": true,
+        "currentDrafter": "0q20rBahZ1X7P0bz7Buvw9ovjIA2",
+        "draftOrder": [
+          "sRtihakg3Qavwei7KcToId47LrX2",
+          "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1",
+          "b2G10m5isKRjnNdjjymvv8dB7na2",
+          "0q20rBahZ1X7P0bz7Buvw9ovjIA2",
+          "sRtihakg3Qavwei7KcToId47LrX2",
+          "cVwoFrceZ2Nm1JQkkNC2SzpXcY62",
+          "wgLGKONV4DZXydnhf4yzTuut55c2",
+          "wlHXuGUYpPOuksV3g7TrpAywtGh2",
+          "mnLVp7F8PDNQ1u0KahpORRqeSdt1",
+          "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+        ],
+        "pickNumber": 1,
+        "randomizationTime": 1744644626189,
+        "round": 1,
+        "startedAt": 1744644626223,
+        "startedByUid": "sRtihakg3Qavwei7KcToId47LrX2"
+      },
+      "draftedPlayers": {
+        "-ONqfRzTCTSQU1i-ZNd4": {
+          "NHL Team": "WPG",
+          "Player": "Kyle Connor",
+          "Position": "LW",
+          "Team": "Daryl Kay",
+          "draftedAt": 1744674082841,
+          "draftedByName": "Daryl Kay",
+          "draftedByUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2",
+          "pickNumber": 1,
+          "playerId": "8478398",
+          "playoffRoundDrafted": 1,
+          "round": 1,
+          "teamUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
+        },
+        "-ONyHt062XK4cCSApz_-": {
+          "NHL Team": "EDM",
+          "Player": "Connor McDavid",
+          "Position": "C",
+          "Team": "Paul Weston",
+          "draftedAt": 1744801861782,
+          "draftedByName": "Paul Weston",
+          "draftedByUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62",
+          "pickNumber": 2,
+          "playerId": "8478402",
+          "playoffRoundDrafted": 1,
+          "round": 1,
+          "teamUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
+        },
+        "-ONyYH-qTfLsqYVbnfj5": {
+          "NHL Team": "COL",
+          "Player": "Nathan MacKinnon",
+          "Position": "C",
+          "Team": "Ryan Jones",
+          "draftedAt": 1744806158451,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 3,
+          "playerId": "8477492",
+          "playoffRoundDrafted": 1,
+          "round": 1,
+          "teamUid": "wgLGKONV4DZXydnhf4yzTuut55c2"
+        },
+        "-ONyrw8blfyhmz3BfrOc": {
+          "NHL Team": "VGK",
+          "Player": "Jack Eichel",
+          "Position": "C",
+          "Team": "Sunny Sahai",
+          "draftedAt": 1744811573956,
+          "draftedByName": "Sunny Sahai",
+          "draftedByUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1",
+          "pickNumber": 4,
+          "playerId": "8478403",
+          "playoffRoundDrafted": 1,
+          "round": 1,
+          "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+        },
+        "-ONyu2FPm6gEYg2oU5MP": {
+          "NHL Team": "WSH",
+          "Player": "Alex Ovechkin",
+          "Position": "LW",
+          "Team": "Mark Weston",
+          "draftedAt": 1744812127298,
+          "draftedByName": "Mark Weston",
+          "draftedByUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2",
+          "pickNumber": 5,
+          "playerId": "8471214",
+          "playoffRoundDrafted": 1,
+          "round": 1,
+          "teamUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
+        },
+        "-ONzBOnhj85zDHvuu2nB": {
+          "NHL Team": "WPG",
+          "Player": "Mark Scheifele",
+          "Position": "C",
+          "Team": "Andrew Porteous",
+          "draftedAt": 1744816938284,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 6,
+          "playerId": "8476460",
+          "playoffRoundDrafted": 1,
+          "round": 1,
+          "teamUid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
+        },
+        "-ONzCDYjY2FmonQVfHWd": {
+          "NHL Team": "TOR",
+          "Player": "Mitch Marner",
+          "Position": "RW",
+          "Team": "Randy Jones",
+          "draftedAt": 1744817154336,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 7,
+          "playerId": "8478483",
+          "playoffRoundDrafted": 1,
+          "round": 1,
+          "teamUid": "sRtihakg3Qavwei7KcToId47LrX2"
+        },
+        "-OO-4BluzsfZC1iCLxEy": {
+          "NHL Team": "EDM",
+          "Player": "Leon Draisaitl",
+          "Position": "C",
+          "Team": "Kris Anderson",
+          "draftedAt": 1744831827597,
+          "draftedByName": "Kris Anderson",
+          "draftedByUid": "b2G10m5isKRjnNdjjymvv8dB7na2",
+          "pickNumber": 8,
+          "playerId": "8477934",
+          "playoffRoundDrafted": 1,
+          "round": 1,
+          "teamUid": "b2G10m5isKRjnNdjjymvv8dB7na2"
+        },
+        "-OO-4GdbQshiRIbIOXtH": {
+          "NHL Team": "COL",
+          "Player": "Cale Makar",
+          "Position": "D",
+          "Team": "Kris Anderson",
+          "draftedAt": 1744831847542,
+          "draftedByName": "Kris Anderson",
+          "draftedByUid": "b2G10m5isKRjnNdjjymvv8dB7na2",
+          "pickNumber": 9,
+          "playerId": "8480069",
+          "playoffRoundDrafted": 1,
+          "round": 2,
+          "teamUid": "b2G10m5isKRjnNdjjymvv8dB7na2"
+        },
+        "-OO-5BikD5EXf_uR5e5z": {
+          "NHL Team": "TOR",
+          "Player": "Auston Matthews",
+          "Position": "C",
+          "Team": "Randy Jones",
+          "draftedAt": 1744832089075,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 10,
+          "playerId": "8479318",
+          "playoffRoundDrafted": 1,
+          "round": 2,
+          "teamUid": "sRtihakg3Qavwei7KcToId47LrX2"
+        },
+        "-OO-81baCTBoX-cS4rDw": {
+          "NHL Team": "WPG",
+          "Player": "Connor Hellebuyck",
+          "Position": "G",
+          "Team": "Andrew Porteous",
+          "draftedAt": 1744832834090,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 11,
+          "playerId": "8476945",
+          "playoffRoundDrafted": 1,
+          "round": 2,
+          "teamUid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
+        },
+        "-OO-B-OcFeeAb8EOLkKA": {
+          "NHL Team": "WSH",
+          "Player": "Dylan Strome",
+          "Position": "C",
+          "Team": "Mark Weston",
+          "draftedAt": 1744833611435,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 12,
+          "playerId": "8478440",
+          "playoffRoundDrafted": 1,
+          "round": 2,
+          "teamUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
+        },
+        "-OO-FGsuMvEC3BObIF1c": {
+          "NHL Team": "TOR",
+          "Player": "William Nylander",
+          "Position": "RW",
+          "Team": "Sunny Sahai",
+          "draftedAt": 1744834731646,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 13,
+          "playerId": "8477939",
+          "playoffRoundDrafted": 1,
+          "round": 2,
+          "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+        },
+        "-OO-I_L74ELwZ7yXP0yk": {
+          "NHL Team": "FLA",
+          "Player": "Sam Reinhart",
+          "Position": "C",
+          "Team": "Ryan Jones",
+          "draftedAt": 1744835597823,
+          "draftedByName": "Ryan Jones",
+          "draftedByUid": "wgLGKONV4DZXydnhf4yzTuut55c2",
+          "pickNumber": 14,
+          "playerId": "8477933",
+          "playoffRoundDrafted": 1,
+          "round": 2,
+          "teamUid": "wgLGKONV4DZXydnhf4yzTuut55c2"
+        },
+        "-OO-J1qt-7LqUoRPx1RQ": {
+          "NHL Team": "WSH",
+          "Player": "Tom Wilson",
+          "Position": "RW",
+          "Team": "Paul Weston",
+          "draftedAt": 1744835718649,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 15,
+          "playerId": "8476880",
+          "playoffRoundDrafted": 1,
+          "round": 2,
+          "teamUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
+        },
+        "-OO-qZFk2dWKCnao9Tax": {
+          "NHL Team": "FLA",
+          "Player": "Sergei Bobrovsky",
+          "Position": "G",
+          "Team": "Daryl Kay",
+          "draftedAt": 1744844768360,
+          "draftedByName": "Daryl Kay",
+          "draftedByUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2",
+          "pickNumber": 16,
+          "playerId": "8475683",
+          "playoffRoundDrafted": 1,
+          "round": 2,
+          "teamUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
+        },
+        "-OO-rySyJMaHU3pNNs8d": {
+          "NHL Team": "FLA",
+          "Player": "Aleksander Barkov",
+          "Position": "C",
+          "Team": "Daryl Kay",
+          "draftedAt": 1744845137855,
+          "draftedByName": "Daryl Kay",
+          "draftedByUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2",
+          "pickNumber": 17,
+          "playerId": "8477493",
+          "playoffRoundDrafted": 1,
+          "round": 3,
+          "teamUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
+        },
+        "-OO0DmuGdEVOz2phAA85": {
+          "NHL Team": "FLA",
+          "Player": "Brad Marchand",
+          "Position": "C",
+          "Team": "Paul Weston",
+          "draftedAt": 1744851119828,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 18,
+          "playerId": "8473419",
+          "playoffRoundDrafted": 1,
+          "round": 3,
+          "teamUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
+        },
+        "-OO0Fi2X1qjS2J7Hhvww": {
+          "NHL Team": "FLA",
+          "Player": "Matthew Tkachuk",
+          "Position": "LW",
+          "Team": "Ryan Jones",
+          "draftedAt": 1744851624228,
+          "draftedByName": "Ryan Jones",
+          "draftedByUid": "wgLGKONV4DZXydnhf4yzTuut55c2",
+          "pickNumber": 19,
+          "playerId": "8479314",
+          "playoffRoundDrafted": 1,
+          "round": 3,
+          "teamUid": "wgLGKONV4DZXydnhf4yzTuut55c2"
+        },
+        "-OO0O2ey7nVBoBXjp8r8": {
+          "NHL Team": "CAR",
+          "Player": "Sebastian Aho",
+          "Position": "C",
+          "Team": "Sunny Sahai",
+          "draftedAt": 1744853809918,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 20,
+          "playerId": "8478427",
+          "playoffRoundDrafted": 1,
+          "round": 3,
+          "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+        },
+        "-OO0_rh_6SatJdGQ0zkw": {
+          "NHL Team": "EDM",
+          "Player": "Evan Bouchard",
+          "Position": "D",
+          "Team": "Mark Weston",
+          "draftedAt": 1744857168789,
+          "draftedByName": "Mark Weston",
+          "draftedByUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2",
+          "pickNumber": 21,
+          "playerId": "8480803",
+          "playoffRoundDrafted": 1,
+          "round": 3,
+          "teamUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
+        },
+        "-OO25d3MthGl9_u8gLLj": {
+          "NHL Team": "TBL",
+          "Player": "Nikita Kucherov",
+          "Position": "RW",
+          "Team": "Andrew Porteous",
+          "draftedAt": 1744882536785,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 22,
+          "playerId": "8476453",
+          "playoffRoundDrafted": 1,
+          "round": 3,
+          "teamUid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
+        },
+        "-OO2ASa05UFiIirYe1Wt": {
+          "NHL Team": "VGK",
+          "Player": "Shea Theodore",
+          "Position": "D",
+          "Team": "Randy Jones",
+          "draftedAt": 1744883800492,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 23,
+          "playerId": "8477447",
+          "playoffRoundDrafted": 1,
+          "round": 3,
+          "teamUid": "sRtihakg3Qavwei7KcToId47LrX2"
+        },
+        "-OO2qEfI10QBlFcvPkt9": {
+          "NHL Team": "COL",
+          "Player": "Mackenzie Blackwood",
+          "Position": "G",
+          "Team": "Kris Anderson",
+          "draftedAt": 1744895015752,
+          "draftedByName": "Kris Anderson",
+          "draftedByUid": "b2G10m5isKRjnNdjjymvv8dB7na2",
+          "pickNumber": 24,
+          "playerId": "8478406",
+          "playoffRoundDrafted": 1,
+          "round": 3,
+          "teamUid": "b2G10m5isKRjnNdjjymvv8dB7na2"
+        },
+        "-OO2qGc0Qysu9avzzxE5": {
+          "NHL Team": "COL",
+          "Player": "Martin Necas",
+          "Position": "C",
+          "Team": "Kris Anderson",
+          "draftedAt": 1744895023717,
+          "draftedByName": "Kris Anderson",
+          "draftedByUid": "b2G10m5isKRjnNdjjymvv8dB7na2",
+          "pickNumber": 25,
+          "playerId": "8480039",
+          "playoffRoundDrafted": 1,
+          "round": 4,
+          "teamUid": "b2G10m5isKRjnNdjjymvv8dB7na2"
+        },
+        "-OO3AMym3PRUq7T1BFBl": {
+          "NHL Team": "TOR",
+          "Player": "Anthony Stolarz",
+          "Position": "G",
+          "Team": "Randy Jones",
+          "draftedAt": 1744900554717,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 26,
+          "playerId": "8476932",
+          "playoffRoundDrafted": 1,
+          "round": 4,
+          "teamUid": "sRtihakg3Qavwei7KcToId47LrX2"
+        },
+        "-OO3FvW7carwDlsQZHxA": {
+          "NHL Team": "TBL",
+          "Player": "Victor Hedman",
+          "Position": "D",
+          "Team": "Andrew Porteous",
+          "draftedAt": 1744902011003,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 27,
+          "playerId": "8475167",
+          "playoffRoundDrafted": 1,
+          "round": 4,
+          "teamUid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
+        },
+        "-OO3MOdDYg6VGppqH9Et": {
+          "NHL Team": "VGK",
+          "Player": "Mark Stone",
+          "Position": "RW",
+          "Team": "Mark Weston",
+          "draftedAt": 1744903707276,
+          "draftedByName": "Mark Weston",
+          "draftedByUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2",
+          "pickNumber": 28,
+          "playerId": "8475913",
+          "playoffRoundDrafted": 1,
+          "round": 4,
+          "teamUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
+        },
+        "-OO3Tm-VJjZzoloZgUQL": {
+          "NHL Team": "DAL",
+          "Player": "Jake Oettinger",
+          "Position": "G",
+          "Team": "Sunny Sahai",
+          "draftedAt": 1744905642055,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 29,
+          "playerId": "8479979",
+          "playoffRoundDrafted": 1,
+          "round": 4,
+          "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+        },
+        "-OO3WX0osuUUC5_tU_af": {
+          "NHL Team": "VGK",
+          "Player": "Adin Hill",
+          "Position": "G",
+          "Team": "Ryan Jones",
+          "draftedAt": 1744906363036,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 30,
+          "playerId": "8478499",
+          "playoffRoundDrafted": 1,
+          "round": 4,
+          "teamUid": "wgLGKONV4DZXydnhf4yzTuut55c2"
+        },
+        "-OO3WYPQMeIpOvr73VIF": {
+          "NHL Team": "WPG",
+          "Player": "Josh Morrissey",
+          "Position": "D",
+          "Team": "Paul Weston",
+          "draftedAt": 1744906368706,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 31,
+          "playerId": "8477504",
+          "playoffRoundDrafted": 1,
+          "round": 4,
+          "teamUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
+        },
+        "-OO3luw10FbpmcJa5rDd": {
+          "NHL Team": "WSH",
+          "Player": "John Carlson",
+          "Position": "D",
+          "Team": "Daryl Kay",
+          "draftedAt": 1744910659377,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 32,
+          "playerId": "8474590",
+          "playoffRoundDrafted": 1,
+          "round": 4,
+          "teamUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
+        },
+        "-OO3xxvFAzx-Ip-Cyik5": {
+          "NHL Team": "WPG",
+          "Player": "Gabriel Vilardi",
+          "Position": "C",
+          "Team": "Daryl Kay",
+          "draftedAt": 1744913817351,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 33,
+          "playerId": "8480014",
+          "playoffRoundDrafted": 1,
+          "round": 5,
+          "teamUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
+        },
+        "-OO45dW9YcyYamJO5WrO": {
+          "NHL Team": "CAR",
+          "Player": "Shayne Gostisbehere",
+          "Position": "D",
+          "Team": "Paul Weston",
+          "draftedAt": 1744916093041,
+          "draftedByName": "Paul Weston",
+          "draftedByUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62",
+          "pickNumber": 34,
+          "playerId": "8476906",
+          "playoffRoundDrafted": 1,
+          "round": 5,
+          "teamUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
+        },
+        "-OO4C8LWZGa3Vtpw65Ls": {
+          "NHL Team": "COL",
+          "Player": "Devon Toews",
+          "Position": "D",
+          "Team": "Ryan Jones",
+          "draftedAt": 1744917796216,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 35,
+          "playerId": "8478038",
+          "playoffRoundDrafted": 1,
+          "round": 5,
+          "teamUid": "wgLGKONV4DZXydnhf4yzTuut55c2"
+        },
+        "-OO4GuQQqqtEyur3vNjB": {
+          "NHL Team": "TOR",
+          "Player": "Morgan Rielly",
+          "Position": "D",
+          "Team": "Sunny Sahai",
+          "draftedAt": 1744919045919,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 36,
+          "playerId": "8476853",
+          "playoffRoundDrafted": 1,
+          "round": 5,
+          "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+        },
+        "-OO4aCL5nqdZF2Kmbocn": {
+          "NHL Team": "WSH",
+          "Player": "Jakob Chychrun",
+          "Position": "D",
+          "Team": "Mark Weston",
+          "draftedAt": 1744924366253,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 37,
+          "playerId": "8479345",
+          "playoffRoundDrafted": 1,
+          "round": 5,
+          "teamUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
+        },
+        "-OO52n3EY7Fg24n_jDfX": {
+          "NHL Team": "DAL",
+          "Player": "Mikko Rantanen",
+          "Position": "RW",
+          "Team": "Andrew Porteous",
+          "draftedAt": 1744932122945,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 38,
+          "playerId": "8478420",
+          "playoffRoundDrafted": 1,
+          "round": 5,
+          "teamUid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
+        },
+        "-OO52qjp69xGxJEpSf15": {
+          "NHL Team": "TOR",
+          "Player": "John Tavares",
+          "Position": "C",
+          "Team": "Randy Jones",
+          "draftedAt": 1744932138019,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 39,
+          "playerId": "8475166",
+          "playoffRoundDrafted": 1,
+          "round": 5,
+          "teamUid": "sRtihakg3Qavwei7KcToId47LrX2"
+        },
+        "-OO5VoifCO0Bi1PJ5gCM": {
+          "NHL Team": "NJD",
+          "Player": "Jack Hughes",
+          "Position": "C",
+          "Team": "Kris Anderson",
+          "draftedAt": 1744939732008,
+          "draftedByName": "Kris Anderson",
+          "draftedByUid": "b2G10m5isKRjnNdjjymvv8dB7na2",
+          "pickNumber": 40,
+          "playerId": "8481559",
+          "playoffRoundDrafted": 1,
+          "round": 5,
+          "teamUid": "b2G10m5isKRjnNdjjymvv8dB7na2"
+        },
+        "-OO5W-cDumz9ikyxr7w9": {
+          "NHL Team": "NJD",
+          "Player": "Jesper Bratt",
+          "Position": "LW",
+          "Team": "Kris Anderson",
+          "draftedAt": 1744939780720,
+          "draftedByName": "Kris Anderson",
+          "draftedByUid": "b2G10m5isKRjnNdjjymvv8dB7na2",
+          "pickNumber": 41,
+          "playerId": "8479407",
+          "playoffRoundDrafted": 1,
+          "round": 6,
+          "teamUid": "b2G10m5isKRjnNdjjymvv8dB7na2"
+        },
+        "-OO5dAsGMpvZAk959OTJ": {
+          "NHL Team": "VGK",
+          "Player": "Noah Hanifin",
+          "Position": "D",
+          "Team": "Randy Jones",
+          "draftedAt": 1744941923903,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 42,
+          "playerId": "8478396",
+          "playoffRoundDrafted": 1,
+          "round": 6,
+          "teamUid": "sRtihakg3Qavwei7KcToId47LrX2"
+        },
+        "-OO5jgnzDCusnxz2Fk1V": {
+          "NHL Team": "LAK",
+          "Player": "Drew Doughty",
+          "Position": "D",
+          "Team": "Andrew Porteous",
+          "draftedAt": 1744943631796,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 43,
+          "playerId": "8474563",
+          "playoffRoundDrafted": 1,
+          "round": 6,
+          "teamUid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
+        },
+        "-OO7FaGxFvBQ0HvHcalz": {
+          "NHL Team": "TBL",
+          "Player": "Andrei Vasilevskiy",
+          "Position": "G",
+          "Team": "Mark Weston",
+          "draftedAt": 1744969032880,
+          "draftedByName": "Mark Weston",
+          "draftedByUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2",
+          "pickNumber": 44,
+          "playerId": "8476883",
+          "playoffRoundDrafted": 1,
+          "round": 6,
+          "teamUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
+        },
+        "-OO81pzRLAeE-dveSb3X": {
+          "NHL Team": "DAL",
+          "Player": "Thomas Harley",
+          "Position": "D",
+          "Team": "Sunny Sahai",
+          "draftedAt": 1744982204439,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 45,
+          "playerId": "8481581",
+          "playoffRoundDrafted": 1,
+          "round": 6,
+          "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+        },
+        "-OO82L2N_4Q8lxYuugQN": {
+          "NHL Team": "VGK",
+          "Player": "Alex Pietrangelo",
+          "Position": "D",
+          "Team": "Ryan Jones",
+          "draftedAt": 1744982335755,
+          "draftedByName": "Ryan Jones",
+          "draftedByUid": "wgLGKONV4DZXydnhf4yzTuut55c2",
+          "pickNumber": 46,
+          "playerId": "8474565",
+          "playoffRoundDrafted": 1,
+          "round": 6,
+          "teamUid": "wgLGKONV4DZXydnhf4yzTuut55c2"
+        },
+        "-OO8GM-C9BuskkS_e0E6": {
+          "NHL Team": "EDM",
+          "Player": "Stuart Skinner",
+          "Position": "G",
+          "Team": "Paul Weston",
+          "draftedAt": 1744986009661,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 47,
+          "playerId": "8479973",
+          "playoffRoundDrafted": 1,
+          "round": 6,
+          "teamUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
+        },
+        "-OO8GUlhdaLw6r_JXyRE": {
+          "NHL Team": "FLA",
+          "Player": "Seth Jones",
+          "Position": "D",
+          "Team": "Daryl Kay",
+          "draftedAt": 1744986045594,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 48,
+          "playerId": "8477495",
+          "playoffRoundDrafted": 1,
+          "round": 6,
+          "teamUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
+        },
+        "-OO8G_UJUaGaQ4zDJct-": {
+          "NHL Team": "COL",
+          "Player": "Valeri Nichushkin",
+          "Position": "RW",
+          "Team": "Daryl Kay",
+          "draftedAt": 1744986068994,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 49,
+          "playerId": "8477501",
+          "playoffRoundDrafted": 1,
+          "round": 7,
+          "teamUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
+        },
+        "-OO8GbuRpC92Cq0nlBVj": {
+          "NHL Team": "TBL",
+          "Player": "Brayden Point",
+          "Position": "C",
+          "Team": "Paul Weston",
+          "draftedAt": 1744986078921,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 50,
+          "playerId": "8478010",
+          "playoffRoundDrafted": 1,
+          "round": 7,
+          "teamUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
+        },
+        "-OO8NgxXxK-SLKiMO13r": {
+          "NHL Team": "COL",
+          "Player": "Brock Nelson",
+          "Position": "C",
+          "Team": "Ryan Jones",
+          "draftedAt": 1744987934703,
+          "draftedByName": "Ryan Jones",
+          "draftedByUid": "wgLGKONV4DZXydnhf4yzTuut55c2",
+          "pickNumber": 51,
+          "playerId": "8475754",
+          "playoffRoundDrafted": 1,
+          "round": 7,
+          "teamUid": "wgLGKONV4DZXydnhf4yzTuut55c2"
+        },
+        "-OO8TU7TK5HyRZbTYQIy": {
+          "NHL Team": "TOR",
+          "Player": "Matthew Knies",
+          "Position": "LW",
+          "Team": "Sunny Sahai",
+          "draftedAt": 1744989450953,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 52,
+          "playerId": "8482720",
+          "playoffRoundDrafted": 1,
+          "round": 7,
+          "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+        },
+        "-OO8TVnaKA6vKLg5T5HK": {
+          "NHL Team": "TBL",
+          "Player": "Brandon Hagel",
+          "Position": "LW",
+          "Team": "Mark Weston",
+          "draftedAt": 1744989457812,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 53,
+          "playerId": "8479542",
+          "playoffRoundDrafted": 1,
+          "round": 7,
+          "teamUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
+        },
+        "-OO8TlQzy0iaZCpuRKmI": {
+          "NHL Team": "CAR",
+          "Player": "Seth Jarvis",
+          "Position": "C",
+          "Team": "Andrew Porteous",
+          "draftedAt": 1744989525812,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 54,
+          "playerId": "8482093",
+          "playoffRoundDrafted": 1,
+          "round": 7,
+          "teamUid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
+        },
+        "-OO8Uk7oHBY_oHhsTN0I": {
+          "NHL Team": "VGK",
+          "Player": "Tomas Hertl",
+          "Position": "C",
+          "Team": "Randy Jones",
+          "draftedAt": 1744989782626,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 55,
+          "playerId": "8476881",
+          "playoffRoundDrafted": 1,
+          "round": 7,
+          "teamUid": "sRtihakg3Qavwei7KcToId47LrX2"
+        },
+        "-OO8WT-6RDmsGHOCk48Q": {
+          "NHL Team": "WPG",
+          "Player": "Neal Pionk",
+          "Position": "D",
+          "Team": "Kris Anderson",
+          "draftedAt": 1744990232694,
+          "draftedByName": "Kris Anderson",
+          "draftedByUid": "b2G10m5isKRjnNdjjymvv8dB7na2",
+          "pickNumber": 56,
+          "playerId": "8480145",
+          "playoffRoundDrafted": 1,
+          "round": 7,
+          "teamUid": "b2G10m5isKRjnNdjjymvv8dB7na2"
+        },
+        "-OPW5ON8I87S2UHXkJsJ": {
+          "NHL Team": "DAL",
+          "Player": "Wyatt Johnston",
+          "Position": "C",
+          "Team": "Paul Weston",
+          "draftedAt": 1746459530805,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 1,
+          "playerId": "8482740",
+          "playoffRoundDrafted": 2,
+          "pointsBeforeAcquiring": 7,
+          "preAcqRound": 2,
+          "round": 1,
+          "teamUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
+        },
+        "-OPWClFFYaQBcLWkupmN": {
+          "NHL Team": "WSH",
+          "Player": "Logan Thompson",
+          "Position": "G",
+          "Team": "Mark Weston",
+          "draftedAt": 1746461463638,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 2,
+          "playerId": "8480313",
+          "playoffRoundDrafted": 2,
+          "pointsBeforeAcquiring": 8,
+          "preAcqRound": 2,
+          "round": 1,
+          "teamUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
+        },
+        "-OPWCqGthNuTM2BQh-Fe": {
+          "NHL Team": "WPG",
+          "Player": "Cole Perfetti",
+          "Position": "C",
+          "Team": "Daryl Kay",
+          "draftedAt": 1746461484223,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 3,
+          "playerId": "8482149",
+          "playoffRoundDrafted": 2,
+          "pointsBeforeAcquiring": 5,
+          "preAcqRound": 2,
+          "round": 1,
+          "teamUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
+        },
+        "-OPWUXT2GEtZ8VtVv4ph": {
+          "NHL Team": "EDM",
+          "Player": "Zach Hyman",
+          "Position": "LW",
+          "Team": "Kris Anderson",
+          "draftedAt": 1746466121737,
+          "draftedByName": "Kris Anderson",
+          "draftedByUid": "b2G10m5isKRjnNdjjymvv8dB7na2",
+          "pickNumber": 4,
+          "playerId": "8475786",
+          "playoffRoundDrafted": 2,
+          "pointsBeforeAcquiring": 5,
+          "preAcqRound": 2,
+          "round": 1,
+          "teamUid": "b2G10m5isKRjnNdjjymvv8dB7na2"
+        },
+        "-OPWaTGIzCDLuI3VeRXH": {
+          "NHL Team": "-",
+          "Player": "BANKED PICK",
+          "Position": "-",
+          "Team": "Randy Jones",
+          "draftedAt": 1746467939515,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "isBankedPick": true,
+          "pickNumber": 5,
+          "round": 2,
+          "teamUid": "sRtihakg3Qavwei7KcToId47LrX2"
+        },
+        "-OPWbj5FFNLnKgbiO3NK": {
+          "NHL Team": "FLA",
+          "Player": "Sam Bennett",
+          "Position": "C",
+          "Team": "Ryan Jones",
+          "draftedAt": 1746468270581,
+          "draftedByName": "Ryan Jones",
+          "draftedByUid": "wgLGKONV4DZXydnhf4yzTuut55c2",
+          "pickNumber": 6,
+          "playerId": "8477935",
+          "playoffRoundDrafted": 2,
+          "pointsBeforeAcquiring": 5,
+          "preAcqRound": 2,
+          "round": 1,
+          "teamUid": "wgLGKONV4DZXydnhf4yzTuut55c2"
+        },
+        "-OPX3HW5kjSnGDEKNdLh": {
+          "NHL Team": "-",
+          "Player": "BANKED PICK",
+          "Position": "-",
+          "Team": "Sunny Sahai",
+          "draftedAt": 1746475755637,
+          "draftedByName": "Sunny Sahai",
+          "draftedByUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1",
+          "isBankedPick": true,
+          "pickNumber": 7,
+          "round": 2,
+          "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+        },
+        "-OPXPNxZWeQl9aXvtrJT": {
+          "NHL Team": "WPG",
+          "Player": "Vladislav Namestnikov",
+          "Position": "C",
+          "Team": "Andrew Porteous",
+          "draftedAt": 1746481549208,
+          "draftedByName": "Andrew Porteous",
+          "draftedByUid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1",
+          "pickNumber": 8,
+          "playerId": "8476480",
+          "playoffRoundDrafted": 2,
+          "pointsBeforeAcquiring": 4,
+          "preAcqRound": 2,
+          "round": 1,
+          "teamUid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
+        },
+        "-OQd50sb3pspmiXz-mOz": {
+          "NHL Team": "CAR",
+          "Player": "Frederik Andersen",
+          "Position": "G",
+          "Team": "Randy Jones",
+          "draftedAt": 1747667394131,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 1,
+          "playerId": "8475883",
+          "playoffRoundDrafted": 3,
+          "pointsBeforeAcquiring": 15,
+          "preAcqRound": 3,
+          "round": 1,
+          "teamUid": "sRtihakg3Qavwei7KcToId47LrX2"
+        },
+        "-OQezhKMXaOrZDX-El6L": {
+          "NHL Team": "DAL",
+          "Player": "Roope Hintz",
+          "Position": "C",
+          "Team": "Sunny Sahai",
+          "draftedAt": 1747699291528,
+          "draftedByName": "Sunny Sahai",
+          "draftedByUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1",
+          "pickNumber": 2,
+          "playerId": "8478449",
+          "playoffRoundDrafted": 3,
+          "pointsBeforeAcquiring": 10,
+          "preAcqRound": 3,
+          "round": 1,
+          "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+        },
+        "-OQfNJAku1jCpM5THTij": {
+          "NHL Team": "FLA",
+          "Player": "Eetu Luostarinen",
+          "Position": "C",
+          "Team": "Kris Anderson",
+          "draftedAt": 1747705742159,
+          "draftedByName": "Kris Anderson",
+          "draftedByUid": "b2G10m5isKRjnNdjjymvv8dB7na2",
+          "pickNumber": 3,
+          "playerId": "8480185",
+          "playoffRoundDrafted": 3,
+          "pointsBeforeAcquiring": 12,
+          "preAcqRound": 3,
+          "round": 1,
+          "teamUid": "b2G10m5isKRjnNdjjymvv8dB7na2"
+        },
+        "-OQiBAfC1hpkg8tg9tq0": {
+          "NHL Team": "CAR",
+          "Player": "Andrei Svechnikov",
+          "Position": "RW",
+          "Team": "Mark Weston",
+          "draftedAt": 1747752893165,
+          "draftedByName": "Mark Weston",
+          "draftedByUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2",
+          "pickNumber": 4,
+          "playerId": "8480830",
+          "playoffRoundDrafted": 3,
+          "pointsBeforeAcquiring": 9,
+          "preAcqRound": 3,
+          "round": 1,
+          "teamUid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
+        },
+        "-OQiKJXm98i2WdKyUOdn": {
+          "NHL Team": "CAR",
+          "Player": "Logan Stankoven",
+          "Position": "C",
+          "Team": "Randy Jones",
+          "draftedAt": 1747755288824,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 5,
+          "playerId": "8482702",
+          "playoffRoundDrafted": 3,
+          "pointsBeforeAcquiring": 5,
+          "preAcqRound": 3,
+          "round": 1,
+          "teamUid": "sRtihakg3Qavwei7KcToId47LrX2"
+        },
+        "-OQiW4_YFNS11T6ekl81": {
+          "NHL Team": "FLA",
+          "Player": "Anton Lundell",
+          "Position": "C",
+          "Team": "Paul Weston",
+          "draftedAt": 1747758373262,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 6,
+          "playerId": "8482113",
+          "playoffRoundDrafted": 3,
+          "pointsBeforeAcquiring": 10,
+          "preAcqRound": 3,
+          "round": 1,
+          "teamUid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
+        },
+        "-OQiW8_1odVoqHeWjbOD": {
+          "NHL Team": "FLA",
+          "Player": "Carter Verhaeghe",
+          "Position": "C",
+          "Team": "Ryan Jones",
+          "draftedAt": 1747758389615,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 7,
+          "playerId": "8477409",
+          "playoffRoundDrafted": 3,
+          "pointsBeforeAcquiring": 8,
+          "preAcqRound": 3,
+          "round": 1,
+          "teamUid": "wgLGKONV4DZXydnhf4yzTuut55c2"
+        },
+        "-OQid12J-shZ4UfoxwHX": {
+          "NHL Team": "FLA",
+          "Player": "Nate Schmidt",
+          "Position": "D",
+          "Team": "Daryl Kay",
+          "draftedAt": 1747760452784,
+          "draftedByName": "Daryl Kay",
+          "draftedByUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2",
+          "pickNumber": 8,
+          "playerId": "8477220",
+          "playoffRoundDrafted": 3,
+          "pointsBeforeAcquiring": 7,
+          "preAcqRound": 3,
+          "round": 1,
+          "teamUid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
+        },
+        "-OQjYUequm3tjyU3-Uxq": {
+          "NHL Team": "CAR",
+          "Player": "Taylor Hall",
+          "Position": "LW",
+          "Team": "Andrew Porteous",
+          "draftedAt": 1747775781610,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 9,
+          "playerId": "8475791",
+          "playoffRoundDrafted": 3,
+          "pointsBeforeAcquiring": 6,
+          "preAcqRound": 3,
+          "round": 1,
+          "teamUid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
+        },
+        "-OQjcLm0bifLQjMuXuyR": {
+          "NHL Team": "EDM",
+          "Player": "Ryan Nugent-Hopkins",
+          "Position": "C",
+          "Team": "Sunny Sahai",
+          "draftedAt": 1747777055926,
+          "draftedByName": "Randy Jones",
+          "draftedByUid": "sRtihakg3Qavwei7KcToId47LrX2",
+          "pickNumber": 10,
+          "playerId": "8476454",
+          "playoffRoundDrafted": 3,
+          "pointsBeforeAcquiring": 9,
+          "preAcqRound": 3,
+          "round": 1,
+          "teamUid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+        }
+      },
+      "eliminatedPlayers": {
+        "8471214": true,
+        "8474563": true,
+        "8474565": true,
+        "8474590": true,
+        "8475166": true,
+        "8475167": true,
+        "8475754": true,
+        "8475913": true,
+        "8476453": true,
+        "8476460": true,
+        "8476480": true,
+        "8476853": true,
+        "8476880": true,
+        "8476881": true,
+        "8476883": true,
+        "8476932": true,
+        "8476945": true,
+        "8477447": true,
+        "8477492": true,
+        "8477501": true,
+        "8477504": true,
+        "8477939": true,
+        "8478010": true,
+        "8478038": true,
+        "8478396": true,
+        "8478398": true,
+        "8478403": true,
+        "8478406": true,
+        "8478440": true,
+        "8478483": true,
+        "8478499": true,
+        "8479318": true,
+        "8479345": true,
+        "8479407": true,
+        "8479542": true,
+        "8480014": true,
+        "8480039": true,
+        "8480069": true,
+        "8480145": true,
+        "8480313": true,
+        "8481559": true,
+        "8482149": true,
+        "8482720": true
+      },
+      "invitedManagers": [
+        {
+          "email": "krisanderson12@hotmail.com",
+          "invitedAt": "2025-04-11T19:06:37.504Z"
+        },
+        {
+          "email": "andrewpatrickporteous@gmail.com",
+          "invitedAt": "2025-04-11T19:06:45.037Z"
+        },
+        {
+          "email": "suno1234@hotmail.com",
+          "invitedAt": "2025-04-11T19:06:51.520Z"
+        }
+      ],
+      "maxTeams": 10,
+      "name": "League of Men 2025",
+      "password": "hockey",
+      "playoffRound": {
+        "currentRound": 3,
+        "nextRoundDraftOrder": [
+          {
+            "pickType": "standard",
+            "uid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
+          },
+          {
+            "pickType": "standard",
+            "uid": "b2G10m5isKRjnNdjjymvv8dB7na2"
+          },
+          {
+            "pickType": "standard",
+            "uid": "sRtihakg3Qavwei7KcToId47LrX2"
+          },
+          {
+            "pickType": "standard",
+            "uid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
+          },
+          {
+            "pickType": "standard",
+            "uid": "wgLGKONV4DZXydnhf4yzTuut55c2"
+          },
+          {
+            "pickType": "standard",
+            "uid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
+          },
+          {
+            "pickType": "standard",
+            "uid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
+          },
+          {
+            "pickType": "standard",
+            "uid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+          }
+        ]
+      },
+      "presence": {
+        "0q20rBahZ1X7P0bz7Buvw9ovjIA2": {
+          "lastSeen": 1747767594990,
+          "online": false
+        },
+        "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1": {
+          "lastSeen": 1747779889768,
+          "online": false
+        },
+        "b2G10m5isKRjnNdjjymvv8dB7na2": {
+          "lastSeen": 1748265871048,
+          "online": false
+        },
+        "cVwoFrceZ2Nm1JQkkNC2SzpXcY62": {
+          "lastSeen": 1745055124270,
+          "online": false
+        },
+        "mnLVp7F8PDNQ1u0KahpORRqeSdt1": {
+          "lastSeen": 1746481815209,
+          "online": false
+        },
+        "sRtihakg3Qavwei7KcToId47LrX2": {
+          "lastSeen": 1747833292796,
+          "online": false
+        },
+        "wgLGKONV4DZXydnhf4yzTuut55c2": {
+          "lastSeen": 1747753817785,
+          "online": false
+        },
+        "wlHXuGUYpPOuksV3g7TrpAywtGh2": {
+          "lastSeen": 1747760471874,
+          "online": false
+        }
+      },
+      "settings": {
+        "draftStatus": "inactive",
+        "status": "inactive"
+      },
+      "teams": {
+        "0q20rBahZ1X7P0bz7Buvw9ovjIA2": {
+          "email": "markweston9191@gmail.com",
+          "isCommissioner": false,
+          "joinedAt": "2025-04-13T13:18:46.063Z",
+          "name": "Mark Weston",
+          "uid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
+        },
+        "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1": {
+          "email": "mandeep.sahai@gmail.com",
+          "isCommissioner": false,
+          "joinedAt": "2025-04-14T14:48:54.816Z",
+          "name": "Sunny Sahai",
+          "uid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+        },
+        "b2G10m5isKRjnNdjjymvv8dB7na2": {
+          "email": "andobombs@gmail.com",
+          "isCommissioner": false,
+          "joinedAt": "2025-04-12T03:08:15.926Z",
+          "name": "Kris Anderson",
+          "uid": "b2G10m5isKRjnNdjjymvv8dB7na2"
+        },
+        "cVwoFrceZ2Nm1JQkkNC2SzpXcY62": {
+          "email": "paulaweston12@gmail.com",
+          "isCommissioner": false,
+          "joinedAt": "2025-04-14T13:58:55.619Z",
+          "name": "Paul Weston",
+          "uid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
+        },
+        "mnLVp7F8PDNQ1u0KahpORRqeSdt1": {
+          "email": "andrewpatrickporteous@gmail.com",
+          "isCommissioner": false,
+          "joinedAt": "2025-04-11T20:57:11.647Z",
+          "name": "Andrew Porteous",
+          "uid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
+        },
+        "sRtihakg3Qavwei7KcToId47LrX2": {
+          "email": "randyjones87@gmail.com",
+          "isCommissioner": true,
+          "joinedAt": "2025-04-11T19:07:17.408Z",
+          "name": "Randy Jones",
+          "uid": "sRtihakg3Qavwei7KcToId47LrX2"
+        },
+        "wgLGKONV4DZXydnhf4yzTuut55c2": {
+          "email": "ryanjones84@gmail.com",
+          "isCommissioner": false,
+          "joinedAt": "2025-04-11T19:15:05.531Z",
+          "name": "Ryan Jones",
+          "uid": "wgLGKONV4DZXydnhf4yzTuut55c2"
+        },
+        "wlHXuGUYpPOuksV3g7TrpAywtGh2": {
+          "email": "darylk@gmail.com",
+          "isCommissioner": false,
+          "joinedAt": "2025-04-13T23:20:40.016Z",
+          "name": "Daryl Kay",
+          "uid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
+        }
+      }
+    },
+    "-OO4DglC-zqxYLE4ppOh": {
+      "presence": {
+        "RXSuL4cSg8YdwxZs4WsO3a7yvdK2": {
+          "lastSeen": 1744993826655,
+          "online": false
+        }
+      }
+    }
+  },
+  "users": {
+    "0q20rBahZ1X7P0bz7Buvw9ovjIA2": {
+      "leagues": {
+        "-ONaEwjf0r2hguG0LaAu": {
+          "code": "HFD7DH",
+          "joinedAt": "2025-04-13T13:18:46.097Z",
+          "leagueId": "-ONaEwjf0r2hguG0LaAu",
+          "name": "League of Men 2025",
+          "role": "manager"
+        }
+      },
+      "profile": {
+        "displayName": "Mark Weston",
+        "email": "markweston9191@gmail.com",
+        "lastLogin": 1747752689992,
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocJlOvhAhA-HmPqQQyUIGzLZ4ak3PWGg4e8Muwv9fMjR2tiOow=s96-c",
+        "uid": "0q20rBahZ1X7P0bz7Buvw9ovjIA2"
+      }
+    },
+    "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1": {
+      "leagues": {
+        "-ONaEwjf0r2hguG0LaAu": {
+          "code": "HFD7DH",
+          "joinedAt": "2025-04-14T14:48:54.880Z",
+          "leagueId": "-ONaEwjf0r2hguG0LaAu",
+          "name": "League of Men 2025",
+          "role": "manager"
+        }
+      },
+      "profile": {
+        "displayName": "Sunny Sahai",
+        "email": "mandeep.sahai@gmail.com",
+        "lastLogin": 1747776080326,
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocIz8Sf6rSvjRjewmQi66TryyG-gEHhHY8BcLomxgjj0UnQRvsIe=s96-c",
+        "uid": "9Iz1cAk0IhTaGQtECWl2jsoA9Xu1"
+      }
+    },
+    "RXSuL4cSg8YdwxZs4WsO3a7yvdK2": {
+      "leagues": {
+        "-OO4DglC-zqxYLE4ppOh": {
+          "code": "BV4WQL",
+          "joinedAt": "2025-04-17T19:30:19.403Z",
+          "leagueId": "-OO4DglC-zqxYLE4ppOh",
+          "name": "Test League 001",
+          "role": "manager"
+        }
+      },
+      "profile": {
+        "displayName": "Randy Jones",
+        "email": "rinkrivals.test01@gmail.com",
+        "lastLogin": 1744918222038,
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocJLvLGP61Q3pnGpAhheJHt5y9hPIBih5tExyoN_aAZCw_AcRQ=s96-c",
+        "uid": "RXSuL4cSg8YdwxZs4WsO3a7yvdK2"
+      }
+    },
+    "YDFtmFxjF3ecQLlfG1NpdbdXTMi1": {
+      "profile": {
+        "displayName": "Paul Weston",
+        "email": "westonpaul12@gmail.com",
+        "lastLogin": 1744801148884,
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocJoL93BPFQUS9jMLI3adYEi_2CT_SCmC8eY5_sXDRNySGGMZA=s96-c",
+        "uid": "YDFtmFxjF3ecQLlfG1NpdbdXTMi1"
+      }
+    },
+    "b2G10m5isKRjnNdjjymvv8dB7na2": {
+      "leagues": {
+        "-ONaEwjf0r2hguG0LaAu": {
+          "code": "HFD7DH",
+          "joinedAt": "2025-04-12T03:08:16.017Z",
+          "leagueId": "-ONaEwjf0r2hguG0LaAu",
+          "name": "League of Men 2025",
+          "role": "manager"
+        }
+      },
+      "profile": {
+        "displayName": "Kris Anderson",
+        "email": "andobombs@gmail.com",
+        "lastLogin": 1748264933005,
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocK_L4Iw_Uuja0j7lQGKKYhSMy8YWiWWFBT2fppRngF35PAvcx0h=s96-c",
+        "uid": "b2G10m5isKRjnNdjjymvv8dB7na2"
+      }
+    },
+    "cVwoFrceZ2Nm1JQkkNC2SzpXcY62": {
+      "leagues": {
+        "-ONaEwjf0r2hguG0LaAu": {
+          "code": "HFD7DH",
+          "joinedAt": "2025-04-14T13:58:55.664Z",
+          "leagueId": "-ONaEwjf0r2hguG0LaAu",
+          "name": "League of Men 2025",
+          "role": "manager"
+        }
+      },
+      "profile": {
+        "displayName": "Paul Weston",
+        "email": "paulaweston12@gmail.com",
+        "lastLogin": 1748257527186,
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocLPcOczPpMLLY0DAhUbkXk2ZFp0h8nXmPoxXa9o3ovIgdlN=s96-c",
+        "uid": "cVwoFrceZ2Nm1JQkkNC2SzpXcY62"
+      }
+    },
+    "mnLVp7F8PDNQ1u0KahpORRqeSdt1": {
+      "leagues": {
+        "-ONaEwjf0r2hguG0LaAu": {
+          "code": "HFD7DH",
+          "joinedAt": "2025-04-11T20:57:11.703Z",
+          "leagueId": "-ONaEwjf0r2hguG0LaAu",
+          "name": "League of Men 2025",
+          "role": "manager"
+        }
+      },
+      "profile": {
+        "displayName": "Andrew Porteous",
+        "email": "andrewpatrickporteous@gmail.com",
+        "lastLogin": 1746480187370,
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocILcN78kiVqwpVBArq7UJiD5_9TCjKW-P3C1PDQLXexMVgsEA=s96-c",
+        "uid": "mnLVp7F8PDNQ1u0KahpORRqeSdt1"
+      }
+    },
+    "sRtihakg3Qavwei7KcToId47LrX2": {
+      "leagues": {
+        "-ONaEwjf0r2hguG0LaAu": {
+          "code": "HFD7DH",
+          "joinedAt": "2025-04-11T19:07:17.509Z",
+          "leagueId": "-ONaEwjf0r2hguG0LaAu",
+          "name": "League of Men 2025",
+          "role": "commissioner"
+        }
+      },
+      "profile": {
+        "displayName": "Randy Jones",
+        "email": "randyjones87@gmail.com",
+        "lastLogin": 1748377724371,
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocKgii6XhmV_UbZt0aU5noTzxnwQ3xeEwJ92wQZRZ5JYCQ0gThqP=s96-c",
+        "uid": "sRtihakg3Qavwei7KcToId47LrX2"
+      }
+    },
+    "wgLGKONV4DZXydnhf4yzTuut55c2": {
+      "leagues": {
+        "-ONaEwjf0r2hguG0LaAu": {
+          "code": "HFD7DH",
+          "joinedAt": "2025-04-11T19:15:05.593Z",
+          "leagueId": "-ONaEwjf0r2hguG0LaAu",
+          "name": "League of Men 2025",
+          "role": "manager"
+        }
+      },
+      "profile": {
+        "displayName": "Ryan Jones",
+        "email": "ryanjones84@gmail.com",
+        "lastLogin": 1747753813326,
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocKxvscK6sfHdLKmpk05dscOllYBSMxnhTjQq4-dRebqkpuEboeJyA=s96-c",
+        "uid": "wgLGKONV4DZXydnhf4yzTuut55c2"
+      }
+    },
+    "wlHXuGUYpPOuksV3g7TrpAywtGh2": {
+      "leagues": {
+        "-ONaEwjf0r2hguG0LaAu": {
+          "code": "HFD7DH",
+          "joinedAt": "2025-04-13T23:20:40.259Z",
+          "leagueId": "-ONaEwjf0r2hguG0LaAu",
+          "name": "League of Men 2025",
+          "role": "manager"
+        }
+      },
+      "profile": {
+        "displayName": "Daryl Kay",
+        "email": "darylk@gmail.com",
+        "lastLogin": 1747760249371,
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocL2tPFX6h9nNBRwuGdnM0269kumqz37ilLq8ltw9-25fzgeg4kf=s96-c",
+        "uid": "wlHXuGUYpPOuksV3g7TrpAywtGh2"
+      }
+    }
+  }
+}
